@@ -792,7 +792,10 @@
         <div id="categorias" class="page">
             <div class="page-header">
                 <h1>Categorias</h1>
-                <button class="btn btn-primary btn-small" onclick="openModalCategoria()">+ Nova Categoria</button>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-secondary btn-small" onclick="importarCategoriasDRE()" title="Cadastra automaticamente as categorias padrão da DRE">📋 Importar Categorias DRE</button>
+                    <button class="btn btn-primary btn-small" onclick="openModalCategoria()">+ Nova Categoria</button>
+                </div>
             </div>
 
             <div class="alert alert-success" id="alertCategorias"></div>
@@ -1769,6 +1772,18 @@
             </div>
             <div class="form-row">
                 <div class="form-group">
+                    <label>Categoria <span style="font-size:11px;color:#888;">(vincula à DRE)</span></label>
+                    <select id="categoriaReceber" onchange="preencherGrupoDREReceber()">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Grupo DRE</label>
+                    <input type="text" id="grupoDREReceber" readonly placeholder="Preenchido automaticamente" style="background:#f9f9f9;color:#666;cursor:not-allowed;">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
                     <label>Valor Total*</label>
                     <input type="number" id="valorReceber" step="0.01" required oninput="calcularParcelasReceber()">
                 </div>
@@ -2425,7 +2440,7 @@
 
     function atualizarSelectCategorias() {
         // IDs de todos os selects que recebem lista de categorias
-        const ids = ['categoriaProduto', 'categoriaPagar', 'filtroCategoriaPagar', 'editLancCategoria'];
+        const ids = ['categoriaProduto', 'categoriaPagar', 'filtroCategoriaPagar', 'editLancCategoria', 'categoriaReceber'];
         ids.forEach(id => {
             const select = document.getElementById(id);
             if (!select) return;
@@ -2439,6 +2454,18 @@
             });
             if (valorAtual) select.value = valorAtual;
         });
+    }
+
+    function preencherGrupoDREReceber() {
+        const catId = parseInt(document.getElementById('categoriaReceber').value);
+        const grupoEl = document.getElementById('grupoDREReceber');
+        if (!catId || !grupoEl) { if (grupoEl) grupoEl.value = ''; return; }
+        const cat = dadosCache.categorias.find(c => c.id === catId);
+        if (cat && cat.grupo_dre) {
+            grupoEl.value = _GRUPOS_DRE_LABELS[cat.grupo_dre] || cat.grupo_dre;
+        } else {
+            grupoEl.value = 'Receita Bruta (padrão)';
+        }
     }
 
     function openModalCategoria() {
@@ -2502,6 +2529,93 @@
                 carregarCategorias();
             }
         }
+    }
+
+    // Categorias padrão da DRE — pré-cadastro completo
+    const _CATEGORIAS_DRE_PADRAO = [
+        // RECEITA BRUTA
+        { nome: 'Vendas de Produtos', grupo_dre: 'RECEITA_BRUTA', tipo: 'receita', descricao: 'Receita proveniente da venda de produtos' },
+        { nome: 'Prestação de Serviços', grupo_dre: 'RECEITA_BRUTA', tipo: 'receita', descricao: 'Receita proveniente de serviços prestados' },
+        { nome: 'Receita de Assinaturas', grupo_dre: 'RECEITA_BRUTA', tipo: 'receita', descricao: 'Receita recorrente de assinaturas e mensalidades' },
+        { nome: 'Comissões Recebidas', grupo_dre: 'RECEITA_BRUTA', tipo: 'receita', descricao: 'Receita de comissões comerciais' },
+        // DEDUÇÕES
+        { nome: 'ICMS s/ Vendas', grupo_dre: 'DEDUCOES', tipo: 'despesa', descricao: 'Imposto sobre Circulação de Mercadorias e Serviços' },
+        { nome: 'PIS/COFINS', grupo_dre: 'DEDUCOES', tipo: 'despesa', descricao: 'PIS e COFINS incidentes sobre a receita' },
+        { nome: 'ISS s/ Serviços', grupo_dre: 'DEDUCOES', tipo: 'despesa', descricao: 'Imposto Sobre Serviços' },
+        { nome: 'Devoluções e Descontos', grupo_dre: 'DEDUCOES', tipo: 'despesa', descricao: 'Devoluções de vendas e descontos comerciais concedidos' },
+        // CPV / CSP
+        { nome: 'Custo de Mercadorias Vendidas', grupo_dre: 'CPV', tipo: 'despesa', descricao: 'CMV — custo direto dos produtos vendidos' },
+        { nome: 'Custo de Mão de Obra Direta', grupo_dre: 'CPV', tipo: 'despesa', descricao: 'Salários e encargos da produção direta' },
+        { nome: 'Matéria-Prima e Insumos', grupo_dre: 'CPV', tipo: 'despesa', descricao: 'Materiais diretos utilizados na produção' },
+        { nome: 'Custo de Serviços Prestados', grupo_dre: 'CPV', tipo: 'despesa', descricao: 'Custos diretos dos serviços entregues ao cliente' },
+        // DESPESAS COMERCIAIS
+        { nome: 'Marketing e Publicidade', grupo_dre: 'DESP_COMERCIAL', tipo: 'despesa', descricao: 'Gastos com marketing, anúncios e publicidade' },
+        { nome: 'Comissões de Vendas', grupo_dre: 'DESP_COMERCIAL', tipo: 'despesa', descricao: 'Comissões pagas a vendedores e representantes' },
+        { nome: 'Frete e Logística', grupo_dre: 'DESP_COMERCIAL', tipo: 'despesa', descricao: 'Custos de entrega e distribuição de produtos' },
+        { nome: 'Eventos e Feiras Comerciais', grupo_dre: 'DESP_COMERCIAL', tipo: 'despesa', descricao: 'Participação em feiras, eventos e promoções' },
+        // DESPESAS ADMINISTRATIVAS
+        { nome: 'Salários e Pró-Labore', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'Remuneração de funcionários administrativos e sócios' },
+        { nome: 'Encargos Sociais (FGTS/INSS)', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'Encargos trabalhistas e previdenciários' },
+        { nome: 'Aluguel e Condomínio', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'Locação de imóveis e espaços comerciais' },
+        { nome: 'Energia Elétrica', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'Conta de energia elétrica' },
+        { nome: 'Água e Saneamento', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'Conta de água e esgoto' },
+        { nome: 'Telefone e Internet', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'Planos de telefonia e conectividade' },
+        { nome: 'Contabilidade e Assessoria', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'Honorários contábeis, jurídicos e consultoria' },
+        { nome: 'Material de Escritório', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'Consumíveis e materiais administrativos' },
+        { nome: 'Software e Licenças', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'Assinaturas de sistemas e licenças de software' },
+        { nome: 'Manutenção e Reparos', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'Manutenção predial, equipamentos e veículos' },
+        { nome: 'Seguros', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'Seguros empresariais e de ativos' },
+        { nome: 'Depreciação e Amortização', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'Depreciação de ativos fixos e amortização de intangíveis' },
+        { nome: 'Impostos e Taxas Municipais', grupo_dre: 'DESP_ADMIN', tipo: 'despesa', descricao: 'IPTU, taxas de alvará e outros tributos municipais' },
+        // RECEITAS FINANCEIRAS
+        { nome: 'Rendimento de Aplicações', grupo_dre: 'RECEITA_FINANCEIRA', tipo: 'receita', descricao: 'Rendimentos de investimentos e aplicações financeiras' },
+        { nome: 'Descontos Obtidos', grupo_dre: 'RECEITA_FINANCEIRA', tipo: 'receita', descricao: 'Descontos recebidos de fornecedores em pagamentos antecipados' },
+        { nome: 'Juros Recebidos', grupo_dre: 'RECEITA_FINANCEIRA', tipo: 'receita', descricao: 'Juros sobre créditos e financiamentos a receber' },
+        // DESPESAS FINANCEIRAS
+        { nome: 'Juros e Encargos Bancários', grupo_dre: 'DESP_FINANCEIRA', tipo: 'despesa', descricao: 'Juros de cheque especial, tarifas e encargos bancários' },
+        { nome: 'IOF e Tarifas Financeiras', grupo_dre: 'DESP_FINANCEIRA', tipo: 'despesa', descricao: 'IOF e outras tarifas sobre operações financeiras' },
+        { nome: 'Multas e Mora', grupo_dre: 'DESP_FINANCEIRA', tipo: 'despesa', descricao: 'Multas e juros de mora sobre pagamentos em atraso' },
+        // EMPRÉSTIMOS
+        { nome: 'Amortização de Empréstimos', grupo_dre: 'EMPRESTIMO', tipo: 'despesa', descricao: 'Pagamento de parcelas de empréstimos bancários' },
+        { nome: 'Amortização de Financiamentos', grupo_dre: 'EMPRESTIMO', tipo: 'despesa', descricao: 'Pagamento de financiamentos de bens e equipamentos' },
+        // INVESTIMENTOS
+        { nome: 'Aquisição de Equipamentos', grupo_dre: 'INVESTIMENTO', tipo: 'despesa', descricao: 'Compra de máquinas e equipamentos produtivos' },
+        { nome: 'Investimento em TI', grupo_dre: 'INVESTIMENTO', tipo: 'despesa', descricao: 'Hardware, infraestrutura e projetos de tecnologia' },
+        { nome: 'Reformas e Benfeitorias', grupo_dre: 'INVESTIMENTO', tipo: 'despesa', descricao: 'Obras e melhorias em ativos imobilizados' },
+        // OUTRAS RECEITAS
+        { nome: 'Venda de Ativo Imobilizado', grupo_dre: 'OUTRAS_RECEITAS', tipo: 'receita', descricao: 'Receita com a venda de bens do ativo fixo' },
+        { nome: 'Recuperação de Créditos', grupo_dre: 'OUTRAS_RECEITAS', tipo: 'receita', descricao: 'Recebimento de créditos anteriormente baixados' },
+        { nome: 'Subvenções e Incentivos', grupo_dre: 'OUTRAS_RECEITAS', tipo: 'receita', descricao: 'Subsídios governamentais e incentivos fiscais' },
+        // OUTRAS DESPESAS
+        { nome: 'Perdas e Sinistros', grupo_dre: 'OUTRAS_DESPESAS', tipo: 'despesa', descricao: 'Perdas operacionais e sinistros não cobertos por seguro' },
+        { nome: 'Doações e Patrocínios', grupo_dre: 'OUTRAS_DESPESAS', tipo: 'despesa', descricao: 'Doações institucionais e patrocínios culturais/esportivos' },
+        { nome: 'Multas Fiscais e Regulatórias', grupo_dre: 'OUTRAS_DESPESAS', tipo: 'despesa', descricao: 'Autuações fiscais e multas regulatórias' },
+    ];
+
+    async function importarCategoriasDRE() {
+        const existentes = dadosCache.categorias.map(c => c.nome.toLowerCase());
+        const novas = _CATEGORIAS_DRE_PADRAO.filter(c => !existentes.includes(c.nome.toLowerCase()));
+
+        if (novas.length === 0) {
+            showAlert('✅ Todas as categorias padrão DRE já estão cadastradas!', 'alertCategorias', 'success');
+            return;
+        }
+
+        if (!confirm(`Deseja importar ${novas.length} categoria(s) padrão da DRE?\n\n` +
+            `(${_CATEGORIAS_DRE_PADRAO.length - novas.length} já existem e serão ignoradas)`)) return;
+
+        let ok = 0, erros = 0;
+        for (const cat of novas) {
+            const r = await fetchSupabase('categorias', 'POST', { ...cat, ativo: true });
+            if (r !== null) ok++; else erros++;
+        }
+
+        if (erros === 0) {
+            showAlert(`✅ ${ok} categorias importadas com sucesso!`, 'alertCategorias', 'success');
+        } else {
+            showAlert(`⚠️ ${ok} importadas, ${erros} com erro. Verifique a conexão.`, 'alertCategorias', 'error');
+        }
+        await carregarCategorias();
     }
 
     function closeModal(modalId) {
@@ -2916,6 +3030,7 @@
         const obs = document.getElementById('observacoesReceber').value;
         const clienteId = parseInt(document.getElementById('clienteReceber').value);
         const descricao = document.getElementById('descricaoReceber').value;
+        const categoriaId = parseInt(document.getElementById('categoriaReceber').value) || null;
 
         let erros = 0;
         for (let i = 0; i < numParcelas; i++) {
@@ -2923,6 +3038,7 @@
             const descParc = numParcelas > 1 ? descricao + ' (' + (i+1) + '/' + numParcelas + ')' : descricao;
             const dados = {
                 cliente_id: clienteId,
+                categoria_id: categoriaId,
                 descricao: descParc,
                 valor: valorParcela,
                 data_competencia: competencia,
@@ -4328,6 +4444,10 @@
         document.getElementById('parcelasReceber').value = '1';
         document.getElementById('observacoesReceber').value = '';
         document.getElementById('previewParcelasReceber').style.display = 'none';
+        const catRec = document.getElementById('categoriaReceber');
+        if (catRec) catRec.value = '';
+        const grupoRec = document.getElementById('grupoDREReceber');
+        if (grupoRec) grupoRec.value = '';
         atualizarSelectCategorias();
         atualizarSelectClientes();
         document.getElementById('modalLancarReceber').classList.add('active');
