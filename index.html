@@ -2084,6 +2084,7 @@
                         <thead>
                             <tr>
                                 <th style="width:100px;">Data</th>
+                                <th style="width:80px;">Dia</th>
                                 <th style="width:160px;color:#28a745;">Entradas</th>
                                 <th style="width:160px;color:#dc3545;">Saídas</th>
                                 <th style="width:160px;">Saldo do Dia</th>
@@ -2091,7 +2092,7 @@
                             </tr>
                         </thead>
                         <tbody id="dfcDiarioBody">
-                            <tr><td colspan="5" style="text-align:center;color:#999;padding:20px;">Selecione um período para ver o fluxo diário</td></tr>
+                            <tr><td colspan="6" style="text-align:center;color:#999;padding:20px;">Selecione um período para ver o fluxo diário</td></tr>
                         </tbody>
                         <tfoot id="dfcDiarioFoot"></tfoot>
                     </table>
@@ -2304,6 +2305,65 @@
             </div>
         </div>
 <!-- MODAL BANCO -->
+<!-- MODAL ACERTO DE SALDO -->
+<div class="modal" id="modalAcertoSaldo">
+    <div class="modal-content" style="max-width:520px;">
+        <div class="modal-header">
+            <span>⚖️ Acerto de Saldo Bancário</span>
+            <button class="modal-close" onclick="closeModal('modalAcertoSaldo')">&times;</button>
+        </div>
+
+        <!-- Info do banco -->
+        <div id="acertoInfoBanco" style="background:#f8f9fa;border-radius:8px;padding:14px 16px;margin-bottom:16px;border-left:4px solid var(--cor-primaria);">
+            <div style="font-weight:700;font-size:15px;" id="acertoBancoNome">—</div>
+            <div style="font-size:13px;color:#555;margin-top:4px;">
+                Saldo calculado pelo sistema:
+                <strong id="acertoSaldoCalc" style="color:#28a745;">R$ 0,00</strong>
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+            <label style="font-weight:600;">Saldo Real (extrato bancário)*</label>
+            <input type="number" id="acertoSaldoReal" step="0.01" placeholder="0,00"
+                   oninput="calcularDiferencaAcerto()"
+                   style="font-size:16px;padding:10px;font-weight:600;">
+            <div style="font-size:12px;color:#888;margin-top:4px;">Informe o saldo exato conforme o extrato/app do banco</div>
+        </div>
+
+        <!-- Preview da diferença -->
+        <div id="acertoDiferencaBox" style="display:none;padding:12px 16px;border-radius:8px;margin-bottom:14px;border:1px solid #ddd;">
+            <div style="font-size:13px;font-weight:600;margin-bottom:6px;">📋 Resumo do Ajuste</div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+                <span>Saldo calculado:</span><span id="acertoResSaldoCalc" style="font-weight:700;">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+                <span>Saldo real informado:</span><span id="acertoResSaldoReal" style="font-weight:700;">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:8px;border-top:1px solid #eee;margin-top:4px;">
+                <span style="font-weight:700;">Diferença (ajuste):</span>
+                <span id="acertoResDiferenca" style="font-weight:700;font-size:15px;">—</span>
+            </div>
+            <div id="acertoTipoAjuste" style="font-size:12px;margin-top:8px;padding:6px 10px;border-radius:6px;text-align:center;font-weight:600;"></div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+            <label>Data do Acerto*</label>
+            <input type="date" id="acertoData" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+            <label>Descrição / Motivo</label>
+            <input type="text" id="acertoDescricao" placeholder="Ex: Acerto de saldo — conferência extrato junho/2026" maxlength="200">
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn btn-primary" id="acertoBtnSalvar" onclick="salvarAcertoSaldo()" style="background:#27ae60;">✅ Aplicar Acerto</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modalAcertoSaldo')">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL BANCO -->
 <div class="modal" id="modalBanco">
     <div class="modal-content" style="max-width:480px;">
         <div class="modal-header">
@@ -2404,10 +2464,28 @@
                     </select>
                 </div>
             </div>
-            <!-- Preview parcelas -->
+            <!-- Grid editável de parcelas (Receber) -->
             <div id="previewParcelasReceber" style="display:none; margin-bottom:12px;">
-                <div style="font-size:12px; font-weight:600; color:var(--cor-primaria); margin-bottom:6px;">Parcelas geradas:</div>
-                <div id="listaParcelasReceber" style="max-height:140px; overflow-y:auto; border:1px solid #eee; border-radius:6px; padding:8px; font-size:12px;"></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <div style="font-size:13px; font-weight:600; color:var(--cor-primaria);">✏️ Parcelas — edite valor e data individualmente:</div>
+                    <div style="font-size:12px;color:#888;" id="totalParcelasReceberInfo"></div>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:12px;" id="tabelaParcelasEditReceber">
+                        <thead>
+                            <tr style="background:#f5f5f5;">
+                                <th style="padding:6px 8px;text-align:center;width:60px;border:1px solid #e0e0e0;">#</th>
+                                <th style="padding:6px 8px;text-align:left;border:1px solid #e0e0e0;">Vencimento</th>
+                                <th style="padding:6px 8px;text-align:left;border:1px solid #e0e0e0;">Valor (R$)</th>
+                                <th style="padding:6px 8px;text-align:center;width:36px;border:1px solid #e0e0e0;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaParcelasReceber"></tbody>
+                    </table>
+                </div>
+                <div id="avisoTotalParcelasReceber" style="font-size:11px;color:#856404;background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:5px 10px;margin-top:6px;display:none;">
+                    ⚠️ A soma das parcelas difere do valor total informado.
+                </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -2497,10 +2575,28 @@
                     </select>
                 </div>
             </div>
-            <!-- Preview parcelas -->
+            <!-- Grid editável de parcelas (Pagar) -->
             <div id="previewParcelasPagar" style="display:none; margin-bottom:12px;">
-                <div style="font-size:12px; font-weight:600; color:var(--cor-primaria); margin-bottom:6px;">Parcelas geradas:</div>
-                <div id="listaParcelasPagar" style="max-height:140px; overflow-y:auto; border:1px solid #eee; border-radius:6px; padding:8px; font-size:12px;"></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <div style="font-size:13px; font-weight:600; color:var(--cor-primaria);">✏️ Parcelas — edite valor e data individualmente:</div>
+                    <div style="font-size:12px;color:#888;" id="totalParcelasPagarInfo"></div>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:12px;" id="tabelaParcelasEditPagar">
+                        <thead>
+                            <tr style="background:#f5f5f5;">
+                                <th style="padding:6px 8px;text-align:center;width:60px;border:1px solid #e0e0e0;">#</th>
+                                <th style="padding:6px 8px;text-align:left;border:1px solid #e0e0e0;">Vencimento</th>
+                                <th style="padding:6px 8px;text-align:left;border:1px solid #e0e0e0;">Valor (R$)</th>
+                                <th style="padding:6px 8px;text-align:center;width:36px;border:1px solid #e0e0e0;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaParcelasPagar"></tbody>
+                    </table>
+                </div>
+                <div id="avisoTotalParcelasPagar" style="font-size:11px;color:#856404;background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:5px 10px;margin-top:6px;display:none;">
+                    ⚠️ A soma das parcelas difere do valor total informado.
+                </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -3805,30 +3901,43 @@
     async function salvarContaReceber(event) {
         event.preventDefault();
         const numParcelas = parseInt(document.getElementById('parcelasReceber').value) || 1;
-        const valorTotal = parseFloat(document.getElementById('valorReceber').value);
-        const valorParcela = Math.round((valorTotal / numParcelas) * 100) / 100;
-        const dataBase = document.getElementById('vencimentoReceber').value;
+        const valorTotal  = parseFloat(document.getElementById('valorReceber').value);
+        const dataBase    = document.getElementById('vencimentoReceber').value;
         const competencia = document.getElementById('competenciaReceber').value;
-        const obs = document.getElementById('observacoesReceber').value;
+        const obs         = document.getElementById('observacoesReceber').value;
         const notaFiscalRec = document.getElementById('notaFiscalReceber').value.trim() || null;
-        const clienteId = parseInt(document.getElementById('clienteReceber').value);
-        const descricao = document.getElementById('descricaoReceber').value;
+        const clienteId   = parseInt(document.getElementById('clienteReceber').value);
+        const descricao   = document.getElementById('descricaoReceber').value;
+
+        // Usar parcelas editadas pelo usuário (se houver), senão gerar automaticamente
+        let parcelas = window._parcelasReceber && window._parcelasReceber.length === numParcelas
+            ? window._parcelasReceber
+            : null;
+
+        if (!parcelas || numParcelas === 1) {
+            // À vista ou parcelas não editadas: calcular automaticamente
+            const valorParcela = Math.round((valorTotal / numParcelas) * 100) / 100;
+            parcelas = [];
+            for (let i = 0; i < numParcelas; i++) {
+                parcelas.push({ data: addMonths(dataBase, i), valor: valorParcela });
+            }
+        }
 
         let erros = 0;
-        for (let i = 0; i < numParcelas; i++) {
-            const dataVenc = addMonths(dataBase, i);
+        for (let i = 0; i < parcelas.length; i++) {
+            const p = parcelas[i];
             const descParc = numParcelas > 1 ? descricao + ' (' + (i+1) + '/' + numParcelas + ')' : descricao;
             const dados = {
-                cliente_id: clienteId,
-                descricao: descParc,
-                valor: valorParcela,
+                cliente_id:      clienteId,
+                descricao:       descParc,
+                valor:           parseFloat(p.valor) || 0,
                 data_competencia: competencia,
-                data_vencimento: dataVenc,
-                parcela_atual: i + 1,
-                total_parcelas: numParcelas,
-                status: 'pendente',
-                observacoes: obs,
-                nota_fiscal: notaFiscalRec
+                data_vencimento:  p.data,
+                parcela_atual:   i + 1,
+                total_parcelas:  numParcelas,
+                status:          'pendente',
+                observacoes:     obs,
+                nota_fiscal:     notaFiscalRec
             };
             const r = await fetchSupabase('contas_a_receber', 'POST', dados);
             if (r === null) erros++;
@@ -3837,6 +3946,7 @@
         if (erros === 0) {
             showAlert(numParcelas > 1 ? numParcelas + ' parcelas lançadas!' : 'Lançamento salvo!', 'alertLancarReceber', 'success');
             closeModal('modalLancarReceber');
+            window._parcelasReceber = [];
             await carregarContasReceber();
             await atualizarDashboard();
         } else {
@@ -3917,37 +4027,49 @@
 
     async function salvarContaPagar(event) {
         event.preventDefault();
-        const numParcelas = parseInt(document.getElementById('parcelasPagar').value) || 1;
-        const valorTotal = parseFloat(document.getElementById('valorPagar').value);
-        const valorParcela = Math.round((valorTotal / numParcelas) * 100) / 100;
-        const dataBase = document.getElementById('vencimentoPagar').value;
-        const competencia = document.getElementById('competenciaPagar').value;
-        const obs = document.getElementById('observacoesPagar').value;
-        const notaFiscal = document.getElementById('notaFiscalPagar').value.trim() || null;
-        const fornecedorId = document.getElementById('fornecedorPagar').value ? parseInt(document.getElementById('fornecedorPagar').value) : null;
-        const categoriaId = document.getElementById('categoriaPagar').value ? parseInt(document.getElementById('categoriaPagar').value) : null;
-        const subcategoriaId = document.getElementById('subcategoriaPagar').value ? parseInt(document.getElementById('subcategoriaPagar').value) : null;
-        const produtoId = document.getElementById('produtoPagar').value ? parseInt(document.getElementById('produtoPagar').value) : null;
-        const descricao = document.getElementById('descricaoPagar').value;
+        const numParcelas   = parseInt(document.getElementById('parcelasPagar').value) || 1;
+        const valorTotal    = parseFloat(document.getElementById('valorPagar').value);
+        const dataBase      = document.getElementById('vencimentoPagar').value;
+        const competencia   = document.getElementById('competenciaPagar').value;
+        const obs           = document.getElementById('observacoesPagar').value;
+        const notaFiscal    = document.getElementById('notaFiscalPagar').value.trim() || null;
+        const fornecedorId  = document.getElementById('fornecedorPagar').value ? parseInt(document.getElementById('fornecedorPagar').value) : null;
+        const categoriaId   = document.getElementById('categoriaPagar').value ? parseInt(document.getElementById('categoriaPagar').value) : null;
+        const subcategoriaId= document.getElementById('subcategoriaPagar').value ? parseInt(document.getElementById('subcategoriaPagar').value) : null;
+        const produtoId     = document.getElementById('produtoPagar').value ? parseInt(document.getElementById('produtoPagar').value) : null;
+        const descricao     = document.getElementById('descricaoPagar').value;
+
+        // Usar parcelas editadas pelo usuário (se houver), senão gerar automaticamente
+        let parcelas = window._parcelasPagar && window._parcelasPagar.length === numParcelas
+            ? window._parcelasPagar
+            : null;
+
+        if (!parcelas || numParcelas === 1) {
+            const valorParcela = Math.round((valorTotal / numParcelas) * 100) / 100;
+            parcelas = [];
+            for (let i = 0; i < numParcelas; i++) {
+                parcelas.push({ data: addMonths(dataBase, i), valor: valorParcela });
+            }
+        }
 
         let erros = 0;
-        for (let i = 0; i < numParcelas; i++) {
-            const dataVenc = addMonths(dataBase, i);
+        for (let i = 0; i < parcelas.length; i++) {
+            const p = parcelas[i];
             const descParc = numParcelas > 1 ? descricao + ' (' + (i+1) + '/' + numParcelas + ')' : descricao;
             const dados = {
-                fornecedor_id: fornecedorId,
-                categoria_id: categoriaId,
+                fornecedor_id:   fornecedorId,
+                categoria_id:    categoriaId,
                 subcategoria_id: subcategoriaId,
-                produto_id: produtoId,
-                descricao: descParc,
-                valor: valorParcela,
+                produto_id:      produtoId,
+                descricao:       descParc,
+                valor:           parseFloat(p.valor) || 0,
                 data_competencia: competencia,
-                data_vencimento: dataVenc,
-                parcela_atual: i + 1,
-                total_parcelas: numParcelas,
-                status: 'pendente',
-                observacoes: obs,
-                nota_fiscal: notaFiscal
+                data_vencimento:  p.data,
+                parcela_atual:   i + 1,
+                total_parcelas:  numParcelas,
+                status:          'pendente',
+                observacoes:     obs,
+                nota_fiscal:     notaFiscal
             };
             const r = await fetchSupabase('contas_a_pagar', 'POST', dados);
             if (r === null) erros++;
@@ -3956,6 +4078,7 @@
         if (erros === 0) {
             showAlert(numParcelas > 1 ? numParcelas + ' parcelas lançadas!' : 'Lançamento salvo!', 'alertLancarPagar', 'success');
             closeModal('modalLancarPagar');
+            window._parcelasPagar = [];
             await carregarContasPagar();
             await atualizarDashboard();
         } else {
@@ -6186,7 +6309,8 @@
                 '<td style="' + saldoClass + '">R$ ' + saldoAtual.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td>' +
                 '<td><span class="status-badge ' + (banco.ativo ? 'status-recebido' : 'status-atrasado') + '">' + (banco.ativo ? 'Ativo' : 'Inativo') + '</span></td>' +
                 '<td><button class="btn btn-secondary btn-small" onclick="editarBanco(' + banco.id + ')">Editar</button> ' +
-                '<button class="btn btn-danger btn-small" onclick="deletarBanco(' + banco.id + ')">Deletar</button></td></tr>';
+                '<button class="btn btn-danger btn-small" onclick="deletarBanco(' + banco.id + ')">Deletar</button> ' +
+                '<button class="btn btn-small" onclick="openModalAcertoSaldo(' + banco.id + ')" style="background:#8e44ad;color:white;" title="Ajustar saldo do banco para bater com o extrato real">⚖️ Acerto</button></td></tr>';
         });
     }
 
@@ -6396,6 +6520,160 @@
     }
 
     // ================================================================
+    // ACERTO DE SALDO BANCÁRIO
+    // ================================================================
+
+    // Abre o modal de acerto de saldo para o banco selecionado
+    function openModalAcertoSaldo(bancoId) {
+        const banco = (dadosCache.bancos || []).find(b => b.id === bancoId);
+        if (!banco) return;
+
+        // Calcular saldo atual do banco
+        const saldos = _calcularSaldosBancos(
+            dadosCache.bancos || [],
+            dadosCache.contasRecebidas || [],
+            dadosCache.contasPagas || []
+        );
+        const saldoCalc = saldos[bancoId] !== undefined ? saldos[bancoId] : parseFloat(banco.saldo_inicial || 0);
+
+        // Preencher modal
+        window._acertoBancoId    = bancoId;
+        window._acertoSaldoCalc  = saldoCalc;
+
+        document.getElementById('acertoBancoNome').textContent  = '🏦 ' + banco.nome + ' — ' + (banco.tipo || '');
+        document.getElementById('acertoSaldoCalc').textContent  = 'R$ ' + saldoCalc.toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+        document.getElementById('acertoSaldoCalc').style.color  = saldoCalc >= 0 ? '#28a745' : '#dc3545';
+        document.getElementById('acertoSaldoReal').value        = '';
+        document.getElementById('acertoData').value             = new Date().toISOString().slice(0, 10);
+        document.getElementById('acertoDescricao').value        = 'Acerto de saldo — ' + banco.nome;
+        document.getElementById('acertoDiferencaBox').style.display = 'none';
+        document.getElementById('acertoBtnSalvar').disabled     = true;
+
+        document.getElementById('modalAcertoSaldo').classList.add('active');
+    }
+
+    // Calcula e exibe a diferença em tempo real conforme o usuário digita
+    function calcularDiferencaAcerto() {
+        const saldoRealInput = document.getElementById('acertoSaldoReal').value;
+        const box  = document.getElementById('acertoDiferencaBox');
+        const btn  = document.getElementById('acertoBtnSalvar');
+
+        if (saldoRealInput === '' || saldoRealInput === null) {
+            box.style.display = 'none';
+            btn.disabled = true;
+            return;
+        }
+
+        const saldoReal = parseFloat(saldoRealInput);
+        if (isNaN(saldoReal)) { box.style.display = 'none'; btn.disabled = true; return; }
+
+        const saldoCalc  = window._acertoSaldoCalc || 0;
+        const diferenca  = saldoReal - saldoCalc;   // positivo = faltou crédito; negativo = faltou débito
+        const fmtBRL     = v => 'R$ ' + Math.abs(v).toLocaleString('pt-BR', {minimumFractionDigits:2,maximumFractionDigits:2});
+
+        document.getElementById('acertoResSaldoCalc').textContent  = fmtBRL(saldoCalc);
+        document.getElementById('acertoResSaldoCalc').style.color  = saldoCalc  >= 0 ? '#28a745' : '#dc3545';
+        document.getElementById('acertoResSaldoReal').textContent   = fmtBRL(saldoReal);
+        document.getElementById('acertoResSaldoReal').style.color   = saldoReal  >= 0 ? '#28a745' : '#dc3545';
+        document.getElementById('acertoResDiferenca').textContent   = (diferenca >= 0 ? '+' : '-') + fmtBRL(diferenca);
+        document.getElementById('acertoResDiferenca').style.color   = diferenca  >= 0 ? '#28a745' : '#dc3545';
+
+        const tipoEl = document.getElementById('acertoTipoAjuste');
+        if (Math.abs(diferenca) < 0.001) {
+            tipoEl.textContent = '✅ Saldos idênticos — nenhum ajuste necessário';
+            tipoEl.style.background = '#d4edda'; tipoEl.style.color = '#155724';
+            btn.disabled = true;
+        } else if (diferenca > 0) {
+            tipoEl.textContent = '📥 Será lançado um CRÉDITO (entrada) de ' + fmtBRL(diferenca) + ' para regularizar o saldo';
+            tipoEl.style.background = '#d4edda'; tipoEl.style.color = '#155724';
+            btn.disabled = false;
+        } else {
+            tipoEl.textContent = '📤 Será lançado um DÉBITO (saída) de ' + fmtBRL(diferenca) + ' para regularizar o saldo';
+            tipoEl.style.background = '#f8d7da'; tipoEl.style.color = '#721c24';
+            btn.disabled = false;
+        }
+
+        box.style.display = '';
+    }
+
+    // Salva o acerto criando um lançamento de ajuste em contas_a_receber ou contas_a_pagar
+    async function salvarAcertoSaldo() {
+        const saldoRealInput = document.getElementById('acertoSaldoReal').value;
+        const data           = document.getElementById('acertoData').value;
+        const descricao      = document.getElementById('acertoDescricao').value.trim() || 'Acerto de saldo bancário';
+        const bancoId        = window._acertoBancoId;
+        const saldoCalc      = window._acertoSaldoCalc || 0;
+
+        if (!saldoRealInput || !data || !bancoId) { alert('Preencha todos os campos obrigatórios.'); return; }
+
+        const saldoReal = parseFloat(saldoRealInput);
+        if (isNaN(saldoReal)) { alert('Valor inválido.'); return; }
+
+        const diferenca = saldoReal - saldoCalc;
+
+        if (Math.abs(diferenca) < 0.001) {
+            alert('Saldos idênticos, nenhum ajuste necessário.');
+            closeModal('modalAcertoSaldo');
+            return;
+        }
+
+        const fmtBRL = v => 'R$ ' + Math.abs(v).toLocaleString('pt-BR', {minimumFractionDigits:2,maximumFractionDigits:2});
+
+        // Confirmação antes de salvar
+        const tipo    = diferenca > 0 ? 'CRÉDITO (entrada)' : 'DÉBITO (saída)';
+        const confirmar = confirm(
+            'Confirma o acerto de saldo?\n\n' +
+            'Será lançado: ' + tipo + ' de ' + fmtBRL(diferenca) + '\n' +
+            'Data: ' + data.split('-').reverse().join('/') + '\n' +
+            'Descrição: ' + descricao + '\n\n' +
+            'O saldo do banco será ajustado de ' + fmtBRL(saldoCalc) + ' para ' + fmtBRL(saldoReal) + '.'
+        );
+        if (!confirmar) return;
+
+        let r = null;
+        const hoje = data; // YYYY-MM-DD
+
+        if (diferenca > 0) {
+            // Crédito: criar em contas_a_receber com status "recebido"
+            const payload = {
+                descricao:           descricao,
+                valor:               Math.abs(diferenca),
+                status:              'recebido',
+                banco_id:            bancoId,
+                data_recebimento:    hoje,
+                data_vencimento:     hoje,
+                tipo:                'acerto_saldo',
+                observacoes:         'Acerto de saldo automático. Saldo anterior: ' + fmtBRL(saldoCalc) + ' → Saldo real: ' + fmtBRL(saldoReal)
+            };
+            r = await fetchSupabase('contas_a_receber', 'POST', payload);
+        } else {
+            // Débito: criar em contas_a_pagar com status "pago"
+            const payload = {
+                descricao:        descricao,
+                valor:            Math.abs(diferenca),
+                status:           'pago',
+                banco_id:         bancoId,
+                data_pagamento:   hoje,
+                data_vencimento:  hoje,
+                tipo:             'acerto_saldo',
+                observacoes:      'Acerto de saldo automático. Saldo anterior: ' + fmtBRL(saldoCalc) + ' → Saldo real: ' + fmtBRL(saldoReal)
+            };
+            r = await fetchSupabase('contas_a_pagar', 'POST', payload);
+        }
+
+        if (r !== null) {
+            const banco = (dadosCache.bancos || []).find(b => b.id === bancoId);
+            showAlert(
+                '✅ Acerto de saldo aplicado com sucesso! ' + (diferenca > 0 ? 'Crédito' : 'Débito') +
+                ' de ' + fmtBRL(diferenca) + ' lançado em ' + (banco ? banco.nome : 'banco') + '.',
+                'alertBancos', 'success'
+            );
+            closeModal('modalAcertoSaldo');
+            await carregarBancos();
+        }
+    }
+
+    // ================================================================
     // ABRIR MODAIS DE LANÇAMENTO
     // ================================================================
     function openModalLancarReceber() {
@@ -6408,6 +6686,7 @@
         document.getElementById('notaFiscalReceber').value = '';
         document.getElementById('observacoesReceber').value = '';
         document.getElementById('previewParcelasReceber').style.display = 'none';
+        window._parcelasReceber = []; // limpar parcelas editadas anteriores
         atualizarSelectCategorias();
         atualizarSelectClientes();
         document.getElementById('modalLancarReceber').classList.add('active');
@@ -6430,6 +6709,7 @@
         document.getElementById('notaFiscalPagar').value = '';
         document.getElementById('observacoesPagar').value = '';
         document.getElementById('previewParcelasPagar').style.display = 'none';
+        window._parcelasPagar = []; // limpar parcelas editadas anteriores
         atualizarSelectCategorias();
         atualizarSelectFornecedores();
         atualizarSelectProdutos();
@@ -6445,47 +6725,197 @@
         return d.toISOString().split('T')[0];
     }
 
+    // ================================================================
+    // PARCELAS EDITÁVEIS — RECEBER
+    // ================================================================
+
+    // Array em memória com as parcelas editáveis de receber
+    window._parcelasReceber = [];
+
     function calcularParcelasReceber() {
-        const valor = parseFloat(document.getElementById('valorReceber').value);
-        const n = parseInt(document.getElementById('parcelasReceber').value) || 1;
-        const dataBase = document.getElementById('vencimentoReceber').value;
+        const valor   = parseFloat(document.getElementById('valorReceber').value);
+        const n       = parseInt(document.getElementById('parcelasReceber').value) || 1;
+        const dataBase= document.getElementById('vencimentoReceber').value;
         const preview = document.getElementById('previewParcelasReceber');
-        const lista = document.getElementById('listaParcelasReceber');
-        if (!valor || !dataBase || n <= 1) { preview.style.display = 'none'; return; }
-        const parc = Math.round((valor / n) * 100) / 100;
-        let html = '';
-        for (let i = 0; i < n; i++) {
-            const dt = new Date(addMonths(dataBase, i) + 'T12:00:00');
-            html += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f0f0f0;">' +
-                '<span>' + (i+1) + '/' + n + '</span>' +
-                '<span>' + dt.toLocaleDateString('pt-BR') + '</span>' +
-                '<span style="color:#28a745;font-weight:600;">R$ ' + parc.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '</span>' +
-                '</div>';
+
+        if (!valor || !dataBase || n <= 1) {
+            preview.style.display = 'none';
+            window._parcelasReceber = [];
+            return;
         }
-        lista.innerHTML = html;
+
+        // Só regera as linhas se o número de parcelas mudou ou ainda não há dados
+        if (window._parcelasReceber.length !== n) {
+            const parcBase = Math.round((valor / n) * 100) / 100;
+            window._parcelasReceber = [];
+            for (let i = 0; i < n; i++) {
+                window._parcelasReceber.push({
+                    data: addMonths(dataBase, i),
+                    valor: parcBase
+                });
+            }
+        } else {
+            // Se só o valor total mudou, redistribui mantendo as datas
+            const parcBase = Math.round((valor / n) * 100) / 100;
+            window._parcelasReceber = window._parcelasReceber.map(p => ({ ...p, valor: parcBase }));
+        }
+
+        _renderizarGridParcelasReceber(n, valor);
         preview.style.display = 'block';
     }
 
-    function calcularParcelasPagar() {
-        const valor = parseFloat(document.getElementById('valorPagar').value);
-        const n = parseInt(document.getElementById('parcelasPagar').value) || 1;
-        const dataBase = document.getElementById('vencimentoPagar').value;
-        const preview = document.getElementById('previewParcelasPagar');
-        const lista = document.getElementById('listaParcelasPagar');
-        if (!valor || !dataBase || n <= 1) { preview.style.display = 'none'; return; }
-        const parc = Math.round((valor / n) * 100) / 100;
+    function _renderizarGridParcelasReceber(n, valorTotal) {
+        const tbody  = document.getElementById('listaParcelasReceber');
+        const infoEl = document.getElementById('totalParcelasReceberInfo');
+        if (!tbody) return;
+
         let html = '';
-        for (let i = 0; i < n; i++) {
-            const dt = new Date(addMonths(dataBase, i) + 'T12:00:00');
-            html += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f0f0f0;">' +
-                '<span>' + (i+1) + '/' + n + '</span>' +
-                '<span>' + dt.toLocaleDateString('pt-BR') + '</span>' +
-                '<span style="color:#dc3545;font-weight:600;">R$ ' + parc.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '</span>' +
-                '</div>';
+        window._parcelasReceber.forEach((p, i) => {
+            html += `<tr style="border-bottom:1px solid #f0f0f0;">
+                <td style="padding:5px 8px;text-align:center;border:1px solid #e8e8e8;color:#555;font-weight:600;">${i+1}/${n}</td>
+                <td style="padding:4px 6px;border:1px solid #e8e8e8;">
+                    <input type="date" value="${p.data}"
+                        style="width:100%;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:12px;"
+                        onchange="_atualizarParcelaReceber(${i},'data',this.value)">
+                </td>
+                <td style="padding:4px 6px;border:1px solid #e8e8e8;">
+                    <input type="number" value="${p.valor}" step="0.01" min="0.01"
+                        style="width:100%;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:12px;color:#28a745;font-weight:600;"
+                        oninput="_atualizarParcelaReceber(${i},'valor',this.value)">
+                </td>
+                <td style="padding:4px 6px;text-align:center;border:1px solid #e8e8e8;">
+                    <button type="button" onclick="_redistribuirRestoReceber(${i})"
+                        title="Distribuir o restante igualmente nas demais parcelas"
+                        style="background:none;border:1px solid #ccc;border-radius:4px;cursor:pointer;padding:2px 5px;font-size:11px;color:#555;">⇄</button>
+                </td>
+            </tr>`;
+        });
+        tbody.innerHTML = html;
+
+        // Totalizador
+        const soma = window._parcelasReceber.reduce((s,p) => s + parseFloat(p.valor||0), 0);
+        const diff  = Math.abs(soma - (valorTotal||0));
+        if (infoEl) infoEl.textContent = 'Soma: R$ ' + soma.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+        const avisoEl = document.getElementById('avisoTotalParcelasReceber');
+        if (avisoEl) avisoEl.style.display = diff > 0.01 ? '' : 'none';
+    }
+
+    function _atualizarParcelaReceber(idx, campo, val) {
+        if (!window._parcelasReceber[idx]) return;
+        if (campo === 'valor') window._parcelasReceber[idx].valor = parseFloat(val) || 0;
+        else window._parcelasReceber[idx].data = val;
+        const n = window._parcelasReceber.length;
+        const valorTotal = parseFloat(document.getElementById('valorReceber').value) || 0;
+        const soma = window._parcelasReceber.reduce((s,p) => s + parseFloat(p.valor||0), 0);
+        const infoEl = document.getElementById('totalParcelasReceberInfo');
+        if (infoEl) infoEl.textContent = 'Soma: R$ ' + soma.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+        const avisoEl = document.getElementById('avisoTotalParcelasReceber');
+        if (avisoEl) avisoEl.style.display = Math.abs(soma - valorTotal) > 0.01 ? '' : 'none';
+    }
+
+    // Redistribui o valor restante (total - outras parcelas) na parcela atual e zera as demais
+    function _redistribuirRestoReceber(idx) {
+        const valorTotal = parseFloat(document.getElementById('valorReceber').value) || 0;
+        const n = window._parcelasReceber.length;
+        // Soma das outras parcelas
+        const somaOutras = window._parcelasReceber.reduce((s,p,i) => i!==idx ? s+parseFloat(p.valor||0) : s, 0);
+        const resto = Math.round((valorTotal - somaOutras) * 100) / 100;
+        window._parcelasReceber[idx].valor = resto > 0 ? resto : 0;
+        _renderizarGridParcelasReceber(n, valorTotal);
+    }
+
+    // ================================================================
+    // PARCELAS EDITÁVEIS — PAGAR
+    // ================================================================
+
+    window._parcelasPagar = [];
+
+    function calcularParcelasPagar() {
+        const valor   = parseFloat(document.getElementById('valorPagar').value);
+        const n       = parseInt(document.getElementById('parcelasPagar').value) || 1;
+        const dataBase= document.getElementById('vencimentoPagar').value;
+        const preview = document.getElementById('previewParcelasPagar');
+
+        if (!valor || !dataBase || n <= 1) {
+            preview.style.display = 'none';
+            window._parcelasPagar = [];
+            return;
         }
-        lista.innerHTML = html;
+
+        if (window._parcelasPagar.length !== n) {
+            const parcBase = Math.round((valor / n) * 100) / 100;
+            window._parcelasPagar = [];
+            for (let i = 0; i < n; i++) {
+                window._parcelasPagar.push({
+                    data: addMonths(dataBase, i),
+                    valor: parcBase
+                });
+            }
+        } else {
+            const parcBase = Math.round((valor / n) * 100) / 100;
+            window._parcelasPagar = window._parcelasPagar.map(p => ({ ...p, valor: parcBase }));
+        }
+
+        _renderizarGridParcelasPagar(n, valor);
         preview.style.display = 'block';
     }
+
+    function _renderizarGridParcelasPagar(n, valorTotal) {
+        const tbody  = document.getElementById('listaParcelasPagar');
+        const infoEl = document.getElementById('totalParcelasPagarInfo');
+        if (!tbody) return;
+
+        let html = '';
+        window._parcelasPagar.forEach((p, i) => {
+            html += `<tr style="border-bottom:1px solid #f0f0f0;">
+                <td style="padding:5px 8px;text-align:center;border:1px solid #e8e8e8;color:#555;font-weight:600;">${i+1}/${n}</td>
+                <td style="padding:4px 6px;border:1px solid #e8e8e8;">
+                    <input type="date" value="${p.data}"
+                        style="width:100%;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:12px;"
+                        onchange="_atualizarParcelaPagar(${i},'data',this.value)">
+                </td>
+                <td style="padding:4px 6px;border:1px solid #e8e8e8;">
+                    <input type="number" value="${p.valor}" step="0.01" min="0.01"
+                        style="width:100%;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:12px;color:#dc3545;font-weight:600;"
+                        oninput="_atualizarParcelaPagar(${i},'valor',this.value)">
+                </td>
+                <td style="padding:4px 6px;text-align:center;border:1px solid #e8e8e8;">
+                    <button type="button" onclick="_redistribuirRestoPagar(${i})"
+                        title="Distribuir o restante igualmente nas demais parcelas"
+                        style="background:none;border:1px solid #ccc;border-radius:4px;cursor:pointer;padding:2px 5px;font-size:11px;color:#555;">⇄</button>
+                </td>
+            </tr>`;
+        });
+        tbody.innerHTML = html;
+
+        const soma = window._parcelasPagar.reduce((s,p) => s + parseFloat(p.valor||0), 0);
+        const diff  = Math.abs(soma - (valorTotal||0));
+        if (infoEl) infoEl.textContent = 'Soma: R$ ' + soma.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+        const avisoEl = document.getElementById('avisoTotalParcelasPagar');
+        if (avisoEl) avisoEl.style.display = diff > 0.01 ? '' : 'none';
+    }
+
+    function _atualizarParcelaPagar(idx, campo, val) {
+        if (!window._parcelasPagar[idx]) return;
+        if (campo === 'valor') window._parcelasPagar[idx].valor = parseFloat(val) || 0;
+        else window._parcelasPagar[idx].data = val;
+        const valorTotal = parseFloat(document.getElementById('valorPagar').value) || 0;
+        const soma = window._parcelasPagar.reduce((s,p) => s + parseFloat(p.valor||0), 0);
+        const infoEl = document.getElementById('totalParcelasPagarInfo');
+        if (infoEl) infoEl.textContent = 'Soma: R$ ' + soma.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+        const avisoEl = document.getElementById('avisoTotalParcelasPagar');
+        if (avisoEl) avisoEl.style.display = Math.abs(soma - valorTotal) > 0.01 ? '' : 'none';
+    }
+
+    function _redistribuirRestoPagar(idx) {
+        const valorTotal = parseFloat(document.getElementById('valorPagar').value) || 0;
+        const n = window._parcelasPagar.length;
+        const somaOutras = window._parcelasPagar.reduce((s,p,i) => i!==idx ? s+parseFloat(p.valor||0) : s, 0);
+        const resto = Math.round((valorTotal - somaOutras) * 100) / 100;
+        window._parcelasPagar[idx].valor = resto > 0 ? resto : 0;
+        _renderizarGridParcelasPagar(n, valorTotal);
+    }
+
 
     // ================================================================
     // DIAGNÓSTICO
@@ -6684,16 +7114,6 @@
             mapaSaidas[dt] = (mapaSaidas[dt] || 0) + parseFloat(c.valor||0);
         });
 
-        // Coletar todas as datas únicas e ordenar
-        const todasDatas = Array.from(new Set([...Object.keys(mapaEntradas), ...Object.keys(mapaSaidas)])).sort();
-
-        if (todasDatas.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:20px;">Nenhum lançamento encontrado no período selecionado</td></tr>';
-            if (tfoot) tfoot.innerHTML = '';
-            if (infoEl) infoEl.textContent = '';
-            return;
-        }
-
         // Determinar label do período
         const mesesNomes = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
         let labelPeriodo = '';
@@ -6701,34 +7121,102 @@
         else if (anoSel) labelPeriodo = 'Ano ' + anoSel;
         else if (mesSel) labelPeriodo = mesesNomes[parseInt(mesSel,10)];
         else labelPeriodo = 'Todo o período';
-        if (infoEl) infoEl.textContent = labelPeriodo + ' — ' + todasDatas.length + ' dia(s) com movimentação';
+
+        // ── Gerar a lista de datas a exibir ──────────────────────────────
+        let todasDatas = [];
+
+        if (anoSel && mesSel) {
+            // Mês+Ano selecionados: exibir TODOS os dias do mês (com ou sem movimentação)
+            const ano  = parseInt(anoSel, 10);
+            const mes  = parseInt(mesSel, 10);
+            const dias = new Date(ano, mes, 0).getDate(); // total de dias no mês
+            for (let d = 1; d <= dias; d++) {
+                const mm = String(mes).padStart(2,'0');
+                const dd = String(d).padStart(2,'0');
+                todasDatas.push(anoSel + '-' + mm + '-' + dd);
+            }
+        } else if (anoSel && !mesSel) {
+            // Só ano: todos os dias que têm lançamento nesse ano
+            todasDatas = Array.from(new Set([...Object.keys(mapaEntradas), ...Object.keys(mapaSaidas)])).sort();
+        } else {
+            // Sem filtro de período específico: todos os dias com lançamento
+            todasDatas = Array.from(new Set([...Object.keys(mapaEntradas), ...Object.keys(mapaSaidas)])).sort();
+        }
+
+        // Se não há nenhum dia (sem mês/ano E sem lançamentos)
+        if (todasDatas.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px;">Nenhum lançamento encontrado no período selecionado</td></tr>';
+            if (tfoot) tfoot.innerHTML = '';
+            if (infoEl) infoEl.textContent = '';
+            return;
+        }
+
+        // Contar dias com movimentação real
+        const diasComMov = todasDatas.filter(dt => (mapaEntradas[dt]||0) > 0 || (mapaSaidas[dt]||0) > 0).length;
+        if (infoEl) {
+            if (anoSel && mesSel) {
+                infoEl.textContent = labelPeriodo + ' — ' + todasDatas.length + ' dia(s) no mês, ' + diasComMov + ' com movimentação';
+            } else {
+                infoEl.textContent = labelPeriodo + ' — ' + diasComMov + ' dia(s) com movimentação';
+            }
+        }
 
         // Construir linhas
         let html = '';
         let saldoAcumulado = 0;
         let totEnt = 0, totSai = 0, totSaldoDia = 0;
 
+        const diasSemana = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
         todasDatas.forEach(dt => {
-            const ent = mapaEntradas[dt] || 0;
-            const sai = mapaSaidas[dt] || 0;
+            const ent      = mapaEntradas[dt] || 0;
+            const sai      = mapaSaidas[dt]   || 0;
             const saldoDia = ent - sai;
             saldoAcumulado += saldoDia;
-            totEnt += ent;
-            totSai += sai;
+            totEnt      += ent;
+            totSai      += sai;
             totSaldoDia += saldoDia;
 
             // Formatar data para pt-BR
-            const partes = dt.split('-');
+            const partes      = dt.split('-');
             const dtFormatada = partes[2] + '/' + partes[1] + '/' + partes[0];
 
-            const corSaldoDia   = saldoDia   >= 0 ? '#28a745' : '#dc3545';
-            const corAcumulado  = saldoAcumulado >= 0 ? '#28a745' : '#dc3545';
+            // Dia da semana
+            const dateObj   = new Date(dt + 'T12:00:00');
+            const diaSem    = dateObj.getDay(); // 0=Dom, 6=Sáb
+            const fimDeSem  = diaSem === 0 || diaSem === 6;
+            const nomeDia   = diasSemana[diaSem];
 
-            html += `<tr>
-                <td style="font-weight:500;">${dtFormatada}</td>
-                <td style="color:#28a745;">${ent > 0 ? fmtBRL(ent) : '—'}</td>
-                <td style="color:#dc3545;">${sai > 0 ? fmtBRL(sai) : '—'}</td>
-                <td style="color:${corSaldoDia};font-weight:600;">${fmtValSig(saldoDia)}</td>
+            // Dia sem movimentação → linha discreta
+            const semMov = ent === 0 && sai === 0;
+
+            // Fundo: fim de semana levemente rosado; dia normal branco
+            const bgLinha = fimDeSem
+                ? (semMov ? '#fff5f5' : '#fff0f0')
+                : 'transparent';
+
+            const corDataTxt = fimDeSem
+                ? (semMov ? '#e8a0a0' : '#c0392b')
+                : (semMov ? '#aaa' : 'inherit');
+
+            const corDiaTxt  = fimDeSem
+                ? (semMov ? '#e8a0a0' : '#c0392b')
+                : (semMov ? '#bbb' : '#666');
+
+            const pesoData   = (fimDeSem && !semMov) ? '700' : (semMov ? '400' : '500');
+
+            const corSaldoDia  = saldoDia        >= 0 ? '#28a745' : '#dc3545';
+            const corAcumulado = saldoAcumulado  >= 0 ? '#28a745' : '#dc3545';
+
+            const opacidade = semMov ? 'opacity:0.5;' : '';
+
+            html += `<tr style="background:${bgLinha};${opacidade}">
+                <td style="font-weight:${pesoData};color:${corDataTxt};">${dtFormatada}</td>
+                <td style="font-size:11px;font-weight:${fimDeSem?'700':'400'};color:${corDiaTxt};text-align:center;
+                    ${fimDeSem && !semMov ? 'background:#fde8e8;border-radius:4px;padding:2px 4px;' : ''}">${nomeDia}</td>
+                <td style="color:#28a745;">${ent > 0 ? fmtBRL(ent) : '<span style="color:#ccc;">—</span>'}</td>
+                <td style="color:#dc3545;">${sai > 0 ? fmtBRL(sai) : '<span style="color:#ccc;">—</span>'}</td>
+                <td style="color:${semMov?'#bbb':corSaldoDia};font-weight:${semMov?'400':'600'};">${semMov ? '<span style="color:#ccc;">—</span>' : fmtValSig(saldoDia)}</td>
                 <td style="color:${corAcumulado};font-weight:700;">${fmtValSig(saldoAcumulado)}</td>
             </tr>`;
         });
@@ -6740,6 +7228,7 @@
         if (tfoot) {
             tfoot.innerHTML = `<tr style="font-weight:700;background:#f5f5f5;">
                 <td>TOTAL</td>
+                <td></td>
                 <td style="color:#28a745;">${fmtBRL(totEnt)}</td>
                 <td style="color:#dc3545;">${fmtBRL(totSai)}</td>
                 <td style="color:${corTotSaldo};">${fmtValSig(totSaldoDia)}</td>
@@ -6747,6 +7236,7 @@
             </tr>`;
         }
     }
+
 
     // ================================================================
     // DFC POR CATEGORIA
@@ -8363,8 +8853,8 @@
         doc.text(normalizarTexto(infoPeriodo || 'Fluxo de Caixa Diário'), margem, y + 5);
         y += 9;
 
-        const cD = [28, 38, 38, 38, 42]; // Data, Entradas, Saídas, Saldo Dia, Acumulado
-        const hDiario = ['Data', 'Entradas', 'Saídas', 'Saldo Dia', 'Acumulado'];
+        const cD = [26, 20, 36, 36, 36, 40]; // Data, Dia, Entradas, Saídas, Saldo Dia, Acumulado
+        const hDiario = ['Data', 'Dia', 'Entradas', 'Saídas', 'Saldo Dia', 'Acumulado'];
         doc.setFillColor(80, 80, 80);
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(7.5);
