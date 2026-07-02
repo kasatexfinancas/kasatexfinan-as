@@ -2432,8 +2432,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Descrição*</label>
-                    <input type="text" id="descricaoReceber" required>
+                    <label>Descrição <span style="font-size:11px;color:#888;font-weight:400;">(opcional)</span></label>
+                    <input type="text" id="descricaoReceber">
                 </div>
             </div>
             <div class="form-row">
@@ -2485,6 +2485,17 @@
                 </div>
                 <div id="avisoTotalParcelasReceber" style="font-size:11px;color:#856404;background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:5px 10px;margin-top:6px;display:none;">
                     ⚠️ A soma das parcelas difere do valor total informado.
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group" style="flex:1;">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                        <input type="checkbox" id="custoFixoReceber" onchange="toggleVigenciaReceber()"> Usar como custo fixo (recorrente)
+                    </label>
+                </div>
+                <div class="form-group" id="wrapVigenciaReceber" style="display:none;">
+                    <label>Vigência até</label>
+                    <input type="date" id="vigenciaReceber">
                 </div>
             </div>
             <div class="form-row">
@@ -2543,8 +2554,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Descrição*</label>
-                    <input type="text" id="descricaoPagar" required>
+                    <label>Descrição <span style="font-size:11px;color:#888;font-weight:400;">(opcional)</span></label>
+                    <input type="text" id="descricaoPagar">
                 </div>
             </div>
             <div class="form-row">
@@ -2596,6 +2607,17 @@
                 </div>
                 <div id="avisoTotalParcelasPagar" style="font-size:11px;color:#856404;background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:5px 10px;margin-top:6px;display:none;">
                     ⚠️ A soma das parcelas difere do valor total informado.
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group" style="flex:1;">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                        <input type="checkbox" id="custoFixoPagar" onchange="toggleVigenciaPagar()"> Usar como custo fixo (recorrente)
+                    </label>
+                </div>
+                <div class="form-group" id="wrapVigenciaPagar" style="display:none;">
+                    <label>Vigência até</label>
+                    <input type="date" id="vigenciaPagar">
                 </div>
             </div>
             <div class="form-row">
@@ -3908,6 +3930,8 @@
         const notaFiscalRec = document.getElementById('notaFiscalReceber').value.trim() || null;
         const clienteId   = parseInt(document.getElementById('clienteReceber').value);
         const descricao   = document.getElementById('descricaoReceber').value;
+        const custoFixo   = document.getElementById('custoFixoReceber').checked;
+        const vigenciaAte = custoFixo ? (document.getElementById('vigenciaReceber').value || null) : null;
 
         // Usar parcelas editadas pelo usuário (se houver), senão gerar automaticamente
         let parcelas = window._parcelasReceber && window._parcelasReceber.length === numParcelas
@@ -3937,7 +3961,9 @@
                 total_parcelas:  numParcelas,
                 status:          'pendente',
                 observacoes:     obs,
-                nota_fiscal:     notaFiscalRec
+                nota_fiscal:     notaFiscalRec,
+                custo_fixo:      custoFixo,
+                vigencia_ate:    vigenciaAte
             };
             const r = await fetchSupabase('contas_a_receber', 'POST', dados);
             if (r === null) erros++;
@@ -4038,6 +4064,8 @@
         const subcategoriaId= document.getElementById('subcategoriaPagar').value ? parseInt(document.getElementById('subcategoriaPagar').value) : null;
         const produtoId     = document.getElementById('produtoPagar').value ? parseInt(document.getElementById('produtoPagar').value) : null;
         const descricao     = document.getElementById('descricaoPagar').value;
+        const custoFixo     = document.getElementById('custoFixoPagar').checked;
+        const vigenciaAte   = custoFixo ? (document.getElementById('vigenciaPagar').value || null) : null;
 
         // Usar parcelas editadas pelo usuário (se houver), senão gerar automaticamente
         let parcelas = window._parcelasPagar && window._parcelasPagar.length === numParcelas
@@ -4069,7 +4097,9 @@
                 total_parcelas:  numParcelas,
                 status:          'pendente',
                 observacoes:     obs,
-                nota_fiscal:     notaFiscal
+                nota_fiscal:     notaFiscal,
+                custo_fixo:      custoFixo,
+                vigencia_ate:    vigenciaAte
             };
             const r = await fetchSupabase('contas_a_pagar', 'POST', dados);
             if (r === null) erros++;
@@ -6686,10 +6716,18 @@
         document.getElementById('notaFiscalReceber').value = '';
         document.getElementById('observacoesReceber').value = '';
         document.getElementById('previewParcelasReceber').style.display = 'none';
+        document.getElementById('custoFixoReceber').checked = false;
+        document.getElementById('vigenciaReceber').value = '';
+        document.getElementById('wrapVigenciaReceber').style.display = 'none';
         window._parcelasReceber = []; // limpar parcelas editadas anteriores
         atualizarSelectCategorias();
         atualizarSelectClientes();
         document.getElementById('modalLancarReceber').classList.add('active');
+    }
+
+    function toggleVigenciaReceber() {
+        const checked = document.getElementById('custoFixoReceber').checked;
+        document.getElementById('wrapVigenciaReceber').style.display = checked ? '' : 'none';
     }
 
     function openModalLancarPagar() {
@@ -6709,11 +6747,19 @@
         document.getElementById('notaFiscalPagar').value = '';
         document.getElementById('observacoesPagar').value = '';
         document.getElementById('previewParcelasPagar').style.display = 'none';
+        document.getElementById('custoFixoPagar').checked = false;
+        document.getElementById('vigenciaPagar').value = '';
+        document.getElementById('wrapVigenciaPagar').style.display = 'none';
         window._parcelasPagar = []; // limpar parcelas editadas anteriores
         atualizarSelectCategorias();
         atualizarSelectFornecedores();
         atualizarSelectProdutos();
         document.getElementById('modalLancarPagar').classList.add('active');
+    }
+
+    function toggleVigenciaPagar() {
+        const checked = document.getElementById('custoFixoPagar').checked;
+        document.getElementById('wrapVigenciaPagar').style.display = checked ? '' : 'none';
     }
 
     // ================================================================
