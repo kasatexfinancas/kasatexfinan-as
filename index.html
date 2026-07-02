@@ -381,6 +381,57 @@
             justify-content: flex-end;
         }
 
+        .form-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--cor-primaria);
+            margin: 24px 0 14px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--cor-borda);
+        }
+
+        .form-section-title.first {
+            margin-top: 0;
+        }
+
+        .form-toggle-card {
+            background: var(--cor-fundo);
+            border: 1px solid var(--cor-borda);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 20px;
+            transition: border-color .15s ease;
+        }
+
+        .form-toggle-card.is-active {
+            border-color: var(--cor-primaria);
+        }
+
+        .form-toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 0;
+            user-select: none;
+        }
+
+        .form-toggle-label input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            min-width: 17px;
+            cursor: pointer;
+            accent-color: var(--cor-primaria);
+        }
+
+        .form-toggle-card .form-group {
+            margin-top: 12px;
+            max-width: 240px;
+        }
+
         .btn-secondary {
             background-color: #666;
             color: white;
@@ -2424,6 +2475,7 @@
             <button class="modal-close" onclick="closeModal('modalLancarReceber')">&times;</button>
         </div>
         <form onsubmit="salvarContaReceber(event)">
+            <div class="form-section-title first">🏷️ Identificação</div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Cliente*</label>
@@ -2436,6 +2488,8 @@
                     <input type="text" id="descricaoReceber">
                 </div>
             </div>
+
+            <div class="form-section-title">💰 Valores e Parcelamento</div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Valor Total*</label>
@@ -2487,17 +2541,20 @@
                     ⚠️ A soma das parcelas difere do valor total informado.
                 </div>
             </div>
-            <div class="form-row">
-                <div class="form-group" style="flex:1;">
-                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
-                        <input type="checkbox" id="custoFixoReceber" onchange="toggleVigenciaReceber()"> Usar como custo fixo (recorrente)
-                    </label>
-                </div>
+
+            <div class="form-section-title">🔁 Recorrência</div>
+            <div class="form-toggle-card" id="cardRecorrenciaReceber">
+                <label class="form-toggle-label">
+                    <input type="checkbox" id="custoFixoReceber" onchange="toggleVigenciaReceber()">
+                    <span>Usar como custo fixo (recorrente)</span>
+                </label>
                 <div class="form-group" id="wrapVigenciaReceber" style="display:none;">
-                    <label>Vigência até</label>
+                    <label>Vigência até <span style="font-size:11px;color:#888;font-weight:400;">(opcional)</span></label>
                     <input type="date" id="vigenciaReceber">
                 </div>
             </div>
+
+            <div class="form-section-title">📎 Informações Complementares</div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Nº Nota Fiscal</label>
@@ -2524,6 +2581,7 @@
             <button class="modal-close" onclick="closeModal('modalLancarPagar')">&times;</button>
         </div>
         <form onsubmit="salvarContaPagar(event)">
+            <div class="form-section-title first">🏷️ Identificação</div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Fornecedor <span style="font-size:11px;color:#888;font-weight:400;">(opcional)</span></label>
@@ -2539,25 +2597,27 @@
                 </div>
             </div>
             <div class="form-row" id="rowSubcategoriaPagar">
-                <div class="form-group" style="flex:1;">
+                <div class="form-group">
                     <label>Subcategoria <span style="font-size:11px;color:#888;font-weight:400;">(opcional)</span></label>
                     <select id="subcategoriaPagar">
                         <option value="">Selecione a categoria primeiro...</option>
                     </select>
                 </div>
-            </div>
-            <div class="form-row">
                 <div class="form-group">
                     <label>Produto</label>
                     <select id="produtoPagar">
                         <option value="">Selecione...</option>
                     </select>
                 </div>
+            </div>
+            <div class="form-row">
                 <div class="form-group">
                     <label>Descrição <span style="font-size:11px;color:#888;font-weight:400;">(opcional)</span></label>
                     <input type="text" id="descricaoPagar">
                 </div>
             </div>
+
+            <div class="form-section-title">💰 Valores e Parcelamento</div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Valor Total*</label>
@@ -2609,17 +2669,20 @@
                     ⚠️ A soma das parcelas difere do valor total informado.
                 </div>
             </div>
-            <div class="form-row">
-                <div class="form-group" style="flex:1;">
-                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
-                        <input type="checkbox" id="custoFixoPagar" onchange="toggleVigenciaPagar()"> Usar como custo fixo (recorrente)
-                    </label>
-                </div>
+
+            <div class="form-section-title">🔁 Recorrência</div>
+            <div class="form-toggle-card" id="cardRecorrenciaPagar">
+                <label class="form-toggle-label">
+                    <input type="checkbox" id="custoFixoPagar" onchange="toggleVigenciaPagar()">
+                    <span>Usar como custo fixo (recorrente)</span>
+                </label>
                 <div class="form-group" id="wrapVigenciaPagar" style="display:none;">
-                    <label>Vigência até</label>
+                    <label>Vigência até <span style="font-size:11px;color:#888;font-weight:400;">(opcional)</span></label>
                     <input type="date" id="vigenciaPagar">
                 </div>
             </div>
+
+            <div class="form-section-title">📎 Informações Complementares</div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Nº Nota Fiscal</label>
@@ -6719,6 +6782,7 @@
         document.getElementById('custoFixoReceber').checked = false;
         document.getElementById('vigenciaReceber').value = '';
         document.getElementById('wrapVigenciaReceber').style.display = 'none';
+        document.getElementById('cardRecorrenciaReceber').classList.remove('is-active');
         window._parcelasReceber = []; // limpar parcelas editadas anteriores
         atualizarSelectCategorias();
         atualizarSelectClientes();
@@ -6728,6 +6792,7 @@
     function toggleVigenciaReceber() {
         const checked = document.getElementById('custoFixoReceber').checked;
         document.getElementById('wrapVigenciaReceber').style.display = checked ? '' : 'none';
+        document.getElementById('cardRecorrenciaReceber').classList.toggle('is-active', checked);
     }
 
     function openModalLancarPagar() {
@@ -6750,6 +6815,7 @@
         document.getElementById('custoFixoPagar').checked = false;
         document.getElementById('vigenciaPagar').value = '';
         document.getElementById('wrapVigenciaPagar').style.display = 'none';
+        document.getElementById('cardRecorrenciaPagar').classList.remove('is-active');
         window._parcelasPagar = []; // limpar parcelas editadas anteriores
         atualizarSelectCategorias();
         atualizarSelectFornecedores();
@@ -6760,6 +6826,7 @@
     function toggleVigenciaPagar() {
         const checked = document.getElementById('custoFixoPagar').checked;
         document.getElementById('wrapVigenciaPagar').style.display = checked ? '' : 'none';
+        document.getElementById('cardRecorrenciaPagar').classList.toggle('is-active', checked);
     }
 
     // ================================================================
