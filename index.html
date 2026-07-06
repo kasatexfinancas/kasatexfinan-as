@@ -4756,11 +4756,10 @@
     function preencherAnos() {
         const selects = document.querySelectorAll('select[id*="Ano"]');
         const anoAtual = new Date().getFullYear();
-        
+        const ANO_MAX = 2032;
+
         selects.forEach(select => {
-            // Para o filtro de Fluxo Projetado, incluir anos futuros
-            const isFCP = select.id === 'filtroAnoFCP';
-            const anoFim   = isFCP ? anoAtual + 2 : anoAtual;
+            const anoFim   = ANO_MAX;
             const anoInicio = anoAtual - 5;
             for (let ano = anoFim; ano >= anoInicio; ano--) {
                 select.innerHTML += `<option value="${ano}">${ano}${ano === anoAtual ? ' (atual)' : ''}</option>`;
@@ -6029,7 +6028,7 @@
         const selAno = document.getElementById('extratoFiltroAno');
         if (selAno && selAno.options.length <= 1) {
             const anoAtual = new Date().getFullYear();
-            for (let a = anoAtual; a >= anoAtual - 4; a--) {
+            for (let a = 2032; a >= anoAtual - 4; a--) {
                 const opt = document.createElement('option');
                 opt.value = a; opt.textContent = a;
                 selAno.appendChild(opt);
@@ -8687,7 +8686,7 @@
         const selAno = document.getElementById('filtroAnoAnaliseCat');
         if (selAno && selAno.options.length === 0) {
             const anoAtual = new Date().getFullYear();
-            for (let a = anoAtual + 1; a >= anoAtual - 4; a--) {
+            for (let a = 2032; a >= anoAtual - 4; a--) {
                 const opt = document.createElement('option');
                 opt.value = a; opt.textContent = a;
                 selAno.appendChild(opt);
