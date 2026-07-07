@@ -3854,16 +3854,29 @@
             valorLancamento = Math.round((valorTotal / numLancamentos) * 100) / 100;
         }
 
+        // Campos de data/valor editados manualmente na prévia de parcelas (quando não é lançamento fixo)
+        const camposDataManual = document.querySelectorAll('#listaParcelasReceber .parcela-receber-data');
+        const camposValorManual = document.querySelectorAll('#listaParcelasReceber .parcela-receber-valor');
+        const temEdicaoManual = !custoFixo && camposDataManual.length === numLancamentos;
+
         let erros = 0;
         for (let i = 0; i < numLancamentos; i++) {
-            const dataVenc = addMonths(dataBase, i);
+            let dataVenc, valorLinha;
+            if (temEdicaoManual) {
+                dataVenc = camposDataManual[i].value || addMonths(dataBase, i);
+                valorLinha = parseFloat(camposValorManual[i].value);
+                if (isNaN(valorLinha)) valorLinha = valorLancamento;
+            } else {
+                dataVenc = addMonths(dataBase, i);
+                valorLinha = valorLancamento;
+            }
             let descParc = descricao;
             if (custoFixo) descParc = descricao + ' (Fixo ' + (i+1) + '/' + numLancamentos + ')';
             else if (numLancamentos > 1) descParc = descricao + ' (' + (i+1) + '/' + numLancamentos + ')';
             const dados = {
                 cliente_id: clienteId,
                 descricao: descParc,
-                valor: valorLancamento,
+                valor: valorLinha,
                 data_competencia: custoFixo ? addMonths(competencia, i) : competencia,
                 data_vencimento: dataVenc,
                 parcela_atual: i + 1,
@@ -3996,9 +4009,22 @@
             valorLancamento = Math.round((valorTotal / numLancamentos) * 100) / 100;
         }
 
+        // Campos de data/valor editados manualmente na prévia de parcelas (quando não é lançamento fixo)
+        const camposDataManual = document.querySelectorAll('#listaParcelasPagar .parcela-pagar-data');
+        const camposValorManual = document.querySelectorAll('#listaParcelasPagar .parcela-pagar-valor');
+        const temEdicaoManual = !custoFixo && camposDataManual.length === numLancamentos;
+
         let erros = 0;
         for (let i = 0; i < numLancamentos; i++) {
-            const dataVenc = addMonths(dataBase, i);
+            let dataVenc, valorLinha;
+            if (temEdicaoManual) {
+                dataVenc = camposDataManual[i].value || addMonths(dataBase, i);
+                valorLinha = parseFloat(camposValorManual[i].value);
+                if (isNaN(valorLinha)) valorLinha = valorLancamento;
+            } else {
+                dataVenc = addMonths(dataBase, i);
+                valorLinha = valorLancamento;
+            }
             let descParc = descricao;
             if (custoFixo) descParc = descricao + ' (Fixo ' + (i+1) + '/' + numLancamentos + ')';
             else if (numLancamentos > 1) descParc = descricao + ' (' + (i+1) + '/' + numLancamentos + ')';
@@ -4007,7 +4033,7 @@
                 categoria_id: categoriaId,
                 subcategoria_id: subcategoriaId,
                 descricao: descParc,
-                valor: valorLancamento,
+                valor: valorLinha,
                 data_competencia: custoFixo ? addMonths(competencia, i) : competencia,
                 data_vencimento: dataVenc,
                 parcela_atual: i + 1,
@@ -7055,15 +7081,15 @@
 
         const n = parseInt(document.getElementById('parcelasReceber').value) || 1;
         if (!valor || !dataBase || n <= 1) { preview.style.display = 'none'; return; }
-        titulo.textContent = 'Parcelas geradas:';
+        titulo.textContent = 'Parcelas geradas (edite data e valor se precisar):';
         const parc = Math.round((valor / n) * 100) / 100;
         let html = '';
         for (let i = 0; i < n; i++) {
-            const dt = new Date(addMonths(dataBase, i) + 'T12:00:00');
-            html += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f0f0f0;">' +
-                '<span>' + (i+1) + '/' + n + '</span>' +
-                '<span>' + dt.toLocaleDateString('pt-BR') + '</span>' +
-                '<span style="color:#28a745;font-weight:600;">R$ ' + parc.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '</span>' +
+            const dt = addMonths(dataBase, i);
+            html += '<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f0f0f0;">' +
+                '<span style="width:34px;color:#666;">' + (i+1) + '/' + n + '</span>' +
+                '<input type="date" class="parcela-receber-data" data-idx="' + i + '" value="' + dt + '" style="flex:1;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:12px;">' +
+                '<input type="number" class="parcela-receber-valor" data-idx="' + i + '" value="' + parc + '" step="0.01" style="width:110px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:12px;text-align:right;color:#28a745;font-weight:600;">' +
                 '</div>';
         }
         lista.innerHTML = html;
@@ -7099,15 +7125,15 @@
 
         const n = parseInt(document.getElementById('parcelasPagar').value) || 1;
         if (!valor || !dataBase || n <= 1) { preview.style.display = 'none'; return; }
-        titulo.textContent = 'Parcelas geradas:';
+        titulo.textContent = 'Parcelas geradas (edite data e valor se precisar):';
         const parc = Math.round((valor / n) * 100) / 100;
         let html = '';
         for (let i = 0; i < n; i++) {
-            const dt = new Date(addMonths(dataBase, i) + 'T12:00:00');
-            html += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f0f0f0;">' +
-                '<span>' + (i+1) + '/' + n + '</span>' +
-                '<span>' + dt.toLocaleDateString('pt-BR') + '</span>' +
-                '<span style="color:#dc3545;font-weight:600;">R$ ' + parc.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '</span>' +
+            const dt = addMonths(dataBase, i);
+            html += '<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f0f0f0;">' +
+                '<span style="width:34px;color:#666;">' + (i+1) + '/' + n + '</span>' +
+                '<input type="date" class="parcela-pagar-data" data-idx="' + i + '" value="' + dt + '" style="flex:1;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:12px;">' +
+                '<input type="number" class="parcela-pagar-valor" data-idx="' + i + '" value="' + parc + '" step="0.01" style="width:110px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:12px;text-align:right;color:#dc3545;font-weight:600;">' +
                 '</div>';
         }
         lista.innerHTML = html;
