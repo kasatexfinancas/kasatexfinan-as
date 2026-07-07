@@ -1771,6 +1771,12 @@
             <div class="filter-container">
                 <div class="filter-row">
                     <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="filtroEmpresaRelReceber" onchange="carregarRelatorioReceber()">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Ano</label>
                         <select id="filtroAnoRelReceber" onchange="carregarRelatorioReceber()">
                             <option value="">Todos</option>
@@ -1852,6 +1858,12 @@
 
             <div class="filter-container">
                 <div class="filter-row" style="flex-wrap:wrap;gap:8px;align-items:flex-end;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Empresa</label>
+                        <select id="filtroEmpresaRelPagar" onchange="carregarRelatorioPagar()">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
                     <div class="form-group" style="margin-bottom:0;">
                         <label>Ano</label>
                         <select id="filtroAnoRelPagar" onchange="carregarRelatorioPagar()">
@@ -2036,6 +2048,12 @@
             <div class="filter-container">
                 <div class="filter-row" style="align-items:flex-end;">
                     <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="filtroEmpresaDFC" onchange="carregarDFC()">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Ano</label>
                         <select id="filtroAnoDFC" onchange="carregarDFC()">
                             <option value="">Todos os anos</option>
@@ -2182,6 +2200,12 @@
             <div class="filter-container">
                 <div class="filter-row" style="align-items:flex-end;gap:12px;flex-wrap:wrap;">
                     <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="filtroEmpresaFCP" onchange="carregarFCP()">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Ano de Projeção</label>
                         <select id="filtroAnoFCP" onchange="carregarFCP()">
                             <option value="">Selecione um ano</option>
@@ -2248,6 +2272,12 @@
             <div id="dreAviso" style="display:none;"></div>
             <div class="filter-container">
                 <div class="filter-row" style="align-items:flex-end;gap:12px;flex-wrap:wrap;">
+                    <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="filtroEmpresaDRE" onchange="carregarDRE()">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label>Ano</label>
                         <select id="filtroAnoDRE" onchange="carregarDRE()">
@@ -2339,6 +2369,12 @@
             </div>
             <div class="filter-container">
                 <div class="filter-row" style="align-items:flex-end;gap:12px;flex-wrap:wrap;">
+                    <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="filtroEmpresaAnaliseCat" onchange="renderizarAnaliseCategorias()">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label>Grupo DRE</label>
                         <select id="filtroGrupoDREAnaliseCat" onchange="renderizarAnaliseCategorias()">
@@ -3089,7 +3125,7 @@
     let editandoTipo = null;
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroEmpresaPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroAnoDFC", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroAnoFCP", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroEmpresaPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -3924,7 +3960,7 @@
 
     // Preenche todos os <select> de Empresa espalhados pelo sistema (lançamentos e filtros)
     function atualizarSelectEmpresas() {
-        const ids = ['empresaReceber', 'empresaPagar', 'filtroEmpresaReceber', 'filtroEmpresaPagar', 'filtroEmpresaRecebida', 'filtroEmpresaPaga', 'editLancEmpresa'];
+        const ids = ['empresaReceber', 'empresaPagar', 'filtroEmpresaReceber', 'filtroEmpresaPagar', 'filtroEmpresaRecebida', 'filtroEmpresaPaga', 'editLancEmpresa', 'lancDREEmpresa', 'filtroEmpresaRelReceber', 'filtroEmpresaRelPagar', 'filtroEmpresaDFC', 'filtroEmpresaDRE', 'filtroEmpresaFCP', 'filtroEmpresaAnaliseCat'];
         ids.forEach(id => {
             const select = document.getElementById(id);
             if (!select) return;
@@ -5164,6 +5200,7 @@
         const filtroAno = document.getElementById('filtroAnoRelReceber');
         const filtroMes = document.getElementById('filtroMesRelReceber');
         const filtroDia = document.getElementById('filtroDialRelReceber');
+        const filtroEmpresa = document.getElementById('filtroEmpresaRelReceber');
 
         if (filtroAno && filtroAno.value) {
             filtrado = filtrado.filter(c => c.data_recebimento && c.data_recebimento.startsWith(filtroAno.value));
@@ -5175,6 +5212,10 @@
 
         if (filtroDia && filtroDia.value) {
             filtrado = filtrado.filter(c => c.data_recebimento && c.data_recebimento.endsWith('-' + filtroDia.value));
+        }
+
+        if (filtroEmpresa && filtroEmpresa.value) {
+            filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
         }
 
         const total = filtrado.reduce((sum, c) => sum + parseFloat(c.valor), 0);
@@ -5287,6 +5328,7 @@
         const filtroAno = document.getElementById('filtroAnoRelPagar');
         const filtroMes = document.getElementById('filtroMesRelPagar');
         const filtroDia = document.getElementById('filtroDiaRelPagar');
+        const filtroEmpresa = document.getElementById('filtroEmpresaRelPagar');
 
         if (filtroAno && filtroAno.value) {
             filtrado = filtrado.filter(c => c.data_pagamento && c.data_pagamento.startsWith(filtroAno.value));
@@ -5298,6 +5340,10 @@
 
         if (filtroDia && filtroDia.value) {
             filtrado = filtrado.filter(c => c.data_pagamento && c.data_pagamento.endsWith('-' + filtroDia.value));
+        }
+
+        if (filtroEmpresa && filtroEmpresa.value) {
+            filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
         }
 
         const total = filtrado.reduce((sum, c) => sum + parseFloat(c.valor), 0);
@@ -7500,12 +7546,17 @@
     function fmtValSig(v) { return (v < 0 ? '-' : '') + fmtBRL(v); }
 
     async function carregarDFC() {
-        const contasReceber = await fetchSupabase('contas_a_receber', 'GET');
-        const contasPagar   = await fetchSupabase('contas_a_pagar',   'GET');
+        let contasReceber = await fetchSupabase('contas_a_receber', 'GET');
+        let contasPagar   = await fetchSupabase('contas_a_pagar',   'GET');
         if (!contasReceber || !contasPagar) return;
 
         const filtroAno = document.getElementById('filtroAnoDFC');
         const anoSel    = filtroAno ? filtroAno.value : '';
+        const filtroEmpresa = document.getElementById('filtroEmpresaDFC');
+        if (filtroEmpresa && filtroEmpresa.value) {
+            contasReceber = contasReceber.filter(c => c.empresa_id == filtroEmpresa.value);
+            contasPagar   = contasPagar.filter(c => c.empresa_id == filtroEmpresa.value);
+        }
 
         // DFC usa datas de recebimento/pagamento (fluxo de caixa real)
         let recebidos = contasReceber.filter(c => c.status === 'recebido');
@@ -7979,12 +8030,17 @@
     // ================================================================
 
     async function carregarFCP() {
-        const contasReceber = await fetchSupabase('contas_a_receber', 'GET');
-        const contasPagar   = await fetchSupabase('contas_a_pagar',   'GET');
+        let contasReceber = await fetchSupabase('contas_a_receber', 'GET');
+        let contasPagar   = await fetchSupabase('contas_a_pagar',   'GET');
         if (!contasReceber || !contasPagar) return;
 
         const filtroAno = document.getElementById('filtroAnoFCP');
         const anoSel    = filtroAno ? filtroAno.value : '';
+        const filtroEmpresa = document.getElementById('filtroEmpresaFCP');
+        if (filtroEmpresa && filtroEmpresa.value) {
+            contasReceber = contasReceber.filter(c => c.empresa_id == filtroEmpresa.value);
+            contasPagar   = contasPagar.filter(c => c.empresa_id == filtroEmpresa.value);
+        }
 
         // Aviso
         const avisoEl = document.getElementById('fcpAviso');
@@ -8199,16 +8255,23 @@
     async function carregarDRE() {
         // Buscar lançamentos DRE diretos + contas recebidas/pagas por competência
         const lancsDRE = await fetchSupabase('lancamentos_dre', 'GET');
-        const contasRec = await fetchSupabase('contas_a_receber', 'GET');
-        const contasPag = await fetchSupabase('contas_a_pagar', 'GET');
+        let contasRec = await fetchSupabase('contas_a_receber', 'GET');
+        let contasPag = await fetchSupabase('contas_a_pagar', 'GET');
         if (contasRec === null || contasPag === null) return;
 
         const filtroAno = document.getElementById('filtroAnoDRE');
         const filtroMes = document.getElementById('filtroMesDRE');
         const anoSel = filtroAno ? filtroAno.value : '';
         const mesSel = filtroMes ? filtroMes.value : '';
+        const filtroEmpresa = document.getElementById('filtroEmpresaDRE');
+        const empresaSel = filtroEmpresa ? filtroEmpresa.value : '';
 
-        const dreLancs = lancsDRE || [];
+        let dreLancs = lancsDRE || [];
+        if (empresaSel) {
+            contasRec = contasRec.filter(c => c.empresa_id == empresaSel);
+            contasPag = contasPag.filter(c => c.empresa_id == empresaSel);
+            dreLancs  = dreLancs.filter(l => l.empresa_id == empresaSel);
+        }
 
         // Filtrar por competência
         function filtrarComp(arr, campoData) {
@@ -8702,6 +8765,8 @@
         document.getElementById('lancDREParte').value = '';
         document.getElementById('lancDRECentro').value = '';
         document.getElementById('lancDREObs').value = '';
+        atualizarSelectEmpresas();
+        document.getElementById('lancDREEmpresa').value = '';
 
         if (id) {
             // Edição: carregar dados
@@ -8717,6 +8782,7 @@
                 document.getElementById('lancDREParte').value = l.parte || '';
                 document.getElementById('lancDRECentro').value = l.centro || '';
                 document.getElementById('lancDREObs').value = l.observacoes || '';
+                document.getElementById('lancDREEmpresa').value = l.empresa_id || '';
             });
             document.getElementById('tituloModalLancDRE').textContent = '✏️ Editar Lançamento DRE';
         } else {
@@ -8751,6 +8817,7 @@
             parte:       document.getElementById('lancDREParte').value || null,
             centro:      document.getElementById('lancDRECentro').value || null,
             observacoes: document.getElementById('lancDREObs').value || null,
+            empresa_id:  document.getElementById('lancDREEmpresa').value ? parseInt(document.getElementById('lancDREEmpresa').value) : null,
         };
         const r = id
             ? await fetchSupabase('lancamentos_dre', 'PATCH', dados, 'id=eq.' + id)
@@ -8816,30 +8883,40 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
+        // As listas de colunas abaixo devem refletir EXATAMENTE a ordem das
+        // colunas de dados de cada tabela em tela (sem contar a coluna "Ações").
         const configs = {
             receber: {
                 titulo: 'Contas a Receber (Pendentes)',
-                colunas: ['Cliente', 'Descrição', 'NF', 'Competência', 'Vencimento', 'Valor', 'Parcela', 'Status'],
-                larguras: [40, 55, 20, 22, 22, 22, 16, 18],
-                tableId: 'tabelaPendentesReceber'
+                colunas: ['Cliente', 'Descrição', 'Empresa', 'Competência', 'Vencimento', 'Valor', 'Parcela', 'Status'],
+                larguras: [34, 46, 34, 20, 20, 22, 14, 18],
+                alinhamentos: ['left', 'left', 'left', 'center', 'center', 'right', 'center', 'center'],
+                tableId: 'tabelaPendentesReceber',
+                filtroIds: ['filtroClienteReceber', 'filtroEmpresaReceber', 'filtroAnoReceber', 'filtroMesReceber']
             },
             pagar: {
                 titulo: 'Contas a Pagar (Pendentes)',
-                colunas: ['Fornecedor', 'Categoria', 'Descrição', 'NF', 'Competência', 'Vencimento', 'Valor', 'Parcela', 'Status'],
-                larguras: [32, 28, 40, 16, 20, 20, 22, 14, 16],
-                tableId: 'tabelaPendentesPagar'
+                colunas: ['Fornecedor', 'Categoria', 'Descrição', 'Empresa', 'NF', 'Competência', 'Vencimento', 'Valor', 'Parcela', 'Status'],
+                larguras: [30, 24, 34, 30, 14, 18, 18, 20, 12, 16],
+                alinhamentos: ['left', 'left', 'left', 'left', 'center', 'center', 'center', 'right', 'center', 'center'],
+                tableId: 'tabelaPendentesPagar',
+                filtroIds: ['filtroFornecedorPagar', 'filtroCategoriaPagar', 'filtroEmpresaPagar', 'filtroAnoPagar', 'filtroMesPagar']
             },
             recebidas: {
                 titulo: 'Contas Recebidas',
-                colunas: ['Cliente', 'Descrição', 'Valor', 'Vencimento', 'Recebimento'],
-                larguras: [50, 75, 30, 30, 30],
-                tableId: 'tabelaRecebidas'
+                colunas: ['Cliente', 'Descrição', 'Empresa', 'Parcela', 'Valor', 'Vencimento', 'Recebimento', 'Tipo', 'Banco'],
+                larguras: [32, 42, 30, 14, 22, 20, 20, 20, 26],
+                alinhamentos: ['left', 'left', 'left', 'center', 'right', 'center', 'center', 'left', 'left'],
+                tableId: 'tabelaRecebidas',
+                filtroIds: ['filtroClienteRecebida', 'filtroEmpresaRecebida', 'filtroAnoRecebida', 'filtroMesRecebida', 'filtroBancoRecebida']
             },
             pagas: {
                 titulo: 'Contas Pagas',
-                colunas: ['Fornecedor', 'Categoria', 'Descrição', 'NF', 'Parcela', 'Valor', 'Vencimento', 'Pagamento', 'Tipo', 'Banco'],
-                larguras: [28, 22, 35, 16, 12, 20, 20, 20, 18, 20],
-                tableId: 'tabelaPagas'
+                colunas: ['Fornecedor', 'Categoria', 'Descrição', 'Empresa', 'NF', 'Parcela', 'Valor', 'Vencimento', 'Pagamento', 'Tipo', 'Banco'],
+                larguras: [26, 20, 30, 26, 12, 12, 20, 18, 18, 18, 22],
+                alinhamentos: ['left', 'left', 'left', 'left', 'center', 'center', 'right', 'center', 'center', 'left', 'left'],
+                tableId: 'tabelaPagas',
+                filtroIds: ['filtroFornecedorPaga', 'filtroEmpresaPaga', 'filtroAnoPaga', 'filtroMesPaga', 'filtroBancoPaga']
             }
         };
 
@@ -8855,30 +8932,52 @@
             return;
         }
 
+        // --- Monta a linha de "filtros aplicados", quando houver algum selecionado ---
+        const filtrosAplicados = [];
+        (cfg.filtroIds || []).forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.value && el.selectedOptions && el.selectedOptions[0]) {
+                const label = (el.previousElementSibling && el.previousElementSibling.textContent) || '';
+                filtrosAplicados.push((label ? label.trim() + ': ' : '') + el.selectedOptions[0].textContent.trim());
+            } else if (el && el.value) {
+                filtrosAplicados.push(el.value);
+            }
+        });
+
         // --- Cabeçalho do documento ---
         const pageW = doc.internal.pageSize.getWidth();
         const pageH = doc.internal.pageSize.getHeight();
         doc.setFillColor(255, 122, 66); // cor primária
-        doc.rect(0, 0, pageW, 16, 'F');
+        doc.rect(0, 0, pageW, 18, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(13);
+        doc.setFontSize(14);
         doc.setFont(undefined, 'bold');
-        doc.text('CAP Gestao Financeira', 10, 10);
-        doc.setFontSize(10);
+        doc.text('CAP Gestao Financeira', 10, 11);
+        doc.setFontSize(9);
         doc.setFont(undefined, 'normal');
         const hoje = new Date().toLocaleDateString('pt-BR');
-        doc.text('Gerado em: ' + hoje, pageW - 10, 10, { align: 'right' });
+        doc.text('Gerado em: ' + hoje, pageW - 10, 11, { align: 'right' });
 
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(12);
+        doc.setTextColor(40, 40, 40);
+        doc.setFontSize(13);
         doc.setFont(undefined, 'bold');
-        doc.text(normalizarTexto(cfg.titulo), pageW / 2, 24, { align: 'center' });
+        doc.text(normalizarTexto(cfg.titulo), pageW / 2, 27, { align: 'center' });
+
+        let startY = 31;
+        if (filtrosAplicados.length > 0) {
+            doc.setFontSize(8.5);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(110, 110, 110);
+            doc.text(normalizarTexto('Filtros: ' + filtrosAplicados.join('  |  ')), pageW / 2, 33, { align: 'center' });
+            startY = 37;
+        }
 
         // --- Construir dados da tabela ---
         const numCols = cfg.colunas.length;
         const head = [cfg.colunas.map(c => normalizarTexto(c))];
         const body = [];
         let totalValor = 0;
+        let colValorIdx = cfg.colunas.indexOf('Valor');
 
         linhas.forEach((linha) => {
             const cells = linha.querySelectorAll('td');
@@ -8890,56 +8989,58 @@
                 row.push(normalizarTexto(celula.innerText.trim().replace(/\n/g, ' ')));
             }
             body.push(row);
-            // Somar valor (coluna com "R$")
-            for (let i = 0; i < cells.length - 1; i++) {
-                const t = cells[i].innerText.trim();
+            if (colValorIdx >= 0 && cells[colValorIdx]) {
+                const t = cells[colValorIdx].innerText.trim();
                 if (t.startsWith('R$')) {
                     const v = parseFloat(t.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
-                    if (!isNaN(v)) { totalValor += v; break; }
+                    if (!isNaN(v)) totalValor += v;
                 }
             }
         });
 
-        // --- Configurar columnStyles com larguras fixas ---
+        // --- Configurar columnStyles (largura + alinhamento) ---
         const columnStyles = {};
         cfg.larguras.forEach((w, i) => {
-            columnStyles[i] = { cellWidth: w };
+            columnStyles[i] = { cellWidth: w, halign: (cfg.alinhamentos && cfg.alinhamentos[i]) || 'left' };
         });
+        const colStatusIdx = cfg.colunas.indexOf('Status');
 
         // --- Gerar tabela usando autoTable ---
         doc.autoTable({
             head: head,
             body: body,
-            startY: 28,
-            margin: { left: 8, right: 8, bottom: 12 },
+            startY: startY,
+            margin: { left: 8, right: 8, bottom: 14 },
+            theme: 'grid',
             tableWidth: 'wrap',
             styles: {
-                fontSize: 7.5,
-                cellPadding: 1.5,
+                fontSize: 7.6,
+                cellPadding: 2,
                 overflow: 'linebreak',
                 valign: 'middle',
-                lineColor: [200, 200, 200],
+                lineColor: [225, 225, 225],
                 lineWidth: 0.1,
-                textColor: [50, 50, 50],
+                textColor: [55, 55, 55],
                 fillColor: [255, 255, 255]
             },
             headStyles: {
-                fillColor: [80, 80, 80],
+                fillColor: [255, 122, 66],
                 textColor: [255, 255, 255],
                 fontStyle: 'bold',
                 halign: 'left',
-                cellPadding: 2
+                fontSize: 8,
+                cellPadding: 2.4
             },
             bodyStyles: {
                 fillColor: [255, 255, 255],
-                textColor: [50, 50, 50]
+                textColor: [55, 55, 55]
             },
             alternateRowStyles: {
-                fillColor: [245, 245, 245]
+                fillColor: [250, 246, 243]
             },
             columnStyles: columnStyles,
             didParseCell: function (data) {
-                if (data.section === 'body') {
+                if (data.section === 'body' && colStatusIdx >= 0 && data.column.index === colStatusIdx) {
                     const t = (data.cell.text[0] || '').toLowerCase();
                     if (t === 'atrasado') {
                         data.cell.styles.textColor = [180, 0, 0];
@@ -8947,28 +9048,40 @@
                     } else if (t === 'pendente') {
                         data.cell.styles.textColor = [150, 100, 0];
                         data.cell.styles.fontStyle = 'bold';
+                    } else if (t === 'pago' || t === 'recebido') {
+                        data.cell.styles.textColor = [30, 130, 76];
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                }
+                if (data.section === 'body' && colStatusIdx >= 0 && data.row.raw && data.row.raw[colStatusIdx]) {
+                    const statusTxt = String(data.row.raw[colStatusIdx]).toLowerCase();
+                    if (statusTxt === 'atrasado') {
+                        data.cell.styles.fillColor = [253, 237, 237];
                     }
                 }
             },
             didDrawPage: function (data) {
                 // Rodapé de página
                 doc.setFontSize(7);
-                doc.setTextColor(120, 120, 120);
+                doc.setTextColor(140, 140, 140);
                 doc.setFont(undefined, 'normal');
                 const pageNum = doc.internal.getNumberOfPages();
                 doc.text('Pagina ' + data.pageNumber + ' de ' + pageNum,
-                    pageW / 2, pageH - 5, { align: 'center' });
+                    pageW / 2, pageH - 6, { align: 'center' });
             }
         });
 
-        // --- Total ---
+        // --- Total (com caixa de destaque) ---
         if (totalValor > 0) {
-            const finalY = doc.lastAutoTable.finalY + 6;
+            const finalY = doc.lastAutoTable.finalY + 5;
+            const totalTexto = 'Total: R$ ' + totalValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            doc.setFontSize(10);
             doc.setFont(undefined, 'bold');
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(9);
-            doc.text('Total: R$ ' + totalValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-                pageW - 10, finalY, { align: 'right' });
+            const boxW = doc.getTextWidth(totalTexto) + 10;
+            doc.setFillColor(255, 122, 66);
+            doc.roundedRect(pageW - 10 - boxW, finalY - 5, boxW, 8, 1.5, 1.5, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.text(totalTexto, pageW - 10 - boxW / 2, finalY, { align: 'center' });
         }
 
         doc.save('relatorio_' + tipo + '_' + hoje.replace(/\//g, '-') + '.pdf');
@@ -9028,6 +9141,10 @@
         cabecalho.innerHTML = headHtml;
 
         const contas = (dadosCache.contasAnaliseCategorias || []).filter(c => c.data_competencia && c.data_competencia.startsWith(anoSel));
+        const filtroEmpresaCat = document.getElementById('filtroEmpresaAnaliseCat');
+        const contasFiltradas = (filtroEmpresaCat && filtroEmpresaCat.value)
+            ? contas.filter(c => c.empresa_id == filtroEmpresaCat.value)
+            : contas;
         const categorias = (dadosCache.categorias || []).filter(cat => !grupoSel || cat.grupo_dre === grupoSel);
 
         const totalPorMes = {};
@@ -9040,7 +9157,7 @@
             let totalCategoria = 0;
             mesesExibir.forEach(m => {
                 const mesStr = String(m + 1).padStart(2, '0');
-                const soma = contas
+                const soma = contasFiltradas
                     .filter(c => c.categoria_id === cat.id && c.data_competencia.substring(5, 7) === mesStr)
                     .reduce((acc, c) => acc + parseFloat(c.valor || 0), 0);
                 valoresPorMes[m] = soma;
@@ -9409,6 +9526,12 @@
                     <label>Centro de Custo</label>
                     <input type="text" id="lancDRECentro" placeholder="Ex: Filial SP">
                 </div>
+            </div>
+            <div class="form-group">
+                <label>Empresa</label>
+                <select id="lancDREEmpresa">
+                    <option value="">Selecione...</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Observações</label>
