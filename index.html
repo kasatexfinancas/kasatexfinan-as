@@ -838,6 +838,7 @@
             <div class="menu-item" onclick="showPage('fornecedores')">🏭 Fornecedores</div>
             <div class="menu-item" onclick="showPage('clientes')">👥 Clientes</div>
             <div class="menu-item" onclick="showPage('bancos')">🏦 Bancos</div>
+            <div class="menu-item" onclick="showPage('empresas')">🏢 Empresas</div>
         </div>
 
         <div class="menu-section">
@@ -1234,6 +1235,41 @@
             </div>
         </div>
 
+        <!-- EMPRESAS -->
+        <div id="empresas" class="page">
+            <div class="page-header">
+                <h1>🏢 Empresas</h1>
+                <button class="btn btn-primary btn-small" onclick="openModalEmpresa()">+ Nova Empresa</button>
+            </div>
+
+            <div class="alert alert-success" id="alertEmpresas"></div>
+
+            <div class="filter-container">
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label>Pesquisar</label>
+                        <input type="text" id="filtroEmpresa" placeholder="Nome ou CNPJ" onchange="carregarEmpresas()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="tabelaEmpresas">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>CNPJ</th>
+                            <th>Email</th>
+                            <th>Telefone</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- LANÇAR CONTAS A RECEBER -->
         <div id="lancar-receber" class="page">
             <div class="page-header">
@@ -1251,6 +1287,12 @@
                         <label>Cliente</label>
                         <select id="filtroClienteReceber" onchange="atualizarTabelaPendentesReceber()">
                             <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="filtroEmpresaReceber" onchange="atualizarTabelaPendentesReceber()">
+                            <option value="">Todas</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1295,6 +1337,7 @@
                     <colgroup>
                         <col style="min-width:130px;">
                         <col style="min-width:160px;">
+                        <col style="min-width:130px;">
                         <col style="min-width:90px;">
                         <col style="min-width:100px;">
                         <col style="min-width:110px;">
@@ -1306,6 +1349,7 @@
                         <tr>
                             <th>Cliente</th>
                             <th>Descrição</th>
+                            <th>Empresa</th>
                             <th>Competência</th>
                             <th>Vencimento</th>
                             <th>Valor</th>
@@ -1342,6 +1386,12 @@
                         <label>Categoria</label>
                         <select id="filtroCategoriaPagar" onchange="atualizarTabelaPendentesPagar()">
                             <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="filtroEmpresaPagar" onchange="atualizarTabelaPendentesPagar()">
+                            <option value="">Todas</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1387,6 +1437,7 @@
                         <col style="min-width:130px;">
                         <col style="min-width:120px;">
                         <col style="min-width:160px;">
+                        <col style="min-width:130px;">
                         <col style="min-width:70px;">
                         <col style="min-width:90px;">
                         <col style="min-width:100px;">
@@ -1400,6 +1451,7 @@
                             <th>Fornecedor</th>
                             <th>Categoria</th>
                             <th>Descrição</th>
+                            <th>Empresa</th>
                             <th>NF</th>
                             <th>Competência</th>
                             <th>Vencimento</th>
@@ -1427,6 +1479,12 @@
                         <label>Cliente</label>
                         <select id="filtroClienteRecebida" onchange="carregarContasRecebidas()">
                             <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="filtroEmpresaRecebida" onchange="carregarContasRecebidas()">
+                            <option value="">Todas</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1482,6 +1540,7 @@
                     <colgroup>
                         <col style="min-width:140px;">
                         <col style="min-width:180px;">
+                        <col style="min-width:130px;">
                         <col style="min-width:70px;">
                         <col style="min-width:100px;">
                         <col style="min-width:100px;">
@@ -1494,6 +1553,7 @@
                         <tr>
                             <th>Cliente</th>
                             <th>Descrição</th>
+                            <th>Empresa</th>
                             <th>Parcela</th>
                             <th>Valor</th>
                             <th>Vencimento</th>
@@ -1521,6 +1581,12 @@
                         <label>Fornecedor</label>
                         <select id="filtroFornecedorPaga" onchange="carregarContasPagas()">
                             <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="filtroEmpresaPaga" onchange="carregarContasPagas()">
+                            <option value="">Todas</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1577,6 +1643,7 @@
                         <col style="min-width:130px;">
                         <col style="min-width:110px;">
                         <col style="min-width:150px;">
+                        <col style="min-width:130px;">
                         <col style="min-width:70px;">
                         <col style="min-width:70px;">
                         <col style="min-width:110px;">
@@ -1591,6 +1658,7 @@
                             <th>Fornecedor</th>
                             <th>Categoria</th>
                             <th>Descrição</th>
+                            <th>Empresa</th>
                             <th>NF</th>
                             <th>Parcela</th>
                             <th>Valor</th>
@@ -2382,6 +2450,14 @@
                         <input type="text" id="descricaoReceber" required placeholder="Ex: Venda de produtos">
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="empresaReceber">
+                            <option value="">Selecione...</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <div class="form-section">
@@ -2495,6 +2571,14 @@
                     <div class="form-group">
                         <label>Descrição*</label>
                         <input type="text" id="descricaoPagar" required placeholder="Ex: Compra de mercadorias">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="empresaPagar">
+                            <option value="">Selecione...</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -2937,6 +3021,47 @@
     </div>
 </div>
 
+<div class="modal" id="modalEmpresa">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span id="modalEmpresaTitulo">Nova Empresa</span>
+            <button class="modal-close" onclick="closeModal('modalEmpresa')">&times;</button>
+        </div>
+        <form onsubmit="salvarEmpresa(event)">
+            <div class="form-group">
+                <label>Nome*</label>
+                <input type="text" id="nomeEmpresa" required>
+            </div>
+            <div class="form-group">
+                <label>CNPJ</label>
+                <input type="text" id="cnpjEmpresa" placeholder="XX.XXX.XXX/XXXX-XX">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="emailEmpresa">
+            </div>
+            <div class="form-group">
+                <label>Telefone</label>
+                <input type="text" id="telefoneEmpresa">
+            </div>
+            <div class="form-group">
+                <label>Endereço</label>
+                <textarea id="enderecoEmpresa" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="ativoEmpresa" checked>
+                    Ativo
+                </label>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Salvar</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modalEmpresa')">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     // CONFIG SUPABASE
     const SUPABASE_URL = 'https://vjrhvfjhebstokjhyohk.supabase.co';
@@ -2952,6 +3077,7 @@
         fornecedores: [],
         clientes: [],
         bancos: [],
+        empresas: [],
         contasReceber: [],
         contasPagar: [],
         contasRecebidas: [],
@@ -2963,7 +3089,7 @@
     let editandoTipo = null;
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroAnoDFC", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroAnoFCP", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroEmpresaPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroAnoDFC", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroAnoFCP", "dashFiltroAno", "dashFiltroMes"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -3170,6 +3296,7 @@
         await carregarFornecedores();
         await carregarClientes();
         await carregarBancos();
+        await carregarEmpresas();
         await carregarContasReceber();
         await carregarContasPagar();
         await atualizarDashboard();
@@ -3756,6 +3883,128 @@
         }
     }
 
+    // EMPRESAS (empresas/filiais próprias, usadas para vincular lançamentos e relatórios)
+    async function carregarEmpresas() {
+        const filtro = document.getElementById('filtroEmpresa');
+        let filtros = '';
+
+        if (filtro && filtro.value) {
+            filtros = `or=(nome.ilike.%${filtro.value}%,cnpj.ilike.%${filtro.value}%)`;
+        }
+
+        const dados = await fetchSupabase('empresas', 'GET', null, filtros);
+        if (dados) {
+            dadosCache.empresas = dados;
+            atualizarTabelaEmpresas();
+            atualizarSelectEmpresas();
+        }
+    }
+
+    function atualizarTabelaEmpresas() {
+        const tbody = document.querySelector('#tabelaEmpresas tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        dadosCache.empresas.forEach(emp => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${emp.nome}</td>
+                    <td>${emp.cnpj || '-'}</td>
+                    <td>${emp.email || '-'}</td>
+                    <td>${emp.telefone || '-'}</td>
+                    <td><span class="status-badge ${emp.ativo ? 'status-recebido' : 'status-atrasado'}">${emp.ativo ? 'Ativo' : 'Inativo'}</span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-small" onclick="editarEmpresa(${emp.id})">Editar</button>
+                        <button class="btn btn-danger btn-small" onclick="deletarEmpresa(${emp.id})">Deletar</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // Preenche todos os <select> de Empresa espalhados pelo sistema (lançamentos e filtros)
+    function atualizarSelectEmpresas() {
+        const ids = ['empresaReceber', 'empresaPagar', 'filtroEmpresaReceber', 'filtroEmpresaPagar', 'filtroEmpresaRecebida', 'filtroEmpresaPaga', 'editLancEmpresa'];
+        ids.forEach(id => {
+            const select = document.getElementById(id);
+            if (!select) return;
+            const valorAtual = select.value;
+            select.innerHTML = '<option value="">Selecione...</option>';
+            dadosCache.empresas.filter(e => e.ativo !== false).forEach(emp => {
+                const opt = document.createElement('option');
+                opt.value = emp.id;
+                opt.textContent = emp.nome;
+                select.appendChild(opt);
+            });
+            if (valorAtual) select.value = valorAtual;
+        });
+    }
+
+    function openModalEmpresa() {
+        editandoId = null;
+        editandoTipo = null;
+        document.getElementById('nomeEmpresa').value = '';
+        document.getElementById('cnpjEmpresa').value = '';
+        document.getElementById('emailEmpresa').value = '';
+        document.getElementById('telefoneEmpresa').value = '';
+        document.getElementById('enderecoEmpresa').value = '';
+        document.getElementById('ativoEmpresa').checked = true;
+        document.getElementById('modalEmpresaTitulo').textContent = 'Nova Empresa';
+        document.getElementById('modalEmpresa').classList.add('active');
+    }
+
+    function editarEmpresa(id) {
+        const empresa = dadosCache.empresas.find(e => e.id === id);
+        if (empresa) {
+            editandoId = id;
+            editandoTipo = 'empresa';
+            document.getElementById('nomeEmpresa').value = empresa.nome;
+            document.getElementById('cnpjEmpresa').value = empresa.cnpj || '';
+            document.getElementById('emailEmpresa').value = empresa.email || '';
+            document.getElementById('telefoneEmpresa').value = empresa.telefone || '';
+            document.getElementById('enderecoEmpresa').value = empresa.endereco || '';
+            document.getElementById('ativoEmpresa').checked = empresa.ativo;
+            document.getElementById('modalEmpresaTitulo').textContent = 'Editar Empresa';
+            document.getElementById('modalEmpresa').classList.add('active');
+        }
+    }
+
+    async function salvarEmpresa(event) {
+        event.preventDefault();
+
+        const dados = {
+            nome: document.getElementById('nomeEmpresa').value,
+            cnpj: document.getElementById('cnpjEmpresa').value || null,
+            email: document.getElementById('emailEmpresa').value || null,
+            telefone: document.getElementById('telefoneEmpresa').value || null,
+            endereco: document.getElementById('enderecoEmpresa').value || null,
+            ativo: document.getElementById('ativoEmpresa').checked
+        };
+
+        let resultado;
+        if (editandoId) {
+            resultado = await fetchSupabase('empresas', 'PATCH', dados, `id=eq.${editandoId}`);
+        } else {
+            resultado = await fetchSupabase('empresas', 'POST', dados);
+        }
+
+        if (resultado !== null) {
+            showAlert('Empresa salva com sucesso!', 'alertEmpresas', 'success');
+            closeModal('modalEmpresa');
+            await carregarEmpresas();
+        }
+    }
+
+    async function deletarEmpresa(id) {
+        if (confirm('Tem certeza que deseja deletar esta empresa?')) {
+            const resultado = await fetchSupabase('empresas', 'DELETE', null, `id=eq.${id}`);
+            if (resultado !== null) {
+                showAlert('Empresa deletada com sucesso!', 'alertEmpresas', 'success');
+                carregarEmpresas();
+            }
+        }
+    }
+
     // CONTAS A RECEBER
     async function carregarContasReceber() {
         const filtro = `status=eq.pendente`;
@@ -3772,9 +4021,11 @@
         tbody.innerHTML = '';
         let filtrado = dadosCache.contasReceber;
         const filtroCliente = document.getElementById('filtroClienteReceber');
+        const filtroEmpresa = document.getElementById('filtroEmpresaReceber');
         const filtroAno = document.getElementById('filtroAnoReceber');
         const filtroMes = document.getElementById('filtroMesReceber');
         if (filtroCliente && filtroCliente.value) filtrado = filtrado.filter(c => c.cliente_id == filtroCliente.value);
+        if (filtroEmpresa && filtroEmpresa.value) filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
         if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.startsWith(filtroAno.value));
         if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.includes('-' + filtroMes.value + '-'));
 
@@ -3796,6 +4047,7 @@
 
         filtrado.forEach(conta => {
             const cliente = dadosCache.clientes.find(c => c.id === conta.cliente_id);
+            const empresa = dadosCache.empresas.find(e => e.id === conta.empresa_id);
             const venc = new Date(conta.data_vencimento + 'T12:00:00');
             const status = venc < hoje ? 'atrasado' : 'pendente';
             const parcLabel = conta.custo_fixo
@@ -3809,6 +4061,7 @@
             tbody.innerHTML += `<tr>
                 <td>${cliente ? cliente.nome : '-'}</td>
                 <td>${conta.descricao}</td>
+                <td>${empresa ? empresa.nome : '-'}</td>
                 <td>${compLabel}</td>
                 <td>${venc.toLocaleDateString('pt-BR')}</td>
                 <td>R$ ${parseFloat(conta.valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
@@ -3832,6 +4085,7 @@
         const obs = document.getElementById('observacoesReceber').value;
         const notaFiscalRec = document.getElementById('notaFiscalReceber').value.trim() || null;
         const clienteId = parseInt(document.getElementById('clienteReceber').value);
+        const empresaId = document.getElementById('empresaReceber').value ? parseInt(document.getElementById('empresaReceber').value) : null;
         const descricao = document.getElementById('descricaoReceber').value;
         const valorTotal = parseFloat(document.getElementById('valorReceber').value);
 
@@ -3875,6 +4129,7 @@
             else if (numLancamentos > 1) descParc = descricao + ' (' + (i+1) + '/' + numLancamentos + ')';
             const dados = {
                 cliente_id: clienteId,
+                empresa_id: empresaId,
                 descricao: descParc,
                 valor: valorLinha,
                 data_competencia: custoFixo ? addMonths(competencia, i) : competencia,
@@ -3921,10 +4176,12 @@
         let filtrado = dadosCache.contasPagar;
         const filtroFornecedor = document.getElementById('filtroFornecedorPagar');
         const filtroCategoria = document.getElementById('filtroCategoriaPagar');
+        const filtroEmpresa = document.getElementById('filtroEmpresaPagar');
         const filtroAno = document.getElementById('filtroAnoPagar');
         const filtroMes = document.getElementById('filtroMesPagar');
         if (filtroFornecedor && filtroFornecedor.value) filtrado = filtrado.filter(c => c.fornecedor_id == filtroFornecedor.value);
         if (filtroCategoria && filtroCategoria.value) filtrado = filtrado.filter(c => c.categoria_id == filtroCategoria.value);
+        if (filtroEmpresa && filtroEmpresa.value) filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
         if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.startsWith(filtroAno.value));
         if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.includes('-' + filtroMes.value + '-'));
 
@@ -3947,6 +4204,7 @@
         filtrado.forEach(conta => {
             const fornecedor = dadosCache.fornecedores.find(f => f.id === conta.fornecedor_id);
             const categoria = dadosCache.categorias.find(cat => cat.id === conta.categoria_id);
+            const empresa = dadosCache.empresas.find(e => e.id === conta.empresa_id);
             const venc = new Date(conta.data_vencimento + 'T12:00:00');
             const status = venc < hoje ? 'atrasado' : 'pendente';
             const parcLabel = conta.custo_fixo
@@ -3961,6 +4219,7 @@
                 <td>${fornecedor ? fornecedor.nome : '-'}</td>
                 <td>${categoria ? categoria.nome : '-'}</td>
                 <td>${conta.descricao}</td>
+                <td>${empresa ? empresa.nome : '-'}</td>
                 <td style="font-size:11px;color:#555;">${conta.nota_fiscal || '-'}</td>
                 <td>${compLabel}</td>
                 <td>${venc.toLocaleDateString('pt-BR')}</td>
@@ -3985,6 +4244,7 @@
         const obs = document.getElementById('observacoesPagar').value;
         const notaFiscal = document.getElementById('notaFiscalPagar').value.trim() || null;
         const fornecedorId = parseInt(document.getElementById('fornecedorPagar').value);
+        const empresaId = document.getElementById('empresaPagar').value ? parseInt(document.getElementById('empresaPagar').value) : null;
         const categoriaId = document.getElementById('categoriaPagar').value ? parseInt(document.getElementById('categoriaPagar').value) : null;
         const subcategoriaId = document.getElementById('subcategoriaPagar').value ? parseInt(document.getElementById('subcategoriaPagar').value) : null;
         const descricao = document.getElementById('descricaoPagar').value;
@@ -4030,6 +4290,7 @@
             else if (numLancamentos > 1) descParc = descricao + ' (' + (i+1) + '/' + numLancamentos + ')';
             const dados = {
                 fornecedor_id: fornecedorId,
+                empresa_id: empresaId,
                 categoria_id: categoriaId,
                 subcategoria_id: subcategoriaId,
                 descricao: descParc,
@@ -4066,12 +4327,16 @@
         let filtro = `status=eq.recebido`;
         const filtroCliente = document.getElementById('filtroClienteRecebida');
         const filtroBanco = document.getElementById('filtroBancoRecebida');
+        const filtroEmpresa = document.getElementById('filtroEmpresaRecebida');
 
         if (filtroCliente && filtroCliente.value) {
             filtro += `&cliente_id=eq.${filtroCliente.value}`;
         }
         if (filtroBanco && filtroBanco.value) {
             filtro += `&banco_id=eq.${filtroBanco.value}`;
+        }
+        if (filtroEmpresa && filtroEmpresa.value) {
+            filtro += `&empresa_id=eq.${filtroEmpresa.value}`;
         }
 
         const dados = await fetchSupabase('contas_a_receber', 'GET', null, filtro);
@@ -4106,12 +4371,14 @@
         filtrado.forEach(conta => {
             const cliente = dadosCache.clientes.find(c => c.id === conta.cliente_id);
             const banco = (dadosCache.bancos || []).find(b => b.id === conta.banco_id);
+            const empresa = (dadosCache.empresas || []).find(e => e.id === conta.empresa_id);
             const parcLabel = conta.custo_fixo ? '🔁 Fixo' : (conta.total_parcelas > 1 ? conta.parcela_atual + '/' + conta.total_parcelas : '-');
             const vencFmt = conta.data_vencimento ? new Date(conta.data_vencimento + 'T12:00:00').toLocaleDateString('pt-BR') : '-';
             const recFmt  = conta.data_recebimento ? new Date(conta.data_recebimento + 'T12:00:00').toLocaleDateString('pt-BR') : '-';
             tbody.innerHTML += `<tr>
                 <td>${cliente ? cliente.nome : '-'}</td>
                 <td>${conta.descricao}</td>
+                <td>${empresa ? empresa.nome : '-'}</td>
                 <td style="text-align:center;">${parcLabel}</td>
                 <td>R$ ${parseFloat(conta.valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
                 <td>${vencFmt}</td>
@@ -4132,12 +4399,16 @@
         let filtro = `status=eq.pago`;
         const filtroFornecedor = document.getElementById('filtroFornecedorPaga');
         const filtroBanco = document.getElementById('filtroBancoPaga');
+        const filtroEmpresa = document.getElementById('filtroEmpresaPaga');
 
         if (filtroFornecedor && filtroFornecedor.value) {
             filtro += `&fornecedor_id=eq.${filtroFornecedor.value}`;
         }
         if (filtroBanco && filtroBanco.value) {
             filtro += `&banco_id=eq.${filtroBanco.value}`;
+        }
+        if (filtroEmpresa && filtroEmpresa.value) {
+            filtro += `&empresa_id=eq.${filtroEmpresa.value}`;
         }
 
         const dados = await fetchSupabase('contas_a_pagar', 'GET', null, filtro);
@@ -4173,6 +4444,7 @@
             const fornecedor = dadosCache.fornecedores.find(f => f.id === conta.fornecedor_id);
             const categoria  = dadosCache.categorias.find(cat => cat.id === conta.categoria_id);
             const banco      = (dadosCache.bancos || []).find(b => b.id === conta.banco_id);
+            const empresa    = (dadosCache.empresas || []).find(e => e.id === conta.empresa_id);
             const parcLabel  = conta.custo_fixo ? '🔁 Fixo' : (conta.total_parcelas > 1 ? conta.parcela_atual + '/' + conta.total_parcelas : '-');
             const vencFmt    = conta.data_vencimento ? new Date(conta.data_vencimento + 'T12:00:00').toLocaleDateString('pt-BR') : '-';
             const pagFmt     = conta.data_pagamento  ? new Date(conta.data_pagamento  + 'T12:00:00').toLocaleDateString('pt-BR') : '-';
@@ -4180,6 +4452,7 @@
                 <td>${fornecedor ? fornecedor.nome : '-'}</td>
                 <td>${categoria  ? categoria.nome  : '-'}</td>
                 <td>${conta.descricao}</td>
+                <td>${empresa ? empresa.nome : '-'}</td>
                 <td style="font-size:11px;color:#555;">${conta.nota_fiscal || '-'}</td>
                 <td style="text-align:center;">${parcLabel}</td>
                 <td>R$ ${parseFloat(conta.valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
@@ -4322,6 +4595,7 @@
         atualizarSelectClientes();
         atualizarSelectFornecedores();
         atualizarSelectCategorias();
+        atualizarSelectEmpresas();
         if (tipo === 'receber') {
             const conta = dadosCache.contasRecebidas.find(c => c.id === id)
                        || dadosCache.contasReceber.find(c => c.id === id);
@@ -4334,6 +4608,7 @@
             document.getElementById('editLancCategoriaWrap').style.display = '';
             document.getElementById('editLancCliente').value    = conta.cliente_id || '';
             document.getElementById('editLancCategoria').value  = conta.categoria_id || '';
+            document.getElementById('editLancEmpresa').value    = conta.empresa_id || '';
             document.getElementById('editLancDescricao').value  = conta.descricao || '';
             document.getElementById('editLancValor').value      = conta.valor || '';
             document.getElementById('editLancVencimento').value = conta.data_vencimento || '';
@@ -4352,6 +4627,7 @@
             document.getElementById('editLancCategoriaWrap').style.display = '';
             document.getElementById('editLancFornecedor').value = conta.fornecedor_id || '';
             document.getElementById('editLancCategoria').value  = conta.categoria_id || '';
+            document.getElementById('editLancEmpresa').value    = conta.empresa_id || '';
             document.getElementById('editLancDescricao').value  = conta.descricao || '';
             document.getElementById('editLancValor').value      = conta.valor || '';
             document.getElementById('editLancVencimento').value = conta.data_vencimento || '';
@@ -4368,13 +4644,15 @@
         const id    = parseInt(document.getElementById('editLancId').value);
         const tipo  = document.getElementById('editLancTipo').value;
         const catVal = document.getElementById('editLancCategoria') ? document.getElementById('editLancCategoria').value : '';
+        const empVal = document.getElementById('editLancEmpresa') ? document.getElementById('editLancEmpresa').value : '';
         const dados = {
             descricao:        document.getElementById('editLancDescricao').value,
             valor:            parseFloat(document.getElementById('editLancValor').value),
             data_vencimento:  document.getElementById('editLancVencimento').value,
             data_competencia: document.getElementById('editLancCompetencia').value || null,
             observacoes:      document.getElementById('editLancObs').value || null,
-            categoria_id:     catVal ? parseInt(catVal) : null
+            categoria_id:     catVal ? parseInt(catVal) : null,
+            empresa_id:       empVal ? parseInt(empVal) : null
         };
         if (tipo === 'contas_a_pagar') {
             dados.nota_fiscal = document.getElementById('editLancNota').value.trim() || null;
@@ -4860,6 +5138,7 @@
             else if (pageId === 'analise-categorias') carregarAnaliseCategorias();
             else if (pageId === 'fcp') carregarFCP();
             else if (pageId === 'bancos') carregarBancos();
+            else if (pageId === 'empresas') carregarEmpresas();
             else if (pageId === 'dashboard') atualizarDashboard();
         }
     }
@@ -6972,6 +7251,7 @@
     // ================================================================
     function openModalLancarReceber() {
         document.getElementById('clienteReceber').value = '';
+        document.getElementById('empresaReceber').value = '';
         document.getElementById('descricaoReceber').value = '';
         document.getElementById('valorReceber').value = '';
         document.getElementById('competenciaReceber').value = new Date().toISOString().slice(0,7) + '-01';
@@ -6987,11 +7267,13 @@
         document.getElementById('previewParcelasReceber').style.display = 'none';
         atualizarSelectCategorias();
         atualizarSelectClientes();
+        atualizarSelectEmpresas();
         document.getElementById('modalLancarReceber').classList.add('active');
     }
 
     function openModalLancarPagar() {
         document.getElementById('fornecedorPagar').value = '';
+        document.getElementById('empresaPagar').value = '';
         document.getElementById('categoriaPagar').value = '';
         document.getElementById('subcategoriaPagar').innerHTML = '<option value="">Selecione a categoria primeiro...</option>';
         document.getElementById('descricaoPagar').value = '';
@@ -7009,6 +7291,7 @@
         document.getElementById('previewParcelasPagar').style.display = 'none';
         atualizarSelectCategorias();
         atualizarSelectFornecedores();
+        atualizarSelectEmpresas();
         document.getElementById('modalLancarPagar').classList.add('active');
     }
 
@@ -9181,6 +9464,10 @@
             <div class="form-group" id="editLancCategoriaWrap">
                 <label>Categoria</label>
                 <select id="editLancCategoria"><option value="">Selecione...</option></select>
+            </div>
+            <div class="form-group">
+                <label>Empresa</label>
+                <select id="editLancEmpresa"><option value="">Selecione...</option></select>
             </div>
             <div class="form-group">
                 <label>Descrição*</label>
