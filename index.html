@@ -437,6 +437,82 @@
             color: white;
         }
 
+        /* Cabeçalho fixo (sticky) para tabelas longas — o cabeçalho de colunas
+           permanece visível enquanto o corpo da tabela é rolado. */
+        .tabela-cabecalho-fixo {
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+        .tabela-cabecalho-fixo thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: var(--cor-primaria);
+            color: white;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+        }
+
+        /* Ocultar colunas (contas a pagar) */
+        .colunas-btn-wrap { position: relative; display: inline-block; }
+        .colunas-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+            padding: 10px 14px;
+            min-width: 210px;
+            z-index: 200;
+        }
+        .colunas-dropdown.aberto { display: block; }
+        .colunas-dropdown-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--cor-secundaria);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--cor-borda);
+        }
+        .colunas-dropdown label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            padding: 4px 0;
+            cursor: pointer;
+        }
+        .colunas-dropdown label input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+        .colunas-dropdown-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--cor-borda);
+        }
+        .colunas-dropdown-actions button {
+            flex: 1;
+            font-size: 11px;
+            padding: 5px 6px;
+        }
+        #tabelaPendentesPagar.hide-col-1 th:nth-child(1), #tabelaPendentesPagar.hide-col-1 td:nth-child(1) { display: none; }
+        #tabelaPendentesPagar.hide-col-2 th:nth-child(2), #tabelaPendentesPagar.hide-col-2 td:nth-child(2) { display: none; }
+        #tabelaPendentesPagar.hide-col-3 th:nth-child(3), #tabelaPendentesPagar.hide-col-3 td:nth-child(3) { display: none; }
+        #tabelaPendentesPagar.hide-col-4 th:nth-child(4), #tabelaPendentesPagar.hide-col-4 td:nth-child(4) { display: none; }
+        #tabelaPendentesPagar.hide-col-5 th:nth-child(5), #tabelaPendentesPagar.hide-col-5 td:nth-child(5) { display: none; }
+        #tabelaPendentesPagar.hide-col-6 th:nth-child(6), #tabelaPendentesPagar.hide-col-6 td:nth-child(6) { display: none; }
+        #tabelaPendentesPagar.hide-col-7 th:nth-child(7), #tabelaPendentesPagar.hide-col-7 td:nth-child(7) { display: none; }
+        #tabelaPendentesPagar.hide-col-8 th:nth-child(8), #tabelaPendentesPagar.hide-col-8 td:nth-child(8) { display: none; }
+        #tabelaPendentesPagar.hide-col-9 th:nth-child(9), #tabelaPendentesPagar.hide-col-9 td:nth-child(9) { display: none; }
+        #tabelaPendentesPagar.hide-col-10 th:nth-child(10), #tabelaPendentesPagar.hide-col-10 td:nth-child(10) { display: none; }
+        #tabelaPendentesPagar.hide-col-11 th:nth-child(11), #tabelaPendentesPagar.hide-col-11 td:nth-child(11) { display: none; }
+
         /* Gauge cards no dashboard */
         #dashGauges > div:hover {
             transform: translateY(-2px);
@@ -1007,6 +1083,15 @@
 
             <div class="alert alert-success" id="alertCategorias"></div>
 
+            <div class="filter-container">
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label>Pesquisar</label>
+                        <input type="text" id="filtroCategoriaBusca" placeholder="Nome, grupo DRE ou tipo..." oninput="atualizarTabelaCategorias()">
+                    </div>
+                </div>
+            </div>
+
             <div class="table-container">
                 <table id="tabelaCategorias">
                     <thead>
@@ -1032,6 +1117,15 @@
             </div>
 
             <div class="alert alert-success" id="alertSubcategorias"></div>
+
+            <div class="filter-container">
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label>Pesquisar</label>
+                        <input type="text" id="filtroSubcategoriaBusca" placeholder="Nome ou categoria..." oninput="atualizarTabelaSubcategorias()">
+                    </div>
+                </div>
+            </div>
 
             <div class="table-container">
                 <table id="tabelaSubcategorias">
@@ -1087,7 +1181,7 @@
                 <div class="filter-row">
                     <div class="form-group">
                         <label>Pesquisar</label>
-                        <input type="text" id="filtroFornecedor" placeholder="Nome ou CNPJ" onchange="carregarFornecedores()">
+                        <input type="text" id="filtroFornecedor" placeholder="Nome ou CNPJ" oninput="carregarFornecedoresDebounced()">
                     </div>
                 </div>
             </div>
@@ -1122,7 +1216,7 @@
                 <div class="filter-row">
                     <div class="form-group">
                         <label>Pesquisar</label>
-                        <input type="text" id="filtroCliente" placeholder="Nome ou CPF/CNPJ" onchange="carregarClientes()">
+                        <input type="text" id="filtroCliente" placeholder="Nome ou CPF/CNPJ" oninput="carregarClientesDebounced()">
                     </div>
                 </div>
             </div>
@@ -1248,7 +1342,7 @@
                 <div class="filter-row">
                     <div class="form-group">
                         <label>Pesquisar</label>
-                        <input type="text" id="filtroEmpresa" placeholder="Nome ou CNPJ" onchange="carregarEmpresas()">
+                        <input type="text" id="filtroEmpresa" placeholder="Nome ou CNPJ" oninput="carregarEmpresasDebounced()">
                     </div>
                 </div>
             </div>
@@ -1332,7 +1426,7 @@
                 </div>
             </div>
 
-            <div class="table-container">
+            <div class="table-container tabela-cabecalho-fixo">
                 <table id="tabelaPendentesReceber">
                     <colgroup>
                         <col style="min-width:130px;">
@@ -1368,6 +1462,10 @@
             <div class="page-header">
                 <h1>📤 Contas a Pagar</h1>
                 <div style="display:flex;gap:8px;">
+                    <div class="colunas-btn-wrap">
+                        <button class="btn btn-secondary" type="button" onclick="toggleMenuColunasPagar(event)" style="background:#555;color:white;">🧩 Colunas</button>
+                        <div id="menuColunasPagar" class="colunas-dropdown"></div>
+                    </div>
                     <button class="btn btn-secondary" onclick="gerarPDF('pagar')" style="background:#e67e22;color:white;">📄 PDF</button>
                     <button class="btn btn-primary" onclick="openModalLancarPagar()">+ Novo Lançamento</button>
                 </div>
@@ -1431,7 +1529,7 @@
                 </div>
             </div>
 
-            <div class="table-container">
+            <div class="table-container tabela-cabecalho-fixo">
                 <table id="tabelaPendentesPagar">
                     <colgroup>
                         <col style="min-width:130px;">
@@ -3124,6 +3222,19 @@
     let editandoId = null;
     let editandoTipo = null;
 
+    // Debounce genérico — usado nos campos de pesquisa para não disparar
+    // uma requisição a cada tecla digitada.
+    function debounce(fn, delay) {
+        let timer;
+        return function(...args) {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn.apply(this, args), delay);
+        };
+    }
+    const carregarFornecedoresDebounced = debounce(() => carregarFornecedores(), 350);
+    const carregarClientesDebounced = debounce(() => carregarClientes(), 350);
+    const carregarEmpresasDebounced = debounce(() => carregarEmpresas(), 350);
+
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
     const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroEmpresaPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
 
@@ -3326,6 +3437,7 @@
         atualizarLegendaMetas();
         restaurarFiltros();
         _bindFiltrosSave();
+        aplicarColunasVisiveisPagar();
         await carregarCategorias();
         await carregarSubcategorias();
         await carregarProdutos();
@@ -3366,7 +3478,19 @@
     function atualizarTabelaCategorias() {
         const tbody = document.querySelector('#tabelaCategorias tbody');
         tbody.innerHTML = '';
-        dadosCache.categorias.forEach(cat => {
+        const buscaEl = document.getElementById('filtroCategoriaBusca');
+        const busca = buscaEl ? buscaEl.value.trim().toLowerCase() : '';
+        let lista = dadosCache.categorias;
+        if (busca) {
+            lista = lista.filter(cat => {
+                const grupoLabel = cat.grupo_dre ? (_GRUPOS_DRE_LABELS[cat.grupo_dre] || cat.grupo_dre) : '';
+                return (cat.nome || '').toLowerCase().includes(busca)
+                    || (cat.tipo || '').toLowerCase().includes(busca)
+                    || (cat.descricao || '').toLowerCase().includes(busca)
+                    || grupoLabel.toLowerCase().includes(busca);
+            });
+        }
+        lista.forEach(cat => {
             const grupoLabel = cat.grupo_dre ? (_GRUPOS_DRE_LABELS[cat.grupo_dre] || cat.grupo_dre) : '-';
             tbody.innerHTML += `<tr>
                 <td><b>${cat.nome}</b></td>
@@ -3477,7 +3601,18 @@
         const tbody = document.querySelector('#tabelaSubcategorias tbody');
         if (!tbody) return;
         tbody.innerHTML = '';
-        dadosCache.subcategorias.forEach(sub => {
+        const buscaEl = document.getElementById('filtroSubcategoriaBusca');
+        const busca = buscaEl ? buscaEl.value.trim().toLowerCase() : '';
+        let lista = dadosCache.subcategorias;
+        if (busca) {
+            lista = lista.filter(sub => {
+                const categoria = dadosCache.categorias.find(c => c.id === sub.categoria_id);
+                return (sub.nome || '').toLowerCase().includes(busca)
+                    || (sub.descricao || '').toLowerCase().includes(busca)
+                    || (categoria && categoria.nome || '').toLowerCase().includes(busca);
+            });
+        }
+        lista.forEach(sub => {
             const categoria = dadosCache.categorias.find(c => c.id === sub.categoria_id);
             tbody.innerHTML += `<tr>
                 <td><b>${sub.nome}</b></td>
@@ -3684,8 +3819,9 @@
         const filtro = document.getElementById('filtroFornecedor');
         let filtros = '';
         
-        if (filtro && filtro.value) {
-            filtros = `or=(nome.ilike.%${filtro.value}%,cnpj.ilike.%${filtro.value}%)`;
+        if (filtro && filtro.value.trim()) {
+            const termo = encodeURIComponent(filtro.value.trim());
+            filtros = `or=(nome.ilike.*${termo}*,cnpj.ilike.*${termo}*)`;
         }
 
         const dados = await fetchSupabase('fornecedores', 'GET', null, filtros);
@@ -3804,8 +3940,9 @@
         const filtro = document.getElementById('filtroCliente');
         let filtros = '';
         
-        if (filtro && filtro.value) {
-            filtros = `or=(nome.ilike.%${filtro.value}%,cpf_cnpj.ilike.%${filtro.value}%)`;
+        if (filtro && filtro.value.trim()) {
+            const termo = encodeURIComponent(filtro.value.trim());
+            filtros = `or=(nome.ilike.*${termo}*,cpf_cnpj.ilike.*${termo}*)`;
         }
 
         const dados = await fetchSupabase('clientes', 'GET', null, filtros);
@@ -3924,8 +4061,9 @@
         const filtro = document.getElementById('filtroEmpresa');
         let filtros = '';
 
-        if (filtro && filtro.value) {
-            filtros = `or=(nome.ilike.%${filtro.value}%,cnpj.ilike.%${filtro.value}%)`;
+        if (filtro && filtro.value.trim()) {
+            const termo = encodeURIComponent(filtro.value.trim());
+            filtros = `or=(nome.ilike.*${termo}*,cnpj.ilike.*${termo}*)`;
         }
 
         const dados = await fetchSupabase('empresas', 'GET', null, filtros);
@@ -4221,6 +4359,9 @@
         if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.startsWith(filtroAno.value));
         if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.includes('-' + filtroMes.value + '-'));
 
+        // Lançamentos mais recentes primeiro (novos lançamentos aparecem no topo da lista)
+        filtrado = [...filtrado].sort((a, b) => b.id - a.id);
+
         // Calcular totais
         const hoje = new Date(); hoje.setHours(0,0,0,0);
         let totalFiltro = 0, totalAtrasado = 0;
@@ -4271,6 +4412,95 @@
         });
     }
 
+    // ── OCULTAR/MOSTRAR COLUNAS (Contas a Pagar) ─────────────────────────────
+    const COLUNAS_PAGAR = [
+        { chave: 'fornecedor',   label: 'Fornecedor' },
+        { chave: 'categoria',    label: 'Categoria' },
+        { chave: 'descricao',    label: 'Descrição' },
+        { chave: 'empresa',      label: 'Empresa' },
+        { chave: 'nf',           label: 'NF' },
+        { chave: 'competencia',  label: 'Competência' },
+        { chave: 'vencimento',   label: 'Vencimento' },
+        { chave: 'valor',        label: 'Valor' },
+        { chave: 'parcela',      label: 'Parcela' },
+        { chave: 'status',       label: 'Status' },
+        { chave: 'acoes',        label: 'Ações' }
+    ];
+
+    function _chaveColunasPagar() {
+        const user = usuarioAtual ? usuarioAtual.email : 'guest';
+        return 'cap_colunas_pagar_' + user;
+    }
+
+    function _colunasPagarOcultas() {
+        try {
+            const salvo = localStorage.getItem(_chaveColunasPagar());
+            return salvo ? JSON.parse(salvo) : [];
+        } catch (e) { return []; }
+    }
+
+    function montarMenuColunasPagar() {
+        const menu = document.getElementById('menuColunasPagar');
+        if (!menu) return;
+        const ocultas = _colunasPagarOcultas();
+        let html = '<div class="colunas-dropdown-title">Mostrar colunas</div>';
+        COLUNAS_PAGAR.forEach((col, i) => {
+            const idx = i + 1;
+            const marcado = !ocultas.includes(idx) ? 'checked' : '';
+            html += `<label><input type="checkbox" data-col-idx="${idx}" ${marcado} onchange="toggleColunaPagar(${idx}, this.checked)"> ${col.label}</label>`;
+        });
+        html += `<div class="colunas-dropdown-actions">
+            <button type="button" class="btn btn-secondary" onclick="marcarTodasColunasPagar(true)">Mostrar todas</button>
+            <button type="button" class="btn btn-secondary" onclick="marcarTodasColunasPagar(false)">Ocultar todas</button>
+        </div>`;
+        menu.innerHTML = html;
+    }
+
+    function aplicarColunasVisiveisPagar() {
+        const tabela = document.getElementById('tabelaPendentesPagar');
+        if (!tabela) return;
+        const ocultas = _colunasPagarOcultas();
+        for (let i = 1; i <= COLUNAS_PAGAR.length; i++) {
+            tabela.classList.toggle('hide-col-' + i, ocultas.includes(i));
+        }
+    }
+
+    function toggleColunaPagar(idx, visivel) {
+        let ocultas = _colunasPagarOcultas();
+        if (visivel) {
+            ocultas = ocultas.filter(i => i !== idx);
+        } else if (!ocultas.includes(idx)) {
+            ocultas.push(idx);
+        }
+        localStorage.setItem(_chaveColunasPagar(), JSON.stringify(ocultas));
+        aplicarColunasVisiveisPagar();
+    }
+
+    function marcarTodasColunasPagar(mostrar) {
+        const ocultas = mostrar ? [] : COLUNAS_PAGAR.map((c, i) => i + 1);
+        localStorage.setItem(_chaveColunasPagar(), JSON.stringify(ocultas));
+        aplicarColunasVisiveisPagar();
+        montarMenuColunasPagar();
+    }
+
+    function toggleMenuColunasPagar(event) {
+        if (event) event.stopPropagation();
+        const menu = document.getElementById('menuColunasPagar');
+        if (!menu) return;
+        const abrindo = !menu.classList.contains('aberto');
+        if (abrindo) montarMenuColunasPagar();
+        menu.classList.toggle('aberto', abrindo);
+    }
+
+    // Fecha o menu de colunas ao clicar fora dele
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('menuColunasPagar');
+        if (!menu || !menu.classList.contains('aberto')) return;
+        if (!menu.contains(event.target) && !event.target.closest('.colunas-btn-wrap')) {
+            menu.classList.remove('aberto');
+        }
+    });
+    // ──────────────────────────────────────────────────────────────────────
 
     async function salvarContaPagar(event) {
         event.preventDefault();
