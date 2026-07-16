@@ -437,6 +437,25 @@
             color: white;
         }
 
+        /* CABEÇALHO FIXO - Contas a Pagar / Contas a Receber
+           A tabela de lançamentos rola dentro de uma área com altura limitada,
+           mantendo título, filtros, totais e o cabeçalho da tabela sempre visíveis. */
+        #lancar-pagar .table-container,
+        #lancar-receber .table-container {
+            max-height: max(320px, calc(100vh - 400px));
+            overflow-y: auto;
+            position: relative;
+        }
+
+        #lancar-pagar .table-container thead th,
+        #lancar-receber .table-container thead th {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background-color: var(--cor-primaria);
+            color: white;
+        }
+
         /* Gauge cards no dashboard */
         #dashGauges > div:hover {
             transform: translateY(-2px);
@@ -838,7 +857,6 @@
             <div class="menu-item" onclick="showPage('fornecedores')">🏭 Fornecedores</div>
             <div class="menu-item" onclick="showPage('clientes')">👥 Clientes</div>
             <div class="menu-item" onclick="showPage('bancos')">🏦 Bancos</div>
-            <div class="menu-item" onclick="showPage('empresas')">🏢 Empresas</div>
         </div>
 
         <div class="menu-section">
@@ -1007,6 +1025,15 @@
 
             <div class="alert alert-success" id="alertCategorias"></div>
 
+            <div class="filter-container">
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label>Pesquisar</label>
+                        <input type="text" id="filtroCategoriaBusca" placeholder="Nome, descrição ou grupo DRE" oninput="atualizarTabelaCategorias()">
+                    </div>
+                </div>
+            </div>
+
             <div class="table-container">
                 <table id="tabelaCategorias">
                     <thead>
@@ -1032,6 +1059,15 @@
             </div>
 
             <div class="alert alert-success" id="alertSubcategorias"></div>
+
+            <div class="filter-container">
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label>Pesquisar</label>
+                        <input type="text" id="filtroSubcategoriaBusca" placeholder="Nome, descrição ou categoria" oninput="atualizarTabelaSubcategorias()">
+                    </div>
+                </div>
+            </div>
 
             <div class="table-container">
                 <table id="tabelaSubcategorias">
@@ -1087,7 +1123,7 @@
                 <div class="filter-row">
                     <div class="form-group">
                         <label>Pesquisar</label>
-                        <input type="text" id="filtroFornecedor" placeholder="Nome ou CNPJ" onchange="carregarFornecedores()">
+                        <input type="text" id="filtroFornecedor" placeholder="Nome ou CNPJ" oninput="carregarFornecedoresDebounced()">
                     </div>
                 </div>
             </div>
@@ -1122,7 +1158,7 @@
                 <div class="filter-row">
                     <div class="form-group">
                         <label>Pesquisar</label>
-                        <input type="text" id="filtroCliente" placeholder="Nome ou CPF/CNPJ" onchange="carregarClientes()">
+                        <input type="text" id="filtroCliente" placeholder="Nome ou CPF/CNPJ" oninput="carregarClientesDebounced()">
                     </div>
                 </div>
             </div>
@@ -1235,41 +1271,6 @@
             </div>
         </div>
 
-        <!-- EMPRESAS -->
-        <div id="empresas" class="page">
-            <div class="page-header">
-                <h1>🏢 Empresas</h1>
-                <button class="btn btn-primary btn-small" onclick="openModalEmpresa()">+ Nova Empresa</button>
-            </div>
-
-            <div class="alert alert-success" id="alertEmpresas"></div>
-
-            <div class="filter-container">
-                <div class="filter-row">
-                    <div class="form-group">
-                        <label>Pesquisar</label>
-                        <input type="text" id="filtroEmpresa" placeholder="Nome ou CNPJ" onchange="carregarEmpresas()">
-                    </div>
-                </div>
-            </div>
-
-            <div class="table-container">
-                <table id="tabelaEmpresas">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>CNPJ</th>
-                            <th>Email</th>
-                            <th>Telefone</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-
         <!-- LANÇAR CONTAS A RECEBER -->
         <div id="lancar-receber" class="page">
             <div class="page-header">
@@ -1287,12 +1288,6 @@
                         <label>Cliente</label>
                         <select id="filtroClienteReceber" onchange="atualizarTabelaPendentesReceber()">
                             <option value="">Todos</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Empresa</label>
-                        <select id="filtroEmpresaReceber" onchange="atualizarTabelaPendentesReceber()">
-                            <option value="">Todas</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1337,7 +1332,6 @@
                     <colgroup>
                         <col style="min-width:130px;">
                         <col style="min-width:160px;">
-                        <col style="min-width:130px;">
                         <col style="min-width:90px;">
                         <col style="min-width:100px;">
                         <col style="min-width:110px;">
@@ -1349,7 +1343,6 @@
                         <tr>
                             <th>Cliente</th>
                             <th>Descrição</th>
-                            <th>Empresa</th>
                             <th>Competência</th>
                             <th>Vencimento</th>
                             <th>Valor</th>
@@ -1386,12 +1379,6 @@
                         <label>Categoria</label>
                         <select id="filtroCategoriaPagar" onchange="atualizarTabelaPendentesPagar()">
                             <option value="">Todos</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Empresa</label>
-                        <select id="filtroEmpresaPagar" onchange="atualizarTabelaPendentesPagar()">
-                            <option value="">Todas</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1437,7 +1424,6 @@
                         <col style="min-width:130px;">
                         <col style="min-width:120px;">
                         <col style="min-width:160px;">
-                        <col style="min-width:130px;">
                         <col style="min-width:70px;">
                         <col style="min-width:90px;">
                         <col style="min-width:100px;">
@@ -1451,7 +1437,6 @@
                             <th>Fornecedor</th>
                             <th>Categoria</th>
                             <th>Descrição</th>
-                            <th>Empresa</th>
                             <th>NF</th>
                             <th>Competência</th>
                             <th>Vencimento</th>
@@ -1479,12 +1464,6 @@
                         <label>Cliente</label>
                         <select id="filtroClienteRecebida" onchange="carregarContasRecebidas()">
                             <option value="">Todos</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Empresa</label>
-                        <select id="filtroEmpresaRecebida" onchange="carregarContasRecebidas()">
-                            <option value="">Todas</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1540,7 +1519,6 @@
                     <colgroup>
                         <col style="min-width:140px;">
                         <col style="min-width:180px;">
-                        <col style="min-width:130px;">
                         <col style="min-width:70px;">
                         <col style="min-width:100px;">
                         <col style="min-width:100px;">
@@ -1553,7 +1531,6 @@
                         <tr>
                             <th>Cliente</th>
                             <th>Descrição</th>
-                            <th>Empresa</th>
                             <th>Parcela</th>
                             <th>Valor</th>
                             <th>Vencimento</th>
@@ -1581,12 +1558,6 @@
                         <label>Fornecedor</label>
                         <select id="filtroFornecedorPaga" onchange="carregarContasPagas()">
                             <option value="">Todos</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Empresa</label>
-                        <select id="filtroEmpresaPaga" onchange="carregarContasPagas()">
-                            <option value="">Todas</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1643,7 +1614,6 @@
                         <col style="min-width:130px;">
                         <col style="min-width:110px;">
                         <col style="min-width:150px;">
-                        <col style="min-width:130px;">
                         <col style="min-width:70px;">
                         <col style="min-width:70px;">
                         <col style="min-width:110px;">
@@ -1658,7 +1628,6 @@
                             <th>Fornecedor</th>
                             <th>Categoria</th>
                             <th>Descrição</th>
-                            <th>Empresa</th>
                             <th>NF</th>
                             <th>Parcela</th>
                             <th>Valor</th>
@@ -1771,12 +1740,6 @@
             <div class="filter-container">
                 <div class="filter-row">
                     <div class="form-group">
-                        <label>Empresa</label>
-                        <select id="filtroEmpresaRelReceber" onchange="carregarRelatorioReceber()">
-                            <option value="">Todas</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label>Ano</label>
                         <select id="filtroAnoRelReceber" onchange="carregarRelatorioReceber()">
                             <option value="">Todos</option>
@@ -1858,12 +1821,6 @@
 
             <div class="filter-container">
                 <div class="filter-row" style="flex-wrap:wrap;gap:8px;align-items:flex-end;">
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label>Empresa</label>
-                        <select id="filtroEmpresaRelPagar" onchange="carregarRelatorioPagar()">
-                            <option value="">Todas</option>
-                        </select>
-                    </div>
                     <div class="form-group" style="margin-bottom:0;">
                         <label>Ano</label>
                         <select id="filtroAnoRelPagar" onchange="carregarRelatorioPagar()">
@@ -2048,12 +2005,6 @@
             <div class="filter-container">
                 <div class="filter-row" style="align-items:flex-end;">
                     <div class="form-group">
-                        <label>Empresa</label>
-                        <select id="filtroEmpresaDFC" onchange="carregarDFC()">
-                            <option value="">Todas</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label>Ano</label>
                         <select id="filtroAnoDFC" onchange="carregarDFC()">
                             <option value="">Todos os anos</option>
@@ -2200,12 +2151,6 @@
             <div class="filter-container">
                 <div class="filter-row" style="align-items:flex-end;gap:12px;flex-wrap:wrap;">
                     <div class="form-group">
-                        <label>Empresa</label>
-                        <select id="filtroEmpresaFCP" onchange="carregarFCP()">
-                            <option value="">Todas</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label>Ano de Projeção</label>
                         <select id="filtroAnoFCP" onchange="carregarFCP()">
                             <option value="">Selecione um ano</option>
@@ -2272,12 +2217,6 @@
             <div id="dreAviso" style="display:none;"></div>
             <div class="filter-container">
                 <div class="filter-row" style="align-items:flex-end;gap:12px;flex-wrap:wrap;">
-                    <div class="form-group">
-                        <label>Empresa</label>
-                        <select id="filtroEmpresaDRE" onchange="carregarDRE()">
-                            <option value="">Todas</option>
-                        </select>
-                    </div>
                     <div class="form-group">
                         <label>Ano</label>
                         <select id="filtroAnoDRE" onchange="carregarDRE()">
@@ -2369,12 +2308,6 @@
             </div>
             <div class="filter-container">
                 <div class="filter-row" style="align-items:flex-end;gap:12px;flex-wrap:wrap;">
-                    <div class="form-group">
-                        <label>Empresa</label>
-                        <select id="filtroEmpresaAnaliseCat" onchange="renderizarAnaliseCategorias()">
-                            <option value="">Todas</option>
-                        </select>
-                    </div>
                     <div class="form-group">
                         <label>Grupo DRE</label>
                         <select id="filtroGrupoDREAnaliseCat" onchange="renderizarAnaliseCategorias()">
@@ -2484,14 +2417,6 @@
                     <div class="form-group">
                         <label>Descrição*</label>
                         <input type="text" id="descricaoReceber" required placeholder="Ex: Venda de produtos">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Empresa</label>
-                        <select id="empresaReceber">
-                            <option value="">Selecione...</option>
-                        </select>
                     </div>
                 </div>
             </div>
@@ -2607,14 +2532,6 @@
                     <div class="form-group">
                         <label>Descrição*</label>
                         <input type="text" id="descricaoPagar" required placeholder="Ex: Compra de mercadorias">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Empresa</label>
-                        <select id="empresaPagar">
-                            <option value="">Selecione...</option>
-                        </select>
                     </div>
                 </div>
             </div>
@@ -3057,47 +2974,6 @@
     </div>
 </div>
 
-<div class="modal" id="modalEmpresa">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span id="modalEmpresaTitulo">Nova Empresa</span>
-            <button class="modal-close" onclick="closeModal('modalEmpresa')">&times;</button>
-        </div>
-        <form onsubmit="salvarEmpresa(event)">
-            <div class="form-group">
-                <label>Nome*</label>
-                <input type="text" id="nomeEmpresa" required>
-            </div>
-            <div class="form-group">
-                <label>CNPJ</label>
-                <input type="text" id="cnpjEmpresa" placeholder="XX.XXX.XXX/XXXX-XX">
-            </div>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="emailEmpresa">
-            </div>
-            <div class="form-group">
-                <label>Telefone</label>
-                <input type="text" id="telefoneEmpresa">
-            </div>
-            <div class="form-group">
-                <label>Endereço</label>
-                <textarea id="enderecoEmpresa" rows="2"></textarea>
-            </div>
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" id="ativoEmpresa" checked>
-                    Ativo
-                </label>
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-success">Salvar</button>
-                <button type="button" class="btn btn-secondary" onclick="closeModal('modalEmpresa')">Cancelar</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <script>
     // CONFIG SUPABASE
     const SUPABASE_URL = 'https://vjrhvfjhebstokjhyohk.supabase.co';
@@ -3113,7 +2989,6 @@
         fornecedores: [],
         clientes: [],
         bancos: [],
-        empresas: [],
         contasReceber: [],
         contasPagar: [],
         contasRecebidas: [],
@@ -3125,7 +3000,7 @@
     let editandoTipo = null;
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroEmpresaPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroAnoDFC", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroAnoFCP", "dashFiltroAno", "dashFiltroMes"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -3236,6 +3111,17 @@
     // REQUISIÇÕES SUPABASE
     let _ultimoErroSupabase = null;
 
+    // Debounce genérico: evita disparar uma requisição a cada tecla digitada
+    function debounce(fn, delay = 350) {
+        let timer = null;
+        return function(...args) {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn.apply(this, args), delay);
+        };
+    }
+    const carregarFornecedoresDebounced = debounce(() => carregarFornecedores(), 350);
+    const carregarClientesDebounced = debounce(() => carregarClientes(), 350);
+
     async function fetchSupabase(tabela, metodo = 'GET', dados = null, filtros = '') {
         try {
             const url = filtros
@@ -3332,7 +3218,6 @@
         await carregarFornecedores();
         await carregarClientes();
         await carregarBancos();
-        await carregarEmpresas();
         await carregarContasReceber();
         await carregarContasPagar();
         await atualizarDashboard();
@@ -3366,7 +3251,19 @@
     function atualizarTabelaCategorias() {
         const tbody = document.querySelector('#tabelaCategorias tbody');
         tbody.innerHTML = '';
-        dadosCache.categorias.forEach(cat => {
+        const buscaEl = document.getElementById('filtroCategoriaBusca');
+        const busca = buscaEl ? buscaEl.value.trim().toLowerCase() : '';
+        let lista = dadosCache.categorias;
+        if (busca) {
+            lista = lista.filter(cat => {
+                const grupoLabel = cat.grupo_dre ? (_GRUPOS_DRE_LABELS[cat.grupo_dre] || cat.grupo_dre) : '';
+                return (cat.nome || '').toLowerCase().includes(busca)
+                    || (cat.descricao || '').toLowerCase().includes(busca)
+                    || (cat.tipo || '').toLowerCase().includes(busca)
+                    || grupoLabel.toLowerCase().includes(busca);
+            });
+        }
+        lista.forEach(cat => {
             const grupoLabel = cat.grupo_dre ? (_GRUPOS_DRE_LABELS[cat.grupo_dre] || cat.grupo_dre) : '-';
             tbody.innerHTML += `<tr>
                 <td><b>${cat.nome}</b></td>
@@ -3477,7 +3374,18 @@
         const tbody = document.querySelector('#tabelaSubcategorias tbody');
         if (!tbody) return;
         tbody.innerHTML = '';
-        dadosCache.subcategorias.forEach(sub => {
+        const buscaEl = document.getElementById('filtroSubcategoriaBusca');
+        const busca = buscaEl ? buscaEl.value.trim().toLowerCase() : '';
+        let lista = dadosCache.subcategorias;
+        if (busca) {
+            lista = lista.filter(sub => {
+                const categoria = dadosCache.categorias.find(c => c.id === sub.categoria_id);
+                return (sub.nome || '').toLowerCase().includes(busca)
+                    || (sub.descricao || '').toLowerCase().includes(busca)
+                    || (categoria && categoria.nome || '').toLowerCase().includes(busca);
+            });
+        }
+        lista.forEach(sub => {
             const categoria = dadosCache.categorias.find(c => c.id === sub.categoria_id);
             tbody.innerHTML += `<tr>
                 <td><b>${sub.nome}</b></td>
@@ -3684,8 +3592,10 @@
         const filtro = document.getElementById('filtroFornecedor');
         let filtros = '';
         
-        if (filtro && filtro.value) {
-            filtros = `or=(nome.ilike.%${filtro.value}%,cnpj.ilike.%${filtro.value}%)`;
+        if (filtro && filtro.value.trim()) {
+            // Remove caracteres que quebrariam a sintaxe do filtro "or=(...)" do PostgREST
+            const termo = encodeURIComponent(filtro.value.trim().replace(/[(),]/g, ''));
+            filtros = `or=(nome.ilike.%25${termo}%25,cnpj.ilike.%25${termo}%25)`;
         }
 
         const dados = await fetchSupabase('fornecedores', 'GET', null, filtros);
@@ -3804,8 +3714,10 @@
         const filtro = document.getElementById('filtroCliente');
         let filtros = '';
         
-        if (filtro && filtro.value) {
-            filtros = `or=(nome.ilike.%${filtro.value}%,cpf_cnpj.ilike.%${filtro.value}%)`;
+        if (filtro && filtro.value.trim()) {
+            // Remove caracteres que quebrariam a sintaxe do filtro "or=(...)" do PostgREST
+            const termo = encodeURIComponent(filtro.value.trim().replace(/[(),]/g, ''));
+            filtros = `or=(nome.ilike.%25${termo}%25,cpf_cnpj.ilike.%25${termo}%25)`;
         }
 
         const dados = await fetchSupabase('clientes', 'GET', null, filtros);
@@ -3919,128 +3831,6 @@
         }
     }
 
-    // EMPRESAS (empresas/filiais próprias, usadas para vincular lançamentos e relatórios)
-    async function carregarEmpresas() {
-        const filtro = document.getElementById('filtroEmpresa');
-        let filtros = '';
-
-        if (filtro && filtro.value) {
-            filtros = `or=(nome.ilike.%${filtro.value}%,cnpj.ilike.%${filtro.value}%)`;
-        }
-
-        const dados = await fetchSupabase('empresas', 'GET', null, filtros);
-        if (dados) {
-            dadosCache.empresas = dados;
-            atualizarTabelaEmpresas();
-            atualizarSelectEmpresas();
-        }
-    }
-
-    function atualizarTabelaEmpresas() {
-        const tbody = document.querySelector('#tabelaEmpresas tbody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-
-        dadosCache.empresas.forEach(emp => {
-            tbody.innerHTML += `
-                <tr>
-                    <td>${emp.nome}</td>
-                    <td>${emp.cnpj || '-'}</td>
-                    <td>${emp.email || '-'}</td>
-                    <td>${emp.telefone || '-'}</td>
-                    <td><span class="status-badge ${emp.ativo ? 'status-recebido' : 'status-atrasado'}">${emp.ativo ? 'Ativo' : 'Inativo'}</span></td>
-                    <td>
-                        <button class="btn btn-secondary btn-small" onclick="editarEmpresa(${emp.id})">Editar</button>
-                        <button class="btn btn-danger btn-small" onclick="deletarEmpresa(${emp.id})">Deletar</button>
-                    </td>
-                </tr>
-            `;
-        });
-    }
-
-    // Preenche todos os <select> de Empresa espalhados pelo sistema (lançamentos e filtros)
-    function atualizarSelectEmpresas() {
-        const ids = ['empresaReceber', 'empresaPagar', 'filtroEmpresaReceber', 'filtroEmpresaPagar', 'filtroEmpresaRecebida', 'filtroEmpresaPaga', 'editLancEmpresa', 'lancDREEmpresa', 'filtroEmpresaRelReceber', 'filtroEmpresaRelPagar', 'filtroEmpresaDFC', 'filtroEmpresaDRE', 'filtroEmpresaFCP', 'filtroEmpresaAnaliseCat'];
-        ids.forEach(id => {
-            const select = document.getElementById(id);
-            if (!select) return;
-            const valorAtual = select.value;
-            select.innerHTML = '<option value="">Selecione...</option>';
-            dadosCache.empresas.filter(e => e.ativo !== false).forEach(emp => {
-                const opt = document.createElement('option');
-                opt.value = emp.id;
-                opt.textContent = emp.nome;
-                select.appendChild(opt);
-            });
-            if (valorAtual) select.value = valorAtual;
-        });
-    }
-
-    function openModalEmpresa() {
-        editandoId = null;
-        editandoTipo = null;
-        document.getElementById('nomeEmpresa').value = '';
-        document.getElementById('cnpjEmpresa').value = '';
-        document.getElementById('emailEmpresa').value = '';
-        document.getElementById('telefoneEmpresa').value = '';
-        document.getElementById('enderecoEmpresa').value = '';
-        document.getElementById('ativoEmpresa').checked = true;
-        document.getElementById('modalEmpresaTitulo').textContent = 'Nova Empresa';
-        document.getElementById('modalEmpresa').classList.add('active');
-    }
-
-    function editarEmpresa(id) {
-        const empresa = dadosCache.empresas.find(e => e.id === id);
-        if (empresa) {
-            editandoId = id;
-            editandoTipo = 'empresa';
-            document.getElementById('nomeEmpresa').value = empresa.nome;
-            document.getElementById('cnpjEmpresa').value = empresa.cnpj || '';
-            document.getElementById('emailEmpresa').value = empresa.email || '';
-            document.getElementById('telefoneEmpresa').value = empresa.telefone || '';
-            document.getElementById('enderecoEmpresa').value = empresa.endereco || '';
-            document.getElementById('ativoEmpresa').checked = empresa.ativo;
-            document.getElementById('modalEmpresaTitulo').textContent = 'Editar Empresa';
-            document.getElementById('modalEmpresa').classList.add('active');
-        }
-    }
-
-    async function salvarEmpresa(event) {
-        event.preventDefault();
-
-        const dados = {
-            nome: document.getElementById('nomeEmpresa').value,
-            cnpj: document.getElementById('cnpjEmpresa').value || null,
-            email: document.getElementById('emailEmpresa').value || null,
-            telefone: document.getElementById('telefoneEmpresa').value || null,
-            endereco: document.getElementById('enderecoEmpresa').value || null,
-            ativo: document.getElementById('ativoEmpresa').checked
-        };
-
-        let resultado;
-        if (editandoId) {
-            resultado = await fetchSupabase('empresas', 'PATCH', dados, `id=eq.${editandoId}`);
-        } else {
-            resultado = await fetchSupabase('empresas', 'POST', dados);
-        }
-
-        if (resultado !== null) {
-            showAlert('Empresa salva com sucesso!', 'alertEmpresas', 'success');
-            closeModal('modalEmpresa');
-            await carregarEmpresas();
-        }
-    }
-
-    async function deletarEmpresa(id) {
-        if (confirm('Tem certeza que deseja deletar esta empresa?')) {
-            const resultado = await fetchSupabase('empresas', 'DELETE', null, `id=eq.${id}`);
-            if (resultado !== null) {
-                showAlert('Empresa deletada com sucesso!', 'alertEmpresas', 'success');
-                carregarEmpresas();
-            }
-        }
-    }
-
     // CONTAS A RECEBER
     async function carregarContasReceber() {
         const filtro = `status=eq.pendente`;
@@ -4057,13 +3847,14 @@
         tbody.innerHTML = '';
         let filtrado = dadosCache.contasReceber;
         const filtroCliente = document.getElementById('filtroClienteReceber');
-        const filtroEmpresa = document.getElementById('filtroEmpresaReceber');
         const filtroAno = document.getElementById('filtroAnoReceber');
         const filtroMes = document.getElementById('filtroMesReceber');
         if (filtroCliente && filtroCliente.value) filtrado = filtrado.filter(c => c.cliente_id == filtroCliente.value);
-        if (filtroEmpresa && filtroEmpresa.value) filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
         if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.startsWith(filtroAno.value));
         if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.includes('-' + filtroMes.value + '-'));
+
+        // Lançamentos mais novos primeiro (topo da lista)
+        filtrado = [...filtrado].sort((a, b) => b.id - a.id);
 
         // Calcular totais
         const hoje = new Date(); hoje.setHours(0,0,0,0);
@@ -4083,7 +3874,6 @@
 
         filtrado.forEach(conta => {
             const cliente = dadosCache.clientes.find(c => c.id === conta.cliente_id);
-            const empresa = dadosCache.empresas.find(e => e.id === conta.empresa_id);
             const venc = new Date(conta.data_vencimento + 'T12:00:00');
             const status = venc < hoje ? 'atrasado' : 'pendente';
             const parcLabel = conta.custo_fixo
@@ -4097,7 +3887,6 @@
             tbody.innerHTML += `<tr>
                 <td>${cliente ? cliente.nome : '-'}</td>
                 <td>${conta.descricao}</td>
-                <td>${empresa ? empresa.nome : '-'}</td>
                 <td>${compLabel}</td>
                 <td>${venc.toLocaleDateString('pt-BR')}</td>
                 <td>R$ ${parseFloat(conta.valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
@@ -4121,7 +3910,6 @@
         const obs = document.getElementById('observacoesReceber').value;
         const notaFiscalRec = document.getElementById('notaFiscalReceber').value.trim() || null;
         const clienteId = parseInt(document.getElementById('clienteReceber').value);
-        const empresaId = document.getElementById('empresaReceber').value ? parseInt(document.getElementById('empresaReceber').value) : null;
         const descricao = document.getElementById('descricaoReceber').value;
         const valorTotal = parseFloat(document.getElementById('valorReceber').value);
 
@@ -4144,30 +3932,16 @@
             valorLancamento = Math.round((valorTotal / numLancamentos) * 100) / 100;
         }
 
-        // Campos de data/valor editados manualmente na prévia de parcelas (quando não é lançamento fixo)
-        const camposDataManual = document.querySelectorAll('#listaParcelasReceber .parcela-receber-data');
-        const camposValorManual = document.querySelectorAll('#listaParcelasReceber .parcela-receber-valor');
-        const temEdicaoManual = !custoFixo && camposDataManual.length === numLancamentos;
-
         let erros = 0;
         for (let i = 0; i < numLancamentos; i++) {
-            let dataVenc, valorLinha;
-            if (temEdicaoManual) {
-                dataVenc = camposDataManual[i].value || addMonths(dataBase, i);
-                valorLinha = parseFloat(camposValorManual[i].value);
-                if (isNaN(valorLinha)) valorLinha = valorLancamento;
-            } else {
-                dataVenc = addMonths(dataBase, i);
-                valorLinha = valorLancamento;
-            }
+            const dataVenc = addMonths(dataBase, i);
             let descParc = descricao;
             if (custoFixo) descParc = descricao + ' (Fixo ' + (i+1) + '/' + numLancamentos + ')';
             else if (numLancamentos > 1) descParc = descricao + ' (' + (i+1) + '/' + numLancamentos + ')';
             const dados = {
                 cliente_id: clienteId,
-                empresa_id: empresaId,
                 descricao: descParc,
-                valor: valorLinha,
+                valor: valorLancamento,
                 data_competencia: custoFixo ? addMonths(competencia, i) : competencia,
                 data_vencimento: dataVenc,
                 parcela_atual: i + 1,
@@ -4212,14 +3986,15 @@
         let filtrado = dadosCache.contasPagar;
         const filtroFornecedor = document.getElementById('filtroFornecedorPagar');
         const filtroCategoria = document.getElementById('filtroCategoriaPagar');
-        const filtroEmpresa = document.getElementById('filtroEmpresaPagar');
         const filtroAno = document.getElementById('filtroAnoPagar');
         const filtroMes = document.getElementById('filtroMesPagar');
         if (filtroFornecedor && filtroFornecedor.value) filtrado = filtrado.filter(c => c.fornecedor_id == filtroFornecedor.value);
         if (filtroCategoria && filtroCategoria.value) filtrado = filtrado.filter(c => c.categoria_id == filtroCategoria.value);
-        if (filtroEmpresa && filtroEmpresa.value) filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
         if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.startsWith(filtroAno.value));
         if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.includes('-' + filtroMes.value + '-'));
+
+        // Lançamentos mais novos primeiro (topo da lista)
+        filtrado = [...filtrado].sort((a, b) => b.id - a.id);
 
         // Calcular totais
         const hoje = new Date(); hoje.setHours(0,0,0,0);
@@ -4240,7 +4015,6 @@
         filtrado.forEach(conta => {
             const fornecedor = dadosCache.fornecedores.find(f => f.id === conta.fornecedor_id);
             const categoria = dadosCache.categorias.find(cat => cat.id === conta.categoria_id);
-            const empresa = dadosCache.empresas.find(e => e.id === conta.empresa_id);
             const venc = new Date(conta.data_vencimento + 'T12:00:00');
             const status = venc < hoje ? 'atrasado' : 'pendente';
             const parcLabel = conta.custo_fixo
@@ -4255,7 +4029,6 @@
                 <td>${fornecedor ? fornecedor.nome : '-'}</td>
                 <td>${categoria ? categoria.nome : '-'}</td>
                 <td>${conta.descricao}</td>
-                <td>${empresa ? empresa.nome : '-'}</td>
                 <td style="font-size:11px;color:#555;">${conta.nota_fiscal || '-'}</td>
                 <td>${compLabel}</td>
                 <td>${venc.toLocaleDateString('pt-BR')}</td>
@@ -4280,7 +4053,6 @@
         const obs = document.getElementById('observacoesPagar').value;
         const notaFiscal = document.getElementById('notaFiscalPagar').value.trim() || null;
         const fornecedorId = parseInt(document.getElementById('fornecedorPagar').value);
-        const empresaId = document.getElementById('empresaPagar').value ? parseInt(document.getElementById('empresaPagar').value) : null;
         const categoriaId = document.getElementById('categoriaPagar').value ? parseInt(document.getElementById('categoriaPagar').value) : null;
         const subcategoriaId = document.getElementById('subcategoriaPagar').value ? parseInt(document.getElementById('subcategoriaPagar').value) : null;
         const descricao = document.getElementById('descricaoPagar').value;
@@ -4305,32 +4077,18 @@
             valorLancamento = Math.round((valorTotal / numLancamentos) * 100) / 100;
         }
 
-        // Campos de data/valor editados manualmente na prévia de parcelas (quando não é lançamento fixo)
-        const camposDataManual = document.querySelectorAll('#listaParcelasPagar .parcela-pagar-data');
-        const camposValorManual = document.querySelectorAll('#listaParcelasPagar .parcela-pagar-valor');
-        const temEdicaoManual = !custoFixo && camposDataManual.length === numLancamentos;
-
         let erros = 0;
         for (let i = 0; i < numLancamentos; i++) {
-            let dataVenc, valorLinha;
-            if (temEdicaoManual) {
-                dataVenc = camposDataManual[i].value || addMonths(dataBase, i);
-                valorLinha = parseFloat(camposValorManual[i].value);
-                if (isNaN(valorLinha)) valorLinha = valorLancamento;
-            } else {
-                dataVenc = addMonths(dataBase, i);
-                valorLinha = valorLancamento;
-            }
+            const dataVenc = addMonths(dataBase, i);
             let descParc = descricao;
             if (custoFixo) descParc = descricao + ' (Fixo ' + (i+1) + '/' + numLancamentos + ')';
             else if (numLancamentos > 1) descParc = descricao + ' (' + (i+1) + '/' + numLancamentos + ')';
             const dados = {
                 fornecedor_id: fornecedorId,
-                empresa_id: empresaId,
                 categoria_id: categoriaId,
                 subcategoria_id: subcategoriaId,
                 descricao: descParc,
-                valor: valorLinha,
+                valor: valorLancamento,
                 data_competencia: custoFixo ? addMonths(competencia, i) : competencia,
                 data_vencimento: dataVenc,
                 parcela_atual: i + 1,
@@ -4363,16 +4121,12 @@
         let filtro = `status=eq.recebido`;
         const filtroCliente = document.getElementById('filtroClienteRecebida');
         const filtroBanco = document.getElementById('filtroBancoRecebida');
-        const filtroEmpresa = document.getElementById('filtroEmpresaRecebida');
 
         if (filtroCliente && filtroCliente.value) {
             filtro += `&cliente_id=eq.${filtroCliente.value}`;
         }
         if (filtroBanco && filtroBanco.value) {
             filtro += `&banco_id=eq.${filtroBanco.value}`;
-        }
-        if (filtroEmpresa && filtroEmpresa.value) {
-            filtro += `&empresa_id=eq.${filtroEmpresa.value}`;
         }
 
         const dados = await fetchSupabase('contas_a_receber', 'GET', null, filtro);
@@ -4407,14 +4161,12 @@
         filtrado.forEach(conta => {
             const cliente = dadosCache.clientes.find(c => c.id === conta.cliente_id);
             const banco = (dadosCache.bancos || []).find(b => b.id === conta.banco_id);
-            const empresa = (dadosCache.empresas || []).find(e => e.id === conta.empresa_id);
             const parcLabel = conta.custo_fixo ? '🔁 Fixo' : (conta.total_parcelas > 1 ? conta.parcela_atual + '/' + conta.total_parcelas : '-');
             const vencFmt = conta.data_vencimento ? new Date(conta.data_vencimento + 'T12:00:00').toLocaleDateString('pt-BR') : '-';
             const recFmt  = conta.data_recebimento ? new Date(conta.data_recebimento + 'T12:00:00').toLocaleDateString('pt-BR') : '-';
             tbody.innerHTML += `<tr>
                 <td>${cliente ? cliente.nome : '-'}</td>
                 <td>${conta.descricao}</td>
-                <td>${empresa ? empresa.nome : '-'}</td>
                 <td style="text-align:center;">${parcLabel}</td>
                 <td>R$ ${parseFloat(conta.valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
                 <td>${vencFmt}</td>
@@ -4435,16 +4187,12 @@
         let filtro = `status=eq.pago`;
         const filtroFornecedor = document.getElementById('filtroFornecedorPaga');
         const filtroBanco = document.getElementById('filtroBancoPaga');
-        const filtroEmpresa = document.getElementById('filtroEmpresaPaga');
 
         if (filtroFornecedor && filtroFornecedor.value) {
             filtro += `&fornecedor_id=eq.${filtroFornecedor.value}`;
         }
         if (filtroBanco && filtroBanco.value) {
             filtro += `&banco_id=eq.${filtroBanco.value}`;
-        }
-        if (filtroEmpresa && filtroEmpresa.value) {
-            filtro += `&empresa_id=eq.${filtroEmpresa.value}`;
         }
 
         const dados = await fetchSupabase('contas_a_pagar', 'GET', null, filtro);
@@ -4480,7 +4228,6 @@
             const fornecedor = dadosCache.fornecedores.find(f => f.id === conta.fornecedor_id);
             const categoria  = dadosCache.categorias.find(cat => cat.id === conta.categoria_id);
             const banco      = (dadosCache.bancos || []).find(b => b.id === conta.banco_id);
-            const empresa    = (dadosCache.empresas || []).find(e => e.id === conta.empresa_id);
             const parcLabel  = conta.custo_fixo ? '🔁 Fixo' : (conta.total_parcelas > 1 ? conta.parcela_atual + '/' + conta.total_parcelas : '-');
             const vencFmt    = conta.data_vencimento ? new Date(conta.data_vencimento + 'T12:00:00').toLocaleDateString('pt-BR') : '-';
             const pagFmt     = conta.data_pagamento  ? new Date(conta.data_pagamento  + 'T12:00:00').toLocaleDateString('pt-BR') : '-';
@@ -4488,7 +4235,6 @@
                 <td>${fornecedor ? fornecedor.nome : '-'}</td>
                 <td>${categoria  ? categoria.nome  : '-'}</td>
                 <td>${conta.descricao}</td>
-                <td>${empresa ? empresa.nome : '-'}</td>
                 <td style="font-size:11px;color:#555;">${conta.nota_fiscal || '-'}</td>
                 <td style="text-align:center;">${parcLabel}</td>
                 <td>R$ ${parseFloat(conta.valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
@@ -4631,7 +4377,6 @@
         atualizarSelectClientes();
         atualizarSelectFornecedores();
         atualizarSelectCategorias();
-        atualizarSelectEmpresas();
         if (tipo === 'receber') {
             const conta = dadosCache.contasRecebidas.find(c => c.id === id)
                        || dadosCache.contasReceber.find(c => c.id === id);
@@ -4644,7 +4389,6 @@
             document.getElementById('editLancCategoriaWrap').style.display = '';
             document.getElementById('editLancCliente').value    = conta.cliente_id || '';
             document.getElementById('editLancCategoria').value  = conta.categoria_id || '';
-            document.getElementById('editLancEmpresa').value    = conta.empresa_id || '';
             document.getElementById('editLancDescricao').value  = conta.descricao || '';
             document.getElementById('editLancValor').value      = conta.valor || '';
             document.getElementById('editLancVencimento').value = conta.data_vencimento || '';
@@ -4663,7 +4407,6 @@
             document.getElementById('editLancCategoriaWrap').style.display = '';
             document.getElementById('editLancFornecedor').value = conta.fornecedor_id || '';
             document.getElementById('editLancCategoria').value  = conta.categoria_id || '';
-            document.getElementById('editLancEmpresa').value    = conta.empresa_id || '';
             document.getElementById('editLancDescricao').value  = conta.descricao || '';
             document.getElementById('editLancValor').value      = conta.valor || '';
             document.getElementById('editLancVencimento').value = conta.data_vencimento || '';
@@ -4680,15 +4423,13 @@
         const id    = parseInt(document.getElementById('editLancId').value);
         const tipo  = document.getElementById('editLancTipo').value;
         const catVal = document.getElementById('editLancCategoria') ? document.getElementById('editLancCategoria').value : '';
-        const empVal = document.getElementById('editLancEmpresa') ? document.getElementById('editLancEmpresa').value : '';
         const dados = {
             descricao:        document.getElementById('editLancDescricao').value,
             valor:            parseFloat(document.getElementById('editLancValor').value),
             data_vencimento:  document.getElementById('editLancVencimento').value,
             data_competencia: document.getElementById('editLancCompetencia').value || null,
             observacoes:      document.getElementById('editLancObs').value || null,
-            categoria_id:     catVal ? parseInt(catVal) : null,
-            empresa_id:       empVal ? parseInt(empVal) : null
+            categoria_id:     catVal ? parseInt(catVal) : null
         };
         if (tipo === 'contas_a_pagar') {
             dados.nota_fiscal = document.getElementById('editLancNota').value.trim() || null;
@@ -5174,7 +4915,6 @@
             else if (pageId === 'analise-categorias') carregarAnaliseCategorias();
             else if (pageId === 'fcp') carregarFCP();
             else if (pageId === 'bancos') carregarBancos();
-            else if (pageId === 'empresas') carregarEmpresas();
             else if (pageId === 'dashboard') atualizarDashboard();
         }
     }
@@ -5200,7 +4940,6 @@
         const filtroAno = document.getElementById('filtroAnoRelReceber');
         const filtroMes = document.getElementById('filtroMesRelReceber');
         const filtroDia = document.getElementById('filtroDialRelReceber');
-        const filtroEmpresa = document.getElementById('filtroEmpresaRelReceber');
 
         if (filtroAno && filtroAno.value) {
             filtrado = filtrado.filter(c => c.data_recebimento && c.data_recebimento.startsWith(filtroAno.value));
@@ -5212,10 +4951,6 @@
 
         if (filtroDia && filtroDia.value) {
             filtrado = filtrado.filter(c => c.data_recebimento && c.data_recebimento.endsWith('-' + filtroDia.value));
-        }
-
-        if (filtroEmpresa && filtroEmpresa.value) {
-            filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
         }
 
         const total = filtrado.reduce((sum, c) => sum + parseFloat(c.valor), 0);
@@ -5328,7 +5063,6 @@
         const filtroAno = document.getElementById('filtroAnoRelPagar');
         const filtroMes = document.getElementById('filtroMesRelPagar');
         const filtroDia = document.getElementById('filtroDiaRelPagar');
-        const filtroEmpresa = document.getElementById('filtroEmpresaRelPagar');
 
         if (filtroAno && filtroAno.value) {
             filtrado = filtrado.filter(c => c.data_pagamento && c.data_pagamento.startsWith(filtroAno.value));
@@ -5340,10 +5074,6 @@
 
         if (filtroDia && filtroDia.value) {
             filtrado = filtrado.filter(c => c.data_pagamento && c.data_pagamento.endsWith('-' + filtroDia.value));
-        }
-
-        if (filtroEmpresa && filtroEmpresa.value) {
-            filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
         }
 
         const total = filtrado.reduce((sum, c) => sum + parseFloat(c.valor), 0);
@@ -7297,7 +7027,6 @@
     // ================================================================
     function openModalLancarReceber() {
         document.getElementById('clienteReceber').value = '';
-        document.getElementById('empresaReceber').value = '';
         document.getElementById('descricaoReceber').value = '';
         document.getElementById('valorReceber').value = '';
         document.getElementById('competenciaReceber').value = new Date().toISOString().slice(0,7) + '-01';
@@ -7313,13 +7042,11 @@
         document.getElementById('previewParcelasReceber').style.display = 'none';
         atualizarSelectCategorias();
         atualizarSelectClientes();
-        atualizarSelectEmpresas();
         document.getElementById('modalLancarReceber').classList.add('active');
     }
 
     function openModalLancarPagar() {
         document.getElementById('fornecedorPagar').value = '';
-        document.getElementById('empresaPagar').value = '';
         document.getElementById('categoriaPagar').value = '';
         document.getElementById('subcategoriaPagar').innerHTML = '<option value="">Selecione a categoria primeiro...</option>';
         document.getElementById('descricaoPagar').value = '';
@@ -7337,7 +7064,6 @@
         document.getElementById('previewParcelasPagar').style.display = 'none';
         atualizarSelectCategorias();
         atualizarSelectFornecedores();
-        atualizarSelectEmpresas();
         document.getElementById('modalLancarPagar').classList.add('active');
     }
 
@@ -7410,15 +7136,15 @@
 
         const n = parseInt(document.getElementById('parcelasReceber').value) || 1;
         if (!valor || !dataBase || n <= 1) { preview.style.display = 'none'; return; }
-        titulo.textContent = 'Parcelas geradas (edite data e valor se precisar):';
+        titulo.textContent = 'Parcelas geradas:';
         const parc = Math.round((valor / n) * 100) / 100;
         let html = '';
         for (let i = 0; i < n; i++) {
-            const dt = addMonths(dataBase, i);
-            html += '<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f0f0f0;">' +
-                '<span style="width:34px;color:#666;">' + (i+1) + '/' + n + '</span>' +
-                '<input type="date" class="parcela-receber-data" data-idx="' + i + '" value="' + dt + '" style="flex:1;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:12px;">' +
-                '<input type="number" class="parcela-receber-valor" data-idx="' + i + '" value="' + parc + '" step="0.01" style="width:110px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:12px;text-align:right;color:#28a745;font-weight:600;">' +
+            const dt = new Date(addMonths(dataBase, i) + 'T12:00:00');
+            html += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f0f0f0;">' +
+                '<span>' + (i+1) + '/' + n + '</span>' +
+                '<span>' + dt.toLocaleDateString('pt-BR') + '</span>' +
+                '<span style="color:#28a745;font-weight:600;">R$ ' + parc.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '</span>' +
                 '</div>';
         }
         lista.innerHTML = html;
@@ -7454,15 +7180,15 @@
 
         const n = parseInt(document.getElementById('parcelasPagar').value) || 1;
         if (!valor || !dataBase || n <= 1) { preview.style.display = 'none'; return; }
-        titulo.textContent = 'Parcelas geradas (edite data e valor se precisar):';
+        titulo.textContent = 'Parcelas geradas:';
         const parc = Math.round((valor / n) * 100) / 100;
         let html = '';
         for (let i = 0; i < n; i++) {
-            const dt = addMonths(dataBase, i);
-            html += '<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f0f0f0;">' +
-                '<span style="width:34px;color:#666;">' + (i+1) + '/' + n + '</span>' +
-                '<input type="date" class="parcela-pagar-data" data-idx="' + i + '" value="' + dt + '" style="flex:1;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:12px;">' +
-                '<input type="number" class="parcela-pagar-valor" data-idx="' + i + '" value="' + parc + '" step="0.01" style="width:110px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:12px;text-align:right;color:#dc3545;font-weight:600;">' +
+            const dt = new Date(addMonths(dataBase, i) + 'T12:00:00');
+            html += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f0f0f0;">' +
+                '<span>' + (i+1) + '/' + n + '</span>' +
+                '<span>' + dt.toLocaleDateString('pt-BR') + '</span>' +
+                '<span style="color:#dc3545;font-weight:600;">R$ ' + parc.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '</span>' +
                 '</div>';
         }
         lista.innerHTML = html;
@@ -7546,17 +7272,12 @@
     function fmtValSig(v) { return (v < 0 ? '-' : '') + fmtBRL(v); }
 
     async function carregarDFC() {
-        let contasReceber = await fetchSupabase('contas_a_receber', 'GET');
-        let contasPagar   = await fetchSupabase('contas_a_pagar',   'GET');
+        const contasReceber = await fetchSupabase('contas_a_receber', 'GET');
+        const contasPagar   = await fetchSupabase('contas_a_pagar',   'GET');
         if (!contasReceber || !contasPagar) return;
 
         const filtroAno = document.getElementById('filtroAnoDFC');
         const anoSel    = filtroAno ? filtroAno.value : '';
-        const filtroEmpresa = document.getElementById('filtroEmpresaDFC');
-        if (filtroEmpresa && filtroEmpresa.value) {
-            contasReceber = contasReceber.filter(c => c.empresa_id == filtroEmpresa.value);
-            contasPagar   = contasPagar.filter(c => c.empresa_id == filtroEmpresa.value);
-        }
 
         // DFC usa datas de recebimento/pagamento (fluxo de caixa real)
         let recebidos = contasReceber.filter(c => c.status === 'recebido');
@@ -8030,17 +7751,12 @@
     // ================================================================
 
     async function carregarFCP() {
-        let contasReceber = await fetchSupabase('contas_a_receber', 'GET');
-        let contasPagar   = await fetchSupabase('contas_a_pagar',   'GET');
+        const contasReceber = await fetchSupabase('contas_a_receber', 'GET');
+        const contasPagar   = await fetchSupabase('contas_a_pagar',   'GET');
         if (!contasReceber || !contasPagar) return;
 
         const filtroAno = document.getElementById('filtroAnoFCP');
         const anoSel    = filtroAno ? filtroAno.value : '';
-        const filtroEmpresa = document.getElementById('filtroEmpresaFCP');
-        if (filtroEmpresa && filtroEmpresa.value) {
-            contasReceber = contasReceber.filter(c => c.empresa_id == filtroEmpresa.value);
-            contasPagar   = contasPagar.filter(c => c.empresa_id == filtroEmpresa.value);
-        }
 
         // Aviso
         const avisoEl = document.getElementById('fcpAviso');
@@ -8255,23 +7971,16 @@
     async function carregarDRE() {
         // Buscar lançamentos DRE diretos + contas recebidas/pagas por competência
         const lancsDRE = await fetchSupabase('lancamentos_dre', 'GET');
-        let contasRec = await fetchSupabase('contas_a_receber', 'GET');
-        let contasPag = await fetchSupabase('contas_a_pagar', 'GET');
+        const contasRec = await fetchSupabase('contas_a_receber', 'GET');
+        const contasPag = await fetchSupabase('contas_a_pagar', 'GET');
         if (contasRec === null || contasPag === null) return;
 
         const filtroAno = document.getElementById('filtroAnoDRE');
         const filtroMes = document.getElementById('filtroMesDRE');
         const anoSel = filtroAno ? filtroAno.value : '';
         const mesSel = filtroMes ? filtroMes.value : '';
-        const filtroEmpresa = document.getElementById('filtroEmpresaDRE');
-        const empresaSel = filtroEmpresa ? filtroEmpresa.value : '';
 
-        let dreLancs = lancsDRE || [];
-        if (empresaSel) {
-            contasRec = contasRec.filter(c => c.empresa_id == empresaSel);
-            contasPag = contasPag.filter(c => c.empresa_id == empresaSel);
-            dreLancs  = dreLancs.filter(l => l.empresa_id == empresaSel);
-        }
+        const dreLancs = lancsDRE || [];
 
         // Filtrar por competência
         function filtrarComp(arr, campoData) {
@@ -8765,8 +8474,6 @@
         document.getElementById('lancDREParte').value = '';
         document.getElementById('lancDRECentro').value = '';
         document.getElementById('lancDREObs').value = '';
-        atualizarSelectEmpresas();
-        document.getElementById('lancDREEmpresa').value = '';
 
         if (id) {
             // Edição: carregar dados
@@ -8782,7 +8489,6 @@
                 document.getElementById('lancDREParte').value = l.parte || '';
                 document.getElementById('lancDRECentro').value = l.centro || '';
                 document.getElementById('lancDREObs').value = l.observacoes || '';
-                document.getElementById('lancDREEmpresa').value = l.empresa_id || '';
             });
             document.getElementById('tituloModalLancDRE').textContent = '✏️ Editar Lançamento DRE';
         } else {
@@ -8817,7 +8523,6 @@
             parte:       document.getElementById('lancDREParte').value || null,
             centro:      document.getElementById('lancDRECentro').value || null,
             observacoes: document.getElementById('lancDREObs').value || null,
-            empresa_id:  document.getElementById('lancDREEmpresa').value ? parseInt(document.getElementById('lancDREEmpresa').value) : null,
         };
         const r = id
             ? await fetchSupabase('lancamentos_dre', 'PATCH', dados, 'id=eq.' + id)
@@ -8883,40 +8588,30 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
-        // As listas de colunas abaixo devem refletir EXATAMENTE a ordem das
-        // colunas de dados de cada tabela em tela (sem contar a coluna "Ações").
         const configs = {
             receber: {
                 titulo: 'Contas a Receber (Pendentes)',
-                colunas: ['Cliente', 'Descrição', 'Empresa', 'Competência', 'Vencimento', 'Valor', 'Parcela', 'Status'],
-                larguras: [34, 46, 34, 20, 20, 22, 14, 18],
-                alinhamentos: ['left', 'left', 'left', 'center', 'center', 'right', 'center', 'center'],
-                tableId: 'tabelaPendentesReceber',
-                filtroIds: ['filtroClienteReceber', 'filtroEmpresaReceber', 'filtroAnoReceber', 'filtroMesReceber']
+                colunas: ['Cliente', 'Descrição', 'NF', 'Competência', 'Vencimento', 'Valor', 'Parcela', 'Status'],
+                larguras: [40, 55, 20, 22, 22, 22, 16, 18],
+                tableId: 'tabelaPendentesReceber'
             },
             pagar: {
                 titulo: 'Contas a Pagar (Pendentes)',
-                colunas: ['Fornecedor', 'Categoria', 'Descrição', 'Empresa', 'NF', 'Competência', 'Vencimento', 'Valor', 'Parcela', 'Status'],
-                larguras: [30, 24, 34, 30, 14, 18, 18, 20, 12, 16],
-                alinhamentos: ['left', 'left', 'left', 'left', 'center', 'center', 'center', 'right', 'center', 'center'],
-                tableId: 'tabelaPendentesPagar',
-                filtroIds: ['filtroFornecedorPagar', 'filtroCategoriaPagar', 'filtroEmpresaPagar', 'filtroAnoPagar', 'filtroMesPagar']
+                colunas: ['Fornecedor', 'Categoria', 'Descrição', 'NF', 'Competência', 'Vencimento', 'Valor', 'Parcela', 'Status'],
+                larguras: [32, 28, 40, 16, 20, 20, 22, 14, 16],
+                tableId: 'tabelaPendentesPagar'
             },
             recebidas: {
                 titulo: 'Contas Recebidas',
-                colunas: ['Cliente', 'Descrição', 'Empresa', 'Parcela', 'Valor', 'Vencimento', 'Recebimento', 'Tipo', 'Banco'],
-                larguras: [32, 42, 30, 14, 22, 20, 20, 20, 26],
-                alinhamentos: ['left', 'left', 'left', 'center', 'right', 'center', 'center', 'left', 'left'],
-                tableId: 'tabelaRecebidas',
-                filtroIds: ['filtroClienteRecebida', 'filtroEmpresaRecebida', 'filtroAnoRecebida', 'filtroMesRecebida', 'filtroBancoRecebida']
+                colunas: ['Cliente', 'Descrição', 'Valor', 'Vencimento', 'Recebimento'],
+                larguras: [50, 75, 30, 30, 30],
+                tableId: 'tabelaRecebidas'
             },
             pagas: {
                 titulo: 'Contas Pagas',
-                colunas: ['Fornecedor', 'Categoria', 'Descrição', 'Empresa', 'NF', 'Parcela', 'Valor', 'Vencimento', 'Pagamento', 'Tipo', 'Banco'],
-                larguras: [26, 20, 30, 26, 12, 12, 20, 18, 18, 18, 22],
-                alinhamentos: ['left', 'left', 'left', 'left', 'center', 'center', 'right', 'center', 'center', 'left', 'left'],
-                tableId: 'tabelaPagas',
-                filtroIds: ['filtroFornecedorPaga', 'filtroEmpresaPaga', 'filtroAnoPaga', 'filtroMesPaga', 'filtroBancoPaga']
+                colunas: ['Fornecedor', 'Categoria', 'Descrição', 'NF', 'Parcela', 'Valor', 'Vencimento', 'Pagamento', 'Tipo', 'Banco'],
+                larguras: [28, 22, 35, 16, 12, 20, 20, 20, 18, 20],
+                tableId: 'tabelaPagas'
             }
         };
 
@@ -8932,52 +8627,30 @@
             return;
         }
 
-        // --- Monta a linha de "filtros aplicados", quando houver algum selecionado ---
-        const filtrosAplicados = [];
-        (cfg.filtroIds || []).forEach(id => {
-            const el = document.getElementById(id);
-            if (el && el.value && el.selectedOptions && el.selectedOptions[0]) {
-                const label = (el.previousElementSibling && el.previousElementSibling.textContent) || '';
-                filtrosAplicados.push((label ? label.trim() + ': ' : '') + el.selectedOptions[0].textContent.trim());
-            } else if (el && el.value) {
-                filtrosAplicados.push(el.value);
-            }
-        });
-
         // --- Cabeçalho do documento ---
         const pageW = doc.internal.pageSize.getWidth();
         const pageH = doc.internal.pageSize.getHeight();
         doc.setFillColor(255, 122, 66); // cor primária
-        doc.rect(0, 0, pageW, 18, 'F');
+        doc.rect(0, 0, pageW, 16, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
-        doc.text('CAP Gestao Financeira', 10, 11);
-        doc.setFontSize(9);
-        doc.setFont(undefined, 'normal');
-        const hoje = new Date().toLocaleDateString('pt-BR');
-        doc.text('Gerado em: ' + hoje, pageW - 10, 11, { align: 'right' });
-
-        doc.setTextColor(40, 40, 40);
         doc.setFontSize(13);
         doc.setFont(undefined, 'bold');
-        doc.text(normalizarTexto(cfg.titulo), pageW / 2, 27, { align: 'center' });
+        doc.text('CAP Gestao Financeira', 10, 10);
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        const hoje = new Date().toLocaleDateString('pt-BR');
+        doc.text('Gerado em: ' + hoje, pageW - 10, 10, { align: 'right' });
 
-        let startY = 31;
-        if (filtrosAplicados.length > 0) {
-            doc.setFontSize(8.5);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(110, 110, 110);
-            doc.text(normalizarTexto('Filtros: ' + filtrosAplicados.join('  |  ')), pageW / 2, 33, { align: 'center' });
-            startY = 37;
-        }
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text(normalizarTexto(cfg.titulo), pageW / 2, 24, { align: 'center' });
 
         // --- Construir dados da tabela ---
         const numCols = cfg.colunas.length;
         const head = [cfg.colunas.map(c => normalizarTexto(c))];
         const body = [];
         let totalValor = 0;
-        let colValorIdx = cfg.colunas.indexOf('Valor');
 
         linhas.forEach((linha) => {
             const cells = linha.querySelectorAll('td');
@@ -8989,58 +8662,56 @@
                 row.push(normalizarTexto(celula.innerText.trim().replace(/\n/g, ' ')));
             }
             body.push(row);
-            if (colValorIdx >= 0 && cells[colValorIdx]) {
-                const t = cells[colValorIdx].innerText.trim();
+            // Somar valor (coluna com "R$")
+            for (let i = 0; i < cells.length - 1; i++) {
+                const t = cells[i].innerText.trim();
                 if (t.startsWith('R$')) {
                     const v = parseFloat(t.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
-                    if (!isNaN(v)) totalValor += v;
+                    if (!isNaN(v)) { totalValor += v; break; }
                 }
             }
         });
 
-        // --- Configurar columnStyles (largura + alinhamento) ---
+        // --- Configurar columnStyles com larguras fixas ---
         const columnStyles = {};
         cfg.larguras.forEach((w, i) => {
-            columnStyles[i] = { cellWidth: w, halign: (cfg.alinhamentos && cfg.alinhamentos[i]) || 'left' };
+            columnStyles[i] = { cellWidth: w };
         });
-        const colStatusIdx = cfg.colunas.indexOf('Status');
 
         // --- Gerar tabela usando autoTable ---
         doc.autoTable({
             head: head,
             body: body,
-            startY: startY,
-            margin: { left: 8, right: 8, bottom: 14 },
-            theme: 'grid',
+            startY: 28,
+            margin: { left: 8, right: 8, bottom: 12 },
             tableWidth: 'wrap',
             styles: {
-                fontSize: 7.6,
-                cellPadding: 2,
+                fontSize: 7.5,
+                cellPadding: 1.5,
                 overflow: 'linebreak',
                 valign: 'middle',
-                lineColor: [225, 225, 225],
+                lineColor: [200, 200, 200],
                 lineWidth: 0.1,
-                textColor: [55, 55, 55],
+                textColor: [50, 50, 50],
                 fillColor: [255, 255, 255]
             },
             headStyles: {
-                fillColor: [255, 122, 66],
+                fillColor: [80, 80, 80],
                 textColor: [255, 255, 255],
                 fontStyle: 'bold',
                 halign: 'left',
-                fontSize: 8,
-                cellPadding: 2.4
+                cellPadding: 2
             },
             bodyStyles: {
                 fillColor: [255, 255, 255],
-                textColor: [55, 55, 55]
+                textColor: [50, 50, 50]
             },
             alternateRowStyles: {
-                fillColor: [250, 246, 243]
+                fillColor: [245, 245, 245]
             },
             columnStyles: columnStyles,
             didParseCell: function (data) {
-                if (data.section === 'body' && colStatusIdx >= 0 && data.column.index === colStatusIdx) {
+                if (data.section === 'body') {
                     const t = (data.cell.text[0] || '').toLowerCase();
                     if (t === 'atrasado') {
                         data.cell.styles.textColor = [180, 0, 0];
@@ -9048,40 +8719,28 @@
                     } else if (t === 'pendente') {
                         data.cell.styles.textColor = [150, 100, 0];
                         data.cell.styles.fontStyle = 'bold';
-                    } else if (t === 'pago' || t === 'recebido') {
-                        data.cell.styles.textColor = [30, 130, 76];
-                        data.cell.styles.fontStyle = 'bold';
-                    }
-                }
-                if (data.section === 'body' && colStatusIdx >= 0 && data.row.raw && data.row.raw[colStatusIdx]) {
-                    const statusTxt = String(data.row.raw[colStatusIdx]).toLowerCase();
-                    if (statusTxt === 'atrasado') {
-                        data.cell.styles.fillColor = [253, 237, 237];
                     }
                 }
             },
             didDrawPage: function (data) {
                 // Rodapé de página
                 doc.setFontSize(7);
-                doc.setTextColor(140, 140, 140);
+                doc.setTextColor(120, 120, 120);
                 doc.setFont(undefined, 'normal');
                 const pageNum = doc.internal.getNumberOfPages();
                 doc.text('Pagina ' + data.pageNumber + ' de ' + pageNum,
-                    pageW / 2, pageH - 6, { align: 'center' });
+                    pageW / 2, pageH - 5, { align: 'center' });
             }
         });
 
-        // --- Total (com caixa de destaque) ---
+        // --- Total ---
         if (totalValor > 0) {
-            const finalY = doc.lastAutoTable.finalY + 5;
-            const totalTexto = 'Total: R$ ' + totalValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            doc.setFontSize(10);
+            const finalY = doc.lastAutoTable.finalY + 6;
             doc.setFont(undefined, 'bold');
-            const boxW = doc.getTextWidth(totalTexto) + 10;
-            doc.setFillColor(255, 122, 66);
-            doc.roundedRect(pageW - 10 - boxW, finalY - 5, boxW, 8, 1.5, 1.5, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.text(totalTexto, pageW - 10 - boxW / 2, finalY, { align: 'center' });
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(9);
+            doc.text('Total: R$ ' + totalValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+                pageW - 10, finalY, { align: 'right' });
         }
 
         doc.save('relatorio_' + tipo + '_' + hoje.replace(/\//g, '-') + '.pdf');
@@ -9141,10 +8800,6 @@
         cabecalho.innerHTML = headHtml;
 
         const contas = (dadosCache.contasAnaliseCategorias || []).filter(c => c.data_competencia && c.data_competencia.startsWith(anoSel));
-        const filtroEmpresaCat = document.getElementById('filtroEmpresaAnaliseCat');
-        const contasFiltradas = (filtroEmpresaCat && filtroEmpresaCat.value)
-            ? contas.filter(c => c.empresa_id == filtroEmpresaCat.value)
-            : contas;
         const categorias = (dadosCache.categorias || []).filter(cat => !grupoSel || cat.grupo_dre === grupoSel);
 
         const totalPorMes = {};
@@ -9157,7 +8812,7 @@
             let totalCategoria = 0;
             mesesExibir.forEach(m => {
                 const mesStr = String(m + 1).padStart(2, '0');
-                const soma = contasFiltradas
+                const soma = contas
                     .filter(c => c.categoria_id === cat.id && c.data_competencia.substring(5, 7) === mesStr)
                     .reduce((acc, c) => acc + parseFloat(c.valor || 0), 0);
                 valoresPorMes[m] = soma;
@@ -9528,12 +9183,6 @@
                 </div>
             </div>
             <div class="form-group">
-                <label>Empresa</label>
-                <select id="lancDREEmpresa">
-                    <option value="">Selecione...</option>
-                </select>
-            </div>
-            <div class="form-group">
                 <label>Observações</label>
                 <textarea id="lancDREObs" rows="2"></textarea>
             </div>
@@ -9587,10 +9236,6 @@
             <div class="form-group" id="editLancCategoriaWrap">
                 <label>Categoria</label>
                 <select id="editLancCategoria"><option value="">Selecione...</option></select>
-            </div>
-            <div class="form-group">
-                <label>Empresa</label>
-                <select id="editLancEmpresa"><option value="">Selecione...</option></select>
             </div>
             <div class="form-group">
                 <label>Descrição*</label>
