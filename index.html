@@ -456,6 +456,11 @@
             color: white;
         }
 
+        /* Ocultar colunas (Contas a Pagar) */
+        col.col-oculta {
+            visibility: collapse;
+        }
+
         /* Gauge cards no dashboard */
         #dashGauges > div:hover {
             transform: translateY(-2px);
@@ -1360,9 +1365,18 @@
         <div id="lancar-pagar" class="page">
             <div class="page-header">
                 <h1>📤 Contas a Pagar</h1>
-                <div style="display:flex;gap:8px;">
+                <div style="display:flex;gap:8px;position:relative;">
                     <button class="btn btn-secondary" onclick="gerarPDF('pagar')" style="background:#e67e22;color:white;">📄 PDF</button>
+                    <button class="btn btn-secondary" onclick="toggleColunasPagarPanel(event)" style="background:#555;color:white;">👁 Colunas</button>
                     <button class="btn btn-primary" onclick="openModalLancarPagar()">+ Novo Lançamento</button>
+
+                    <div id="colunasPagarPanel" style="display:none;position:absolute;top:100%;right:0;margin-top:6px;background:white;border:1px solid var(--cor-borda);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.15);padding:12px 16px;z-index:100;min-width:200px;text-align:left;">
+                        <div style="font-size:12px;font-weight:600;color:#555;margin-bottom:8px;">Mostrar colunas</div>
+                        <div id="colunasPagarLista" style="display:flex;flex-direction:column;gap:6px;font-size:13px;"></div>
+                        <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--cor-borda);">
+                            <button type="button" class="btn btn-secondary btn-small" style="width:100%;" onclick="resetColunasPagar()">Mostrar todas</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="alert alert-success" id="alertLancarPagar"></div>
@@ -1421,16 +1435,16 @@
             <div class="table-container">
                 <table id="tabelaPendentesPagar">
                     <colgroup>
-                        <col style="min-width:130px;">
-                        <col style="min-width:120px;">
-                        <col style="min-width:160px;">
-                        <col style="min-width:70px;">
-                        <col style="min-width:90px;">
-                        <col style="min-width:100px;">
-                        <col style="min-width:110px;">
-                        <col style="min-width:70px;">
-                        <col style="min-width:90px;">
-                        <col style="min-width:170px;">
+                        <col id="colPagar-fornecedor" style="min-width:130px;">
+                        <col id="colPagar-categoria" style="min-width:120px;">
+                        <col id="colPagar-descricao" style="min-width:160px;">
+                        <col id="colPagar-nf" style="min-width:70px;">
+                        <col id="colPagar-competencia" style="min-width:90px;">
+                        <col id="colPagar-vencimento" style="min-width:100px;">
+                        <col id="colPagar-valor" style="min-width:110px;">
+                        <col id="colPagar-parcela" style="min-width:70px;">
+                        <col id="colPagar-status" style="min-width:90px;">
+                        <col id="colPagar-acoes" style="min-width:170px;">
                     </colgroup>
                     <thead>
                         <tr>
@@ -3042,6 +3056,7 @@
         inicializarPing();
         preencherAnos();
         preencherDias();
+        inicializarColunasPagar();
     });
 
     // LOGIN
@@ -4044,6 +4059,92 @@
         });
     }
 
+
+    // OCULTAR/MOSTRAR COLUNAS - Contas a Pagar
+    const COLUNAS_PAGAR = [
+        { id: 'fornecedor',   label: 'Fornecedor' },
+        { id: 'categoria',    label: 'Categoria' },
+        { id: 'descricao',    label: 'Descrição' },
+        { id: 'nf',           label: 'NF' },
+        { id: 'competencia',  label: 'Competência' },
+        { id: 'vencimento',   label: 'Vencimento' },
+        { id: 'valor',        label: 'Valor' },
+        { id: 'parcela',      label: 'Parcela' },
+        { id: 'status',       label: 'Status' },
+        { id: 'acoes',        label: 'Ações' }
+    ];
+    const CHAVE_COLUNAS_PAGAR_OCULTAS = 'cap_colunas_pagar_ocultas';
+
+    function obterColunasPagarOcultas() {
+        try {
+            return JSON.parse(localStorage.getItem(CHAVE_COLUNAS_PAGAR_OCULTAS)) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function salvarColunasPagarOcultas(lista) {
+        localStorage.setItem(CHAVE_COLUNAS_PAGAR_OCULTAS, JSON.stringify(lista));
+    }
+
+    function aplicarColunaPagarVisibilidade(colId, visivel) {
+        const col = document.getElementById('colPagar-' + colId);
+        if (col) col.classList.toggle('col-oculta', !visivel);
+    }
+
+    function inicializarColunasPagar() {
+        const lista = document.getElementById('colunasPagarLista');
+        if (!lista) return;
+        const ocultas = obterColunasPagarOcultas();
+        lista.innerHTML = '';
+        COLUNAS_PAGAR.forEach(colDef => {
+            const visivel = !ocultas.includes(colDef.id);
+            aplicarColunaPagarVisibilidade(colDef.id, visivel);
+
+            const label = document.createElement('label');
+            label.style.cssText = 'display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = visivel;
+            checkbox.onchange = () => alternarColunaPagar(colDef.id, checkbox.checked);
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(colDef.label));
+            lista.appendChild(label);
+        });
+    }
+
+    function alternarColunaPagar(colId, visivel) {
+        aplicarColunaPagarVisibilidade(colId, visivel);
+        let ocultas = obterColunasPagarOcultas();
+        if (visivel) {
+            ocultas = ocultas.filter(id => id !== colId);
+        } else if (!ocultas.includes(colId)) {
+            ocultas.push(colId);
+        }
+        salvarColunasPagarOcultas(ocultas);
+    }
+
+    function resetColunasPagar() {
+        salvarColunasPagarOcultas([]);
+        inicializarColunasPagar();
+    }
+
+    function toggleColunasPagarPanel(event) {
+        event.stopPropagation();
+        const painel = document.getElementById('colunasPagarPanel');
+        if (!painel) return;
+        const abrir = painel.style.display === 'none';
+        painel.style.display = abrir ? 'block' : 'none';
+        if (abrir) {
+            const fecharAoClicarFora = (e) => {
+                if (!painel.contains(e.target)) {
+                    painel.style.display = 'none';
+                    document.removeEventListener('click', fecharAoClicarFora);
+                }
+            };
+            setTimeout(() => document.addEventListener('click', fecharAoClicarFora), 0);
+        }
+    }
 
     async function salvarContaPagar(event) {
         event.preventDefault();
