@@ -3201,6 +3201,88 @@
     const SUPABASE_URL = 'https://vjrhvfjhebstokjhyohk.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqcmh2ZmpoZWJzdG9ramh5b2hrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2NTA5ODgsImV4cCI6MjA5NzIyNjk4OH0.P8xZiL6qfsEiPU01eaTUXfKlxDrPlfHTvLvl3YJQy_Y';
     const API_URL = 'https://vjrhvfjhebstokjhyohk.supabase.co/rest/v1';
+    const AUTH_URL = SUPABASE_URL + '/auth/v1';
+
+    // ────────────────────────────────────────────────────────────────────────
+    // AUTENTICAÇÃO REAL (Supabase Auth)
+    // A chave abaixo (SUPABASE_KEY) é a chave "anon" e é pública por natureza.
+    // Ela SÓ é segura porque o banco tem RLS habilitado e as políticas exigem
+    // usuário autenticado (role "authenticated"). Ver arquivo seguranca-supabase.sql.
+    // ────────────────────────────────────────────────────────────────────────
+    let _sessao = null;          // { access_token, refresh_token, expires_at, user }
+    let _refreshTimer = null;
+
+    function tokenAtual() {
+        return (_sessao && _sessao.access_token) ? _sessao.access_token : null;
+    }
+
+    function _guardarSessao(j) {
+        _sessao = {
+            access_token:  j.access_token,
+            refresh_token: j.refresh_token,
+            expires_at:    Date.now() + ((j.expires_in || 3600) * 1000),
+            user:          j.user || null
+        };
+        _agendarRefresh();
+    }
+
+    function _limparSessao() {
+        _sessao = null;
+        if (_refreshTimer) { clearTimeout(_refreshTimer); _refreshTimer = null; }
+    }
+
+    function _agendarRefresh() {
+        if (_refreshTimer) clearTimeout(_refreshTimer);
+        if (!_sessao) return;
+        let atraso = _sessao.expires_at - Date.now() - 60000; // renova 1 min antes
+        if (atraso < 5000) atraso = 5000;
+        _refreshTimer = setTimeout(() => { renovarSessao(); }, atraso);
+    }
+
+    async function loginSupabase(email, senha) {
+        const r = await fetch(AUTH_URL + '/token?grant_type=password', {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: senha })
+        });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) {
+            throw new Error(j.error_description || j.msg || j.message || 'Usuário ou senha incorretos');
+        }
+        _guardarSessao(j);
+        return j;
+    }
+
+    async function renovarSessao() {
+        if (!_sessao || !_sessao.refresh_token) return false;
+        try {
+            const r = await fetch(AUTH_URL + '/token?grant_type=refresh_token', {
+                method: 'POST',
+                headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refresh_token: _sessao.refresh_token })
+            });
+            const j = await r.json().catch(() => ({}));
+            if (!r.ok || !j.access_token) throw new Error('refresh recusado');
+            _guardarSessao(j);
+            return true;
+        } catch (e) {
+            forcarRelogin('Sua sessão expirou. Faça login novamente.');
+            return false;
+        }
+    }
+
+    function forcarRelogin(msg) {
+        _limparSessao();
+        usuarioAtual = null;
+        try {
+            document.getElementById('mainContainer').classList.remove('active');
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('loginForm').reset();
+            const err = document.getElementById('errorMessage');
+            if (err && msg) { err.textContent = msg; err.style.display = 'block'; }
+        } catch (e) {}
+    }
+    // ────────────────────────────────────────────────────────────────────────
 
     // VARIÁVEIS GLOBAIS
     let usuarioAtual = null;
@@ -3293,61 +3375,87 @@
         }
     }
 
-    function handleLogin(event) {
+    async function handleLogin(event) {
         event.preventDefault();
-        const username = document.getElementById('username').value;
+        const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value;
-        const remember = document.getElementById('remember').checked;
+        const btn = event.target ? event.target.querySelector('button[type="submit"]') : null;
+        const err = document.getElementById('errorMessage');
 
-        // Validação simples
-        const USUARIOS = {
-            admin:      { senha: 'C@pka_2026', nome: 'Administrador' },
-            financeiro: { senha: 'C@pfi_2026', nome: 'Financeiro' },
-            dir:        { senha: 'C@pdi_2026', nome: 'Diretoria' }
-        };
-        const u = USUARIOS[username];
-        if (u && password === u.senha) {
-            usuarioAtual = { email: username, nome: u.nome };
-            
-            if (remember) {
-                localStorage.setItem('cap_usuario', JSON.stringify(usuarioAtual));
-                localStorage.setItem('cap_lembrar', 'true');
-            }
+        err.style.display = 'none';
+        if (btn) { btn.disabled = true; btn.textContent = 'ENTRANDO...'; }
+
+        try {
+            // Autenticação real no Supabase Auth (não há mais senha no código!)
+            const sessao = await loginSupabase(username, password);
+
+            const meta = (sessao.user && sessao.user.user_metadata) || {};
+            usuarioAtual = {
+                id:    sessao.user ? sessao.user.id : null,
+                email: sessao.user ? sessao.user.email : username,
+                nome:  meta.nome || meta.full_name || (sessao.user ? sessao.user.email : username)
+            };
 
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainContainer').classList.add('active');
             document.getElementById('userGreeting').textContent = `Bem-vindo, ${usuarioAtual.nome}!`;
-            
+
             carregarDadosIniciais();
-        } else {
-            document.getElementById('errorMessage').textContent = 'Usuário ou senha incorretos!';
-            document.getElementById('errorMessage').style.display = 'block';
+        } catch (e) {
+            err.textContent = e.message || 'Usuário ou senha incorretos!';
+            err.style.display = 'block';
+        } finally {
+            if (btn) { btn.disabled = false; btn.textContent = 'ENTRAR'; }
         }
     }
 
     function verificarLogin() {
-        // Nunca pular a tela de login — sempre exibir ao abrir o sistema
+        // Nunca pular a tela de login — sempre exigir autenticação ao abrir o sistema.
+        // Nenhum dado de sessão é gravado em localStorage.
         localStorage.removeItem('cap_usuario');
         localStorage.removeItem('cap_lembrar');
+        _limparSessao();
+        usuarioAtual = null;
         document.getElementById('loginScreen').style.display = 'flex';
         document.getElementById('mainContainer').classList.remove('active');
     }
 
-    function handleLogout() {
-        if (confirm('Tem certeza que deseja sair?')) {
-            usuarioAtual = null;
-            localStorage.removeItem('cap_usuario');
-            localStorage.removeItem('cap_lembrar');
-            document.getElementById('mainContainer').classList.remove('active');
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('loginForm').reset();
+    async function handleLogout() {
+        if (!confirm('Tem certeza que deseja sair?')) return;
+
+        // Invalida o refresh token no servidor
+        const t = tokenAtual();
+        if (t) {
+            try {
+                await fetch(AUTH_URL + '/logout', {
+                    method: 'POST',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + t }
+                });
+            } catch (e) { /* ignora falha de rede no logout */ }
         }
+
+        _limparSessao();
+        usuarioAtual = null;
+        localStorage.removeItem('cap_usuario');
+        localStorage.removeItem('cap_lembrar');
+        document.getElementById('mainContainer').classList.remove('active');
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('loginForm').reset();
+        const err = document.getElementById('errorMessage');
+        if (err) err.style.display = 'none';
     }
 
     // REQUISIÇÕES SUPABASE
     let _ultimoErroSupabase = null;
 
-    async function fetchSupabase(tabela, metodo = 'GET', dados = null, filtros = '') {
+    async function fetchSupabase(tabela, metodo = 'GET', dados = null, filtros = '', _jaTentouRenovar = false) {
+        // Sem sessão válida não se fala com o banco.
+        const token = tokenAtual();
+        if (!token) {
+            forcarRelogin('Faça login para continuar.');
+            return null;
+        }
+
         try {
             const url = filtros
                 ? API_URL + '/' + tabela + '?' + filtros
@@ -3355,7 +3463,7 @@
 
             const headers = {
                 'apikey': SUPABASE_KEY,
-                'Authorization': 'Bearer ' + SUPABASE_KEY,
+                'Authorization': 'Bearer ' + token,   // token DO USUÁRIO, não a chave anon
                 'Content-Type': 'application/json'
             };
 
@@ -3369,6 +3477,13 @@
 
             const resposta = await fetch(url, opcoes);
             const status = resposta.status;
+
+            // Token expirado/inválido: tenta renovar uma vez e repete a chamada
+            if (status === 401 && !_jaTentouRenovar) {
+                const ok = await renovarSessao();
+                if (ok) return fetchSupabase(tabela, metodo, dados, filtros, true);
+                return null;
+            }
 
             // 204 No Content (DELETE bem-sucedido)
             if (status === 204) return [];
@@ -3404,7 +3519,8 @@
 
         // Sugestão específica por código
         if (status === 401 || status === 403) {
-            msg += ' ⚠️ Verifique RLS no Supabase: execute "DISABLE ROW LEVEL SECURITY" na tabela ' + tabela + '.';
+            msg += ' ⚠️ Acesso negado. Seu usuário não tem permissão para esta operação na tabela "'
+                 + tabela + '", ou a sessão expirou. NÃO desative o RLS: ajuste as políticas de acesso no Supabase.';
         } else if (status === 409) {
             msg += ' ⚠️ Registro duplicado.';
         } else if (status === 422) {
@@ -3427,7 +3543,7 @@
     function inicializarPing() {
         // Ping a cada 5 minutos
         setInterval(() => {
-            fetchSupabase('categorias', 'GET', null, 'limit=1');
+            if (tokenAtual()) fetchSupabase('categorias', 'GET', null, 'limit=1');
         }, 5 * 60 * 1000);
     }
 
@@ -7705,89 +7821,55 @@
     async function diagnosticarConexao() {
         document.getElementById('modalDiagnostico').classList.add('active');
         const div = document.getElementById('diagResultado');
-        div.innerHTML = '<p style="color:#666;">⏳ Testando conexão com Supabase...</p>';
+        div.innerHTML = '<p style="color:#666;">\u23f3 Testando conex\u00e3o...</p>';
 
         const resultados = [];
+        const token = tokenAtual();
 
-        // Teste 1: GET categorias
-        try {
-            const r = await fetch(API_URL + '/categorias?limit=1', {
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-            });
-            const txt = await r.text();
-            if (r.ok) {
-                resultados.push('✅ GET categorias: OK (status ' + r.status + ')');
-            } else {
-                resultados.push('❌ GET categorias: ERRO ' + r.status + ' — ' + txt.substring(0,120));
-            }
-        } catch(e) {
-            resultados.push('❌ GET categorias: falha de rede — ' + e.message);
+        if (!token) {
+            div.innerHTML = '<p style="font-family:monospace;">\u274c Sem sess\u00e3o ativa. Fa\u00e7a login antes de executar o diagn\u00f3stico.</p>';
+            return;
         }
 
-        // Teste 2: POST categorias (INSERT teste)
+        const h = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token };
+
+        resultados.push('\ud83d\udc64 Usu\u00e1rio: ' + (usuarioAtual ? usuarioAtual.email : '-'));
+
+        // Teste 1: sess\u00e3o v\u00e1lida
         try {
-            const r = await fetch(API_URL + '/categorias', {
-                method: 'POST',
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': 'Bearer ' + SUPABASE_KEY,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=representation'
-                },
-                body: JSON.stringify({ nome: '__teste_diagnostico__', ativo: false })
-            });
-            const txt = await r.text();
-            if (r.ok || r.status === 201) {
-                resultados.push('✅ INSERT categorias: OK (status ' + r.status + ')');
-                // Deletar o registro de teste
-                try {
-                    const parsed = JSON.parse(txt);
-                    const id = Array.isArray(parsed) ? parsed[0]?.id : parsed?.id;
-                    if (id) {
-                        await fetch(API_URL + '/categorias?id=eq.' + id, {
-                            method: 'DELETE',
-                            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-                        });
-                        resultados.push('✅ DELETE categorias: OK (limpeza do teste)');
-                    }
-                } catch(e2) {}
-            } else {
-                resultados.push('❌ INSERT categorias: ERRO ' + r.status + ' — ' + txt.substring(0,200));
-                if (r.status === 401 || r.status === 403 || txt.includes('permission') || txt.includes('policy')) {
-                    resultados.push('   ⚠️ <strong>Provável causa: RLS ativo</strong>. Use o comando SQL abaixo para corrigir.');
-                }
-            }
+            const r = await fetch(AUTH_URL + '/user', { headers: h });
+            resultados.push(r.ok
+                ? '\u2705 Sess\u00e3o v\u00e1lida (token aceito pelo Supabase Auth)'
+                : '\u274c Sess\u00e3o inv\u00e1lida ou expirada (HTTP ' + r.status + ') \u2014 fa\u00e7a login novamente');
         } catch(e) {
-            resultados.push('❌ INSERT categorias: falha de rede — ' + e.message);
+            resultados.push('\u274c Falha de rede ao validar sess\u00e3o: ' + e.message);
         }
 
-        // Teste 3: GET empresas (RLS pode bloquear SELECT sem gerar erro — retorna lista vazia)
-        try {
-            const r = await fetch(API_URL + '/empresas?limit=5', {
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-            });
-            const txt = await r.text();
-            if (r.ok) {
-                let qtd = 0;
-                try { qtd = JSON.parse(txt).length; } catch(e) {}
-                if (qtd > 0) {
-                    resultados.push('✅ GET empresas: OK (' + qtd + ' registro(s) encontrado(s))');
+        // Teste 2: leitura (somente leitura, n\u00e3o grava nada no banco)
+        const tabelas = ['categorias', 'empresas', 'clientes', 'fornecedores'];
+        for (const t of tabelas) {
+            try {
+                const r = await fetch(API_URL + '/' + t + '?limit=1', { headers: h });
+                const txt = await r.text();
+                if (r.ok) {
+                    let qtd = 0;
+                    try { qtd = JSON.parse(txt).length; } catch(e) {}
+                    resultados.push('\u2705 Leitura em "' + t + '": OK (' + qtd + ' registro(s) na amostra)');
+                } else if (r.status === 401 || r.status === 403) {
+                    resultados.push('\u26a0\ufe0f Leitura em "' + t + '": acesso negado (HTTP ' + r.status + ').');
+                    resultados.push('&nbsp;&nbsp;&nbsp;O usu\u00e1rio autenticado n\u00e3o tem pol\u00edtica de SELECT nesta tabela. Ajuste as POL\u00cdTICAS de RLS \u2014 nunca desative o RLS.');
                 } else {
-                    resultados.push('⚠️ GET empresas: respondeu OK mas retornou 0 registros.');
-                    resultados.push('   Se você já cadastrou empresas, isso normalmente é RLS bloqueando a leitura (SELECT) — o PostgREST não avisa com erro, só filtra tudo. Rode: ALTER TABLE empresas DISABLE ROW LEVEL SECURITY;');
+                    resultados.push('\u274c Leitura em "' + t + '": HTTP ' + r.status + ' \u2014 ' + txt.substring(0,120));
                 }
-            } else {
-                resultados.push('❌ GET empresas: ERRO ' + r.status + ' — ' + txt.substring(0,150));
+            } catch(e) {
+                resultados.push('\u274c Leitura em "' + t + '": falha de rede \u2014 ' + e.message);
             }
-        } catch(e) {
-            resultados.push('❌ GET empresas: falha de rede — ' + e.message);
         }
 
-        // Teste 4: Último erro registrado
         if (_ultimoErroSupabase) {
             resultados.push('');
-            resultados.push('📋 Último erro registrado: HTTP ' + _ultimoErroSupabase.status);
-            resultados.push('   ' + _ultimoErroSupabase.body.substring(0, 300));
+            resultados.push('\ud83d\udccb \u00daltimo erro registrado: HTTP ' + _ultimoErroSupabase.status);
+            resultados.push('&nbsp;&nbsp;&nbsp;' + _ultimoErroSupabase.body.substring(0, 300));
         }
 
         div.innerHTML = resultados.map(r => '<p style="margin:3px 0; font-family:monospace;">' + r + '</p>').join('');
@@ -9890,18 +9972,14 @@
         <div id="diagResultado" style="font-size:13px; line-height:1.7;">
             <p style="color:#666;">Executando testes...</p>
         </div>
-        <div style="margin-top:16px; padding:12px; background:#fff8e1; border-radius:6px; border-left:3px solid #ffc107;">
-            <strong style="font-size:12px; color:#856404;">💡 Se RLS está bloqueando INSERT, execute no Supabase SQL Editor:</strong>
-            <pre style="font-size:11px; margin-top:6px; background:#f5f5f5; padding:8px; border-radius:4px; overflow-x:auto;">ALTER TABLE categorias DISABLE ROW LEVEL SECURITY;
-ALTER TABLE subcategorias DISABLE ROW LEVEL SECURITY;
-ALTER TABLE produtos DISABLE ROW LEVEL SECURITY;
-ALTER TABLE fornecedores DISABLE ROW LEVEL SECURITY;
-ALTER TABLE clientes DISABLE ROW LEVEL SECURITY;
-ALTER TABLE contas_a_receber DISABLE ROW LEVEL SECURITY;
-ALTER TABLE contas_a_pagar DISABLE ROW LEVEL SECURITY;
-
-GRANT ALL ON ALL TABLES IN SCHEMA public TO anon;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon;</pre>
+        <div style="margin-top:16px; padding:12px; background:#e8f5e9; border-radius:6px; border-left:3px solid #4caf50;">
+            <strong style="font-size:12px; color:#1b5e20;">\ud83d\udd12 Seguran\u00e7a</strong>
+            <p style="font-size:12px; margin-top:6px; color:#333;">
+                Este diagn\u00f3stico usa a sess\u00e3o do usu\u00e1rio logado e faz apenas leituras.
+                Se aparecer &quot;acesso negado&quot;, a solu\u00e7\u00e3o \u00e9 <strong>criar/ajustar as pol\u00edticas de RLS</strong>
+                para o papel <code>authenticated</code> no Supabase &mdash;
+                <strong>nunca</strong> desativar o Row Level Security nem conceder permiss\u00f5es ao papel <code>anon</code>.
+            </p>
         </div>
         <div class="form-actions" style="margin-top:12px;">
             <button class="btn btn-primary" onclick="diagnosticarConexao()">🔄 Testar novamente</button>
