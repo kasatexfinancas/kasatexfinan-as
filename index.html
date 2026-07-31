@@ -859,6 +859,43 @@
         .hidden {
             display: none !important;
         }
+
+        /* Combobox pesquisável (transforma <select> com muitas opções em campo
+           de busca com filtro conforme digita) */
+        .ss-wrapper { position: relative; width: 100%; }
+        .ss-native-select {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .ss-input { cursor: pointer; background: #fff; }
+        .ss-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            max-height: 240px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid var(--cor-borda);
+            border-radius: 6px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+            z-index: 500;
+            text-align: left;
+        }
+        .ss-dropdown.ss-aberto { display: block; }
+        .ss-item {
+            padding: 8px 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .ss-item:hover { background: #f5f5f5; }
+        .ss-item-ativo { background: #fff1ea; font-weight: 600; }
+        .ss-item-vazio { color: #999; cursor: default; font-style: italic; }
+        .ss-item-vazio:hover { background: transparent; }
     </style>
 </head>
 <body>
@@ -903,20 +940,9 @@
         <div class="menu-item active" onclick="showPage('dashboard')">📊 Dashboard</div>
 
         <div class="menu-section">
-            <div class="menu-section-title">Cadastros</div>
-            <div class="menu-item" onclick="showPage('categorias')">📁 Categorias</div>
-            <div class="menu-item" onclick="showPage('subcategorias')">🏷️ Subcategorias</div>
-            <div class="menu-item" onclick="showPage('produtos')">📦 Produtos</div>
-            <div class="menu-item" onclick="showPage('fornecedores')">🏭 Fornecedores</div>
-            <div class="menu-item" onclick="showPage('clientes')">👥 Clientes</div>
-            <div class="menu-item" onclick="showPage('bancos')">🏦 Bancos</div>
-            <div class="menu-item" onclick="showPage('empresas')">🏢 Empresas</div>
-        </div>
-
-        <div class="menu-section">
             <div class="menu-section-title">Lançamentos</div>
-            <div class="menu-item" onclick="showPage('lancar-receber')">📥 Lançar Contas a Receber</div>
             <div class="menu-item" onclick="showPage('lancar-pagar')">📤 Lançar Contas a Pagar</div>
+            <div class="menu-item" onclick="showPage('lancar-receber')">📥 Lançar Contas a Receber</div>
         </div>
 
         <div class="menu-section">
@@ -934,6 +960,17 @@
             <div class="menu-item" onclick="showPage('dre')">📊 DRE</div>
             <div class="menu-item" onclick="showPage('analise-categorias')">🔎 Análise de Categorias</div>
             <div class="menu-item" onclick="showPage('fcp')">🔮 Fluxo Projetado</div>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Cadastros</div>
+            <div class="menu-item" onclick="showPage('categorias')">📁 Categorias</div>
+            <div class="menu-item" onclick="showPage('subcategorias')">🏷️ Subcategorias</div>
+            <div class="menu-item" onclick="showPage('produtos')">📦 Produtos</div>
+            <div class="menu-item" onclick="showPage('fornecedores')">🏭 Fornecedores</div>
+            <div class="menu-item" onclick="showPage('clientes')">👥 Clientes</div>
+            <div class="menu-item" onclick="showPage('bancos')">🏦 Bancos</div>
+            <div class="menu-item" onclick="showPage('empresas')">🏢 Empresas</div>
         </div>
 
               </div><!-- fim sidebar-menu -->
@@ -3356,7 +3393,134 @@
         inicializarPing();
         preencherAnos();
         preencherDias();
+        inicializarSelectsPesquisaveis();
     });
+
+    // ── SELECTS PESQUISÁVEIS (busca conforme digita) ─────────────────────────
+    // Converte os <select> com listas longas (Fornecedor, Cliente, Categoria,
+    // Subcategoria, Banco) em um campo de texto + lista filtrável, mantendo o
+    // <select> original funcionando por trás (mesmo id, mesmo value, mesmo
+    // onchange) para não quebrar nenhum código já existente.
+    function inicializarSelectsPesquisaveis() {
+        const idsParaTornarPesquisavel = [
+            // Fornecedor
+            'filtroFornecedorPagar', 'filtroFornecedorPaga', 'fornecedorPagar',
+            'lancRapidoFornecedor', 'editLancFornecedor',
+            // Cliente
+            'filtroClienteReceber', 'filtroClienteRecebida', 'clienteReceber',
+            'lancRapidoCliente', 'editLancCliente',
+            // Categoria
+            'filtroCategoriaPagar', 'categoriaPagar', 'lancRapidoCategoria',
+            'editLancCategoria', 'categoriaProduto', 'filtroCatMensal',
+            'lancDRECategoria',
+            // Subcategoria
+            'subcategoriaPagar', 'lancRapidoSubcategoria', 'subcategoriaCategoriaPai',
+            // Banco
+            'extratoFiltrobancoId', 'conciliacaoBancoId', 'filtroBancoRecebida',
+            'filtroBancoPaga', 'bancoRecebimentoConfirm', 'bancoPagamentoConfirm'
+        ];
+        idsParaTornarPesquisavel.forEach(tornarSelectPesquisavel);
+    }
+
+    function tornarSelectPesquisavel(selectId) {
+        const select = document.getElementById(selectId);
+        if (!select || select.dataset.ssEnhanced) return;
+        select.dataset.ssEnhanced = '1';
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'ss-wrapper';
+        select.parentNode.insertBefore(wrapper, select);
+        wrapper.appendChild(select);
+        select.classList.add('ss-native-select');
+        select.setAttribute('tabindex', '-1');
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'ss-input';
+        input.autocomplete = 'off';
+        input.placeholder = 'Digite para buscar...';
+        wrapper.appendChild(input);
+
+        const dropdown = document.createElement('div');
+        dropdown.className = 'ss-dropdown';
+        wrapper.appendChild(dropdown);
+
+        function textoDaOpcaoSelecionada() {
+            const opt = select.options[select.selectedIndex];
+            return (opt && opt.value !== '') ? opt.textContent : '';
+        }
+
+        function sincronizarInput() {
+            input.value = textoDaOpcaoSelecionada();
+        }
+
+        function renderizarOpcoes(filtro) {
+            const termo = (filtro || '').toLocaleLowerCase('pt-BR');
+            dropdown.innerHTML = '';
+            let algumaOpcao = false;
+            Array.from(select.options).forEach(opt => {
+                if (opt.value === '') return; // não lista o "Selecione..." como item de busca
+                const texto = opt.textContent;
+                if (!termo || texto.toLocaleLowerCase('pt-BR').includes(termo)) {
+                    algumaOpcao = true;
+                    const item = document.createElement('div');
+                    item.className = 'ss-item' + (opt.value === select.value ? ' ss-item-ativo' : '');
+                    item.textContent = texto;
+                    item.addEventListener('mousedown', function(e) {
+                        e.preventDefault();
+                        select.value = opt.value;
+                        sincronizarInput();
+                        fecharDropdown();
+                        select.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+                    dropdown.appendChild(item);
+                }
+            });
+            if (!algumaOpcao) {
+                const vazio = document.createElement('div');
+                vazio.className = 'ss-item ss-item-vazio';
+                vazio.textContent = 'Nenhum resultado encontrado';
+                dropdown.appendChild(vazio);
+            }
+        }
+
+        function abrirDropdown() {
+            renderizarOpcoes('');
+            dropdown.classList.add('ss-aberto');
+        }
+        function fecharDropdown() {
+            dropdown.classList.remove('ss-aberto');
+        }
+
+        input.addEventListener('focus', function() {
+            input.select();
+            abrirDropdown();
+        });
+        input.addEventListener('input', function() {
+            renderizarOpcoes(input.value);
+            dropdown.classList.add('ss-aberto');
+        });
+        input.addEventListener('blur', function() {
+            setTimeout(function() { fecharDropdown(); sincronizarInput(); }, 150);
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { fecharDropdown(); sincronizarInput(); input.blur(); }
+        });
+
+        // Mantém o campo de texto sincronizado sempre que algum código do
+        // sistema alterar o valor do select programaticamente (select.value = x)
+        const nativeDescriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+        Object.defineProperty(select, 'value', {
+            configurable: true,
+            get() { return nativeDescriptor.get.call(this); },
+            set(v) {
+                nativeDescriptor.set.call(this, v);
+                sincronizarInput();
+            }
+        });
+
+        sincronizarInput();
+    }
 
     // LOGIN
     function togglePassword() {
@@ -3966,7 +4130,7 @@
     }
 
     function atualizarSelectFornecedores() {
-        const ids = ['fornecedorPagar', 'filtroFornecedorPagar', 'editLancFornecedor'];
+        const ids = ['fornecedorPagar', 'filtroFornecedorPagar', 'filtroFornecedorPaga', 'editLancFornecedor'];
         ids.forEach(id => {
             const select = document.getElementById(id);
             if (!select) return;
@@ -4509,7 +4673,7 @@
                 <td>${categoria ? categoria.nome : '-'}</td>
                 <td>${conta.descricao}</td>
                 <td>${empresa ? empresa.nome : '-'}</td>
-                <td style="font-size:11px;color:#555;">${conta.nota_fiscal || '-'}</td>
+                <td style="font-weight:bold;color:#333;">${conta.nota_fiscal || '-'}</td>
                 <td>${compLabel}</td>
                 <td>${venc.toLocaleDateString('pt-BR')}</td>
                 <td>R$ ${parseFloat(conta.valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
@@ -4831,7 +4995,7 @@
                 <td>${categoria  ? categoria.nome  : '-'}</td>
                 <td>${conta.descricao}</td>
                 <td>${empresa ? empresa.nome : '-'}</td>
-                <td style="font-size:11px;color:#555;">${conta.nota_fiscal || '-'}</td>
+                <td style="font-weight:bold;color:#333;">${conta.nota_fiscal || '-'}</td>
                 <td style="text-align:center;">${parcLabel}</td>
                 <td>R$ ${parseFloat(conta.valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
                 <td>${vencFmt}</td>
