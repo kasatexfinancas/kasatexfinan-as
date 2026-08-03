@@ -2574,6 +2574,14 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Situação</label>
+                        <select id="filtroStatusAnaliseCat" onchange="renderizarAnaliseCategorias()">
+                            <option value="">Todas (pendentes + pagas)</option>
+                            <option value="pendente">Somente pendentes</option>
+                            <option value="pago">Somente pagas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Filtrar por</label>
                         <select id="filtroTipoDataAnaliseCat" onchange="renderizarAnaliseCategorias()">
                             <option value="competencia">Competência</option>
@@ -3438,7 +3446,7 @@
     const carregarEmpresasDebounced = debounce(() => carregarEmpresas(), 350);
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -9970,18 +9978,28 @@
         const selAno = document.getElementById('filtroAnoAnaliseCat');
         const selMes = document.getElementById('filtroMesAnaliseCat');
         const selTipoData = document.getElementById('filtroTipoDataAnaliseCat');
+        const selStatus = document.getElementById('filtroStatusAnaliseCat');
         const grupoSel = selGrupo ? selGrupo.value : '';
         const anoSel = (selAno && selAno.value) ? selAno.value : String(new Date().getFullYear());
         const mesSel = selMes ? selMes.value : '';
         const tipoData = (selTipoData && selTipoData.value === 'vencimento') ? 'vencimento' : 'competencia';
         const campoData = tipoData === 'vencimento' ? 'data_vencimento' : 'data_competencia';
+        const statusSel = selStatus ? selStatus.value : '';
 
-        // Atualiza título e descrição do card conforme a base de data escolhida
+        // Atualiza título e descrição do card conforme a base de data e a situação escolhidas
         const tituloEl = document.getElementById('analiseCatTitulo');
         const descEl = document.getElementById('analiseCatDescricao');
         if (tituloEl) tituloEl.textContent = 'Valores por Categoria (' + (tipoData === 'vencimento' ? 'vencimento' : 'competência') + ')';
-        if (descEl) descEl.textContent = 'Somatório de contas a pagar por categoria e mês, com base na Data de ' +
-            (tipoData === 'vencimento' ? 'Vencimento' : 'Competência') + '. Categorias sem movimento no período selecionado não aparecem na lista.';
+        if (descEl) {
+            const escopoTxt = statusSel === 'pendente'
+                ? 'Considerando apenas lançamentos PENDENTES (mesmo escopo da tela Contas a Pagar).'
+                : (statusSel === 'pago'
+                    ? 'Considerando apenas lançamentos já PAGOS.'
+                    : 'Considerando TODOS os lançamentos (pendentes + pagos) — por isso o total costuma ser maior que o da tela Contas a Pagar, que mostra somente pendentes.');
+            descEl.textContent = 'Somatório de contas a pagar por categoria e mês, com base na Data de ' +
+                (tipoData === 'vencimento' ? 'Vencimento' : 'Competência') + '. ' + escopoTxt +
+                ' Categorias sem movimento no período selecionado não aparecem na lista.';
+        }
 
         const mesesExibir = mesSel ? [parseInt(mesSel, 10) - 1] : [0,1,2,3,4,5,6,7,8,9,10,11];
         const fmt = v => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -9994,7 +10012,9 @@
         cabecalho.innerHTML = headHtml;
         _atualizarIconesOrdenacao('tabelaAnaliseCategorias');
 
-        const contas = (dadosCache.contasAnaliseCategorias || []).filter(c => c[campoData] && c[campoData].startsWith(anoSel));
+        const contas = (dadosCache.contasAnaliseCategorias || [])
+            .filter(c => c[campoData] && c[campoData].startsWith(anoSel))
+            .filter(c => !statusSel || c.status === statusSel);
         const filtroEmpresaCat = document.getElementById('filtroEmpresaAnaliseCat');
         const contasFiltradas = (filtroEmpresaCat && filtroEmpresaCat.value)
             ? contas.filter(c => c.empresa_id == filtroEmpresaCat.value)
@@ -10088,9 +10108,13 @@
 
         const selEmpresa = document.getElementById('filtroEmpresaAnaliseCat');
         const selGrupo = document.getElementById('filtroGrupoDREAnaliseCat');
+        const selTipoDataPdf = document.getElementById('filtroTipoDataAnaliseCat');
+        const selStatusPdf = document.getElementById('filtroStatusAnaliseCat');
         const filtrosAplicados = [];
         if (selEmpresa && selEmpresa.value && selEmpresa.selectedOptions[0]) filtrosAplicados.push('Empresa: ' + selEmpresa.selectedOptions[0].textContent.trim());
         if (selGrupo && selGrupo.value && selGrupo.selectedOptions[0]) filtrosAplicados.push('Grupo DRE: ' + selGrupo.selectedOptions[0].textContent.trim());
+        if (selTipoDataPdf && selTipoDataPdf.selectedOptions[0]) filtrosAplicados.push('Base: ' + selTipoDataPdf.selectedOptions[0].textContent.trim());
+        if (selStatusPdf && selStatusPdf.selectedOptions[0]) filtrosAplicados.push('Situacao: ' + selStatusPdf.selectedOptions[0].textContent.trim());
         if (filtrosAplicados.length) {
             doc.setFontSize(8);
             doc.text(normalizarTexto('Filtros: ' + filtrosAplicados.join(' | ')), 14, 27);
