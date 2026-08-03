@@ -513,6 +513,36 @@
         #tabelaPendentesPagar.hide-col-10 th:nth-child(10), #tabelaPendentesPagar.hide-col-10 td:nth-child(10) { display: none; }
         #tabelaPendentesPagar.hide-col-11 th:nth-child(11), #tabelaPendentesPagar.hide-col-11 td:nth-child(11) { display: none; }
 
+        /* Cabeçalhos ordenáveis (clique para classificar) */
+        th.th-ordenavel {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            padding-right: 16px !important;
+        }
+        th.th-ordenavel:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        th.th-ordenavel::after {
+            content: '\21C5';
+            position: absolute;
+            right: 4px;
+            font-size: 10px;
+            opacity: 0.5;
+        }
+        th.th-ordenavel.th-ordenado-asc::after {
+            content: '\25B2';
+            opacity: 1;
+        }
+        th.th-ordenavel.th-ordenado-desc::after {
+            content: '\25BC';
+            opacity: 1;
+        }
+
+        /* Ocultar colunas de meses na DRE Mensal (mantém Descrição e DRE Acumulada) */
+        #tabelaDREMensal.ocultar-meses-dre th:nth-child(n+2):nth-child(-n+13),
+        #tabelaDREMensal.ocultar-meses-dre td:nth-child(n+2):nth-child(-n+13) { display: none; }
+
         /* Gauge cards no dashboard */
         #dashGauges > div:hover {
             transform: translateY(-2px);
@@ -1474,14 +1504,14 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>Cliente</th>
-                            <th>Descrição</th>
-                            <th>Empresa</th>
-                            <th>Competência</th>
-                            <th>Vencimento</th>
-                            <th>Valor</th>
-                            <th>Parcela</th>
-                            <th>Status</th>
+                            <th class="th-ordenavel" data-campo-ordenar="cliente" onclick="ordenarTabelaPor('tabelaPendentesReceber','cliente')">Cliente</th>
+                            <th class="th-ordenavel" data-campo-ordenar="descricao" onclick="ordenarTabelaPor('tabelaPendentesReceber','descricao')">Descrição</th>
+                            <th class="th-ordenavel" data-campo-ordenar="empresa" onclick="ordenarTabelaPor('tabelaPendentesReceber','empresa')">Empresa</th>
+                            <th class="th-ordenavel" data-campo-ordenar="competencia" onclick="ordenarTabelaPor('tabelaPendentesReceber','competencia')">Competência</th>
+                            <th class="th-ordenavel" data-campo-ordenar="vencimento" onclick="ordenarTabelaPor('tabelaPendentesReceber','vencimento')">Vencimento</th>
+                            <th class="th-ordenavel" data-campo-ordenar="valor" onclick="ordenarTabelaPor('tabelaPendentesReceber','valor')">Valor</th>
+                            <th class="th-ordenavel" data-campo-ordenar="parcela" onclick="ordenarTabelaPor('tabelaPendentesReceber','parcela')">Parcela</th>
+                            <th class="th-ordenavel" data-campo-ordenar="status" onclick="ordenarTabelaPor('tabelaPendentesReceber','status')">Status</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -1515,14 +1545,27 @@
                     </div>
                     <div class="form-group">
                         <label>Categoria</label>
-                        <select id="filtroCategoriaPagar" onchange="atualizarTabelaPendentesPagar()">
+                        <select id="filtroCategoriaPagar" onchange="atualizarFiltroSubcategoriaPagar()">
                             <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Subcategoria</label>
+                        <select id="filtroSubcategoriaPagar" onchange="atualizarTabelaPendentesPagar()">
+                            <option value="">Todas</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Empresa</label>
                         <select id="filtroEmpresaPagar" onchange="atualizarTabelaPendentesPagar()">
                             <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Filtrar por</label>
+                        <select id="filtroTipoDataPagar" onchange="atualizarTabelaPendentesPagar()">
+                            <option value="vencimento">Vencimento</option>
+                            <option value="competencia">Competência</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1579,16 +1622,16 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>Fornecedor</th>
-                            <th>Categoria</th>
-                            <th>Descrição</th>
-                            <th>Empresa</th>
-                            <th>NF</th>
-                            <th>Competência</th>
-                            <th>Vencimento</th>
-                            <th>Valor</th>
-                            <th>Parcela</th>
-                            <th>Status</th>
+                            <th class="th-ordenavel" data-campo-ordenar="fornecedor" onclick="ordenarTabelaPor('tabelaPendentesPagar','fornecedor')">Fornecedor</th>
+                            <th class="th-ordenavel" data-campo-ordenar="categoria" onclick="ordenarTabelaPor('tabelaPendentesPagar','categoria')">Categoria</th>
+                            <th class="th-ordenavel" data-campo-ordenar="descricao" onclick="ordenarTabelaPor('tabelaPendentesPagar','descricao')">Descrição</th>
+                            <th class="th-ordenavel" data-campo-ordenar="empresa" onclick="ordenarTabelaPor('tabelaPendentesPagar','empresa')">Empresa</th>
+                            <th class="th-ordenavel" data-campo-ordenar="nf" onclick="ordenarTabelaPor('tabelaPendentesPagar','nf')">NF</th>
+                            <th class="th-ordenavel" data-campo-ordenar="competencia" onclick="ordenarTabelaPor('tabelaPendentesPagar','competencia')">Competência</th>
+                            <th class="th-ordenavel" data-campo-ordenar="vencimento" onclick="ordenarTabelaPor('tabelaPendentesPagar','vencimento')">Vencimento</th>
+                            <th class="th-ordenavel" data-campo-ordenar="valor" onclick="ordenarTabelaPor('tabelaPendentesPagar','valor')">Valor</th>
+                            <th class="th-ordenavel" data-campo-ordenar="parcela" onclick="ordenarTabelaPor('tabelaPendentesPagar','parcela')">Parcela</th>
+                            <th class="th-ordenavel" data-campo-ordenar="status" onclick="ordenarTabelaPor('tabelaPendentesPagar','status')">Status</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -1682,15 +1725,15 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>Cliente</th>
-                            <th>Descrição</th>
-                            <th>Empresa</th>
-                            <th>Parcela</th>
-                            <th>Valor</th>
-                            <th>Vencimento</th>
-                            <th>Recebimento</th>
-                            <th>Tipo</th>
-                            <th>Banco</th>
+                            <th class="th-ordenavel" data-campo-ordenar="cliente" onclick="ordenarTabelaPor('tabelaRecebidas','cliente')">Cliente</th>
+                            <th class="th-ordenavel" data-campo-ordenar="descricao" onclick="ordenarTabelaPor('tabelaRecebidas','descricao')">Descrição</th>
+                            <th class="th-ordenavel" data-campo-ordenar="empresa" onclick="ordenarTabelaPor('tabelaRecebidas','empresa')">Empresa</th>
+                            <th class="th-ordenavel" data-campo-ordenar="parcela" onclick="ordenarTabelaPor('tabelaRecebidas','parcela')">Parcela</th>
+                            <th class="th-ordenavel" data-campo-ordenar="valor" onclick="ordenarTabelaPor('tabelaRecebidas','valor')">Valor</th>
+                            <th class="th-ordenavel" data-campo-ordenar="vencimento" onclick="ordenarTabelaPor('tabelaRecebidas','vencimento')">Vencimento</th>
+                            <th class="th-ordenavel" data-campo-ordenar="recebimento" onclick="ordenarTabelaPor('tabelaRecebidas','recebimento')">Recebimento</th>
+                            <th class="th-ordenavel" data-campo-ordenar="tipo" onclick="ordenarTabelaPor('tabelaRecebidas','tipo')">Tipo</th>
+                            <th class="th-ordenavel" data-campo-ordenar="banco" onclick="ordenarTabelaPor('tabelaRecebidas','banco')">Banco</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -1786,17 +1829,17 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>Fornecedor</th>
-                            <th>Categoria</th>
-                            <th>Descrição</th>
-                            <th>Empresa</th>
-                            <th>NF</th>
-                            <th>Parcela</th>
-                            <th>Valor</th>
-                            <th>Vencimento</th>
-                            <th>Pagamento</th>
-                            <th>Tipo</th>
-                            <th>Banco</th>
+                            <th class="th-ordenavel" data-campo-ordenar="fornecedor" onclick="ordenarTabelaPor('tabelaPagas','fornecedor')">Fornecedor</th>
+                            <th class="th-ordenavel" data-campo-ordenar="categoria" onclick="ordenarTabelaPor('tabelaPagas','categoria')">Categoria</th>
+                            <th class="th-ordenavel" data-campo-ordenar="descricao" onclick="ordenarTabelaPor('tabelaPagas','descricao')">Descrição</th>
+                            <th class="th-ordenavel" data-campo-ordenar="empresa" onclick="ordenarTabelaPor('tabelaPagas','empresa')">Empresa</th>
+                            <th class="th-ordenavel" data-campo-ordenar="nf" onclick="ordenarTabelaPor('tabelaPagas','nf')">NF</th>
+                            <th class="th-ordenavel" data-campo-ordenar="parcela" onclick="ordenarTabelaPor('tabelaPagas','parcela')">Parcela</th>
+                            <th class="th-ordenavel" data-campo-ordenar="valor" onclick="ordenarTabelaPor('tabelaPagas','valor')">Valor</th>
+                            <th class="th-ordenavel" data-campo-ordenar="vencimento" onclick="ordenarTabelaPor('tabelaPagas','vencimento')">Vencimento</th>
+                            <th class="th-ordenavel" data-campo-ordenar="pagamento" onclick="ordenarTabelaPor('tabelaPagas','pagamento')">Pagamento</th>
+                            <th class="th-ordenavel" data-campo-ordenar="tipo" onclick="ordenarTabelaPor('tabelaPagas','tipo')">Tipo</th>
+                            <th class="th-ordenavel" data-campo-ordenar="banco" onclick="ordenarTabelaPor('tabelaPagas','banco')">Banco</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -2479,7 +2522,16 @@
                 </div>
             </div>
             <div class="card" id="cardDREMensal" style="display:none;margin-top:16px;">
-                <div class="card-title" id="tituloDREMensal">📅 DRE Mensal</div>
+                <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                    <span id="tituloDREMensal">📅 DRE Mensal</span>
+                    <div style="display:flex;align-items:center;gap:14px;font-size:12px;font-weight:400;">
+                        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+                            <input type="checkbox" id="chkOcultarMesesDRE" onchange="toggleOcultarMesesDRE()">
+                            Ocultar meses
+                        </label>
+                        <button class="btn btn-secondary btn-small" onclick="exportarExcelDREMensal()" style="background:#1D6F42;color:white;">📊 Excel</button>
+                    </div>
+                </div>
                 <div style="overflow-x:auto;">
                     <table id="tabelaDREMensal" style="font-size:12px;min-width:900px;">
                         <thead><tr id="dreHeaderMeses"><th style="min-width:180px;">Descrição</th></tr></thead>
@@ -3351,7 +3403,7 @@
     const carregarEmpresasDebounced = debounce(() => carregarEmpresas(), 350);
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroEmpresaPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -3870,6 +3922,21 @@
             dadosCache.subcategorias = dados;
             atualizarTabelaSubcategorias();
             atualizarSelectSubcategoriaCategoriaPai();
+            const selFiltro = document.getElementById('filtroSubcategoriaPagar');
+            if (selFiltro) {
+                const categoriaId = document.getElementById('filtroCategoriaPagar').value;
+                let lista = dados.filter(s => s.ativo !== false);
+                if (categoriaId) lista = lista.filter(s => s.categoria_id == categoriaId);
+                selFiltro.innerHTML = '<option value="">Todas</option>';
+                lista.forEach(sub => {
+                    let label = sub.nome;
+                    if (!categoriaId) {
+                        const cat = dadosCache.categorias.find(c => c.id === sub.categoria_id);
+                        if (cat) label += ' (' + cat.nome + ')';
+                    }
+                    selFiltro.innerHTML += `<option value="${sub.id}">${label}</option>`;
+                });
+            }
         }
     }
 
@@ -4479,6 +4546,13 @@
         if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.startsWith(filtroAno.value));
         if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.includes('-' + filtroMes.value + '-'));
 
+        // Ordenação: por cabeçalho clicado, ou por padrão (lançamentos mais recentes primeiro)
+        if (_estadoOrdenacaoTabelas.tabelaPendentesReceber && _estadoOrdenacaoTabelas.tabelaPendentesReceber.campo) {
+            filtrado = _aplicarOrdenacaoTabela('tabelaPendentesReceber', filtrado);
+        } else {
+            filtrado = [...filtrado].sort((a, b) => b.id - a.id);
+        }
+
         // Calcular totais
         const hoje = new Date(); hoje.setHours(0,0,0,0);
         let totalFiltro = 0, totalAtrasado = 0;
@@ -4626,17 +4700,25 @@
         let filtrado = dadosCache.contasPagar;
         const filtroFornecedor = document.getElementById('filtroFornecedorPagar');
         const filtroCategoria = document.getElementById('filtroCategoriaPagar');
+        const filtroSubcategoria = document.getElementById('filtroSubcategoriaPagar');
         const filtroEmpresa = document.getElementById('filtroEmpresaPagar');
         const filtroAno = document.getElementById('filtroAnoPagar');
         const filtroMes = document.getElementById('filtroMesPagar');
+        const filtroTipoData = document.getElementById('filtroTipoDataPagar');
+        const campoData = (filtroTipoData && filtroTipoData.value === 'competencia') ? 'data_competencia' : 'data_vencimento';
         if (filtroFornecedor && filtroFornecedor.value) filtrado = filtrado.filter(c => c.fornecedor_id == filtroFornecedor.value);
         if (filtroCategoria && filtroCategoria.value) filtrado = filtrado.filter(c => c.categoria_id == filtroCategoria.value);
+        if (filtroSubcategoria && filtroSubcategoria.value) filtrado = filtrado.filter(c => c.subcategoria_id == filtroSubcategoria.value);
         if (filtroEmpresa && filtroEmpresa.value) filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
-        if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.startsWith(filtroAno.value));
-        if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.includes('-' + filtroMes.value + '-'));
+        if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c[campoData] && c[campoData].startsWith(filtroAno.value));
+        if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c[campoData] && c[campoData].includes('-' + filtroMes.value + '-'));
 
-        // Lançamentos mais recentes primeiro (novos lançamentos aparecem no topo da lista)
-        filtrado = [...filtrado].sort((a, b) => b.id - a.id);
+        // Ordenação: por cabeçalho clicado, ou por padrão (lançamentos mais recentes primeiro)
+        if (_estadoOrdenacaoTabelas.tabelaPendentesPagar && _estadoOrdenacaoTabelas.tabelaPendentesPagar.campo) {
+            filtrado = _aplicarOrdenacaoTabela('tabelaPendentesPagar', filtrado);
+        } else {
+            filtrado = [...filtrado].sort((a, b) => b.id - a.id);
+        }
 
         // Calcular totais
         const hoje = new Date(); hoje.setHours(0,0,0,0);
@@ -4900,15 +4982,20 @@
         if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c.data_recebimento && c.data_recebimento.includes('-' + filtroMes.value + '-'));
         if (filtroDia && filtroDia.value) filtrado = filtrado.filter(c => c.data_recebimento && c.data_recebimento.endsWith('-' + filtroDia.value));
 
-        const ordenar = document.getElementById('ordenarRecebida');
-        const modoOrdenar = ordenar ? ordenar.value : 'recebimento_desc';
-        const [campoOrdenar, direcaoOrdenar] = modoOrdenar.split('_');
-        const campoData = campoOrdenar === 'vencimento' ? 'data_vencimento' : 'data_recebimento';
-        filtrado = [...filtrado].sort((a, b) => {
-            const da = a[campoData] || '';
-            const db = b[campoData] || '';
-            return direcaoOrdenar === 'asc' ? da.localeCompare(db) : db.localeCompare(da);
-        });
+        // Ordenação: clique no cabeçalho tem prioridade sobre o dropdown "Ordenar por"
+        if (_estadoOrdenacaoTabelas.tabelaRecebidas && _estadoOrdenacaoTabelas.tabelaRecebidas.campo) {
+            filtrado = _aplicarOrdenacaoTabela('tabelaRecebidas', filtrado);
+        } else {
+            const ordenar = document.getElementById('ordenarRecebida');
+            const modoOrdenar = ordenar ? ordenar.value : 'recebimento_desc';
+            const [campoOrdenar, direcaoOrdenar] = modoOrdenar.split('_');
+            const campoData = campoOrdenar === 'vencimento' ? 'data_vencimento' : 'data_recebimento';
+            filtrado = [...filtrado].sort((a, b) => {
+                const da = a[campoData] || '';
+                const db = b[campoData] || '';
+                return direcaoOrdenar === 'asc' ? da.localeCompare(db) : db.localeCompare(da);
+            });
+        }
 
         filtrado.forEach(conta => {
             const cliente = dadosCache.clientes.find(c => c.id === conta.cliente_id);
@@ -4972,15 +5059,20 @@
         if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c.data_pagamento && c.data_pagamento.includes('-' + filtroMes.value + '-'));
         if (filtroDia && filtroDia.value) filtrado = filtrado.filter(c => c.data_pagamento && c.data_pagamento.endsWith('-' + filtroDia.value));
 
-        const ordenar = document.getElementById('ordenarPaga');
-        const modoOrdenar = ordenar ? ordenar.value : 'pagamento_desc';
-        const [campoOrdenar, direcaoOrdenar] = modoOrdenar.split('_');
-        const campoData = campoOrdenar === 'vencimento' ? 'data_vencimento' : 'data_pagamento';
-        filtrado = [...filtrado].sort((a, b) => {
-            const da = a[campoData] || '';
-            const db = b[campoData] || '';
-            return direcaoOrdenar === 'asc' ? da.localeCompare(db) : db.localeCompare(da);
-        });
+        // Ordenação: clique no cabeçalho tem prioridade sobre o dropdown "Ordenar por"
+        if (_estadoOrdenacaoTabelas.tabelaPagas && _estadoOrdenacaoTabelas.tabelaPagas.campo) {
+            filtrado = _aplicarOrdenacaoTabela('tabelaPagas', filtrado);
+        } else {
+            const ordenar = document.getElementById('ordenarPaga');
+            const modoOrdenar = ordenar ? ordenar.value : 'pagamento_desc';
+            const [campoOrdenar, direcaoOrdenar] = modoOrdenar.split('_');
+            const campoData = campoOrdenar === 'vencimento' ? 'data_vencimento' : 'data_pagamento';
+            filtrado = [...filtrado].sort((a, b) => {
+                const da = a[campoData] || '';
+                const db = b[campoData] || '';
+                return direcaoOrdenar === 'asc' ? da.localeCompare(db) : db.localeCompare(da);
+            });
+        }
 
         filtrado.forEach(conta => {
             const fornecedor = dadosCache.fornecedores.find(f => f.id === conta.fornecedor_id);
@@ -5598,6 +5690,97 @@
         });
     }
 
+    // ── ORDENAÇÃO POR CABEÇALHO (clique nas colunas) ────────────────────────
+    // Estado de ordenação por tabela: { campo, dir }
+    const _estadoOrdenacaoTabelas = {};
+
+    // Extrai o valor comparável de uma conta para um determinado campo de ordenação
+    function _valorOrdenacaoConta(conta, campo) {
+        switch (campo) {
+            case 'fornecedor': {
+                const f = dadosCache.fornecedores.find(x => x.id === conta.fornecedor_id);
+                return f ? f.nome.toLowerCase() : '';
+            }
+            case 'cliente': {
+                const c = dadosCache.clientes.find(x => x.id === conta.cliente_id);
+                return c ? c.nome.toLowerCase() : '';
+            }
+            case 'categoria': {
+                const c = dadosCache.categorias.find(x => x.id === conta.categoria_id);
+                return c ? c.nome.toLowerCase() : '';
+            }
+            case 'empresa': {
+                const e = dadosCache.empresas.find(x => x.id === conta.empresa_id);
+                return e ? e.nome.toLowerCase() : '';
+            }
+            case 'banco': {
+                const b = (dadosCache.bancos || []).find(x => x.id === conta.banco_id);
+                return b ? b.nome.toLowerCase() : '';
+            }
+            case 'descricao': return (conta.descricao || '').toLowerCase();
+            case 'nf':         return (conta.nota_fiscal || '').toLowerCase();
+            case 'competencia':return conta.data_competencia || '';
+            case 'vencimento': return conta.data_vencimento || '';
+            case 'pagamento':  return conta.data_pagamento || '';
+            case 'recebimento':return conta.data_recebimento || '';
+            case 'valor':      return parseFloat(conta.valor || 0);
+            case 'parcela':    return conta.total_parcelas > 1 ? conta.parcela_atual : 0;
+            case 'status':     return conta.status || '';
+            case 'tipo':       return conta.tipo_pagamento || conta.tipo_recebimento || '';
+            default: return '';
+        }
+    }
+
+    // Aplica a ordenação de cabeçalho ativa (se houver) a uma lista já filtrada
+    function _aplicarOrdenacaoTabela(tabelaId, lista) {
+        const estado = _estadoOrdenacaoTabelas[tabelaId];
+        if (!estado || !estado.campo) return lista;
+        const dir = estado.dir === 'asc' ? 1 : -1;
+        return [...lista].sort((a, b) => {
+            const va = _valorOrdenacaoConta(a, estado.campo);
+            const vb = _valorOrdenacaoConta(b, estado.campo);
+            if (va < vb) return -1 * dir;
+            if (va > vb) return 1 * dir;
+            return 0;
+        });
+    }
+
+    // Atualiza os ícones (▲/▼) dos cabeçalhos ordenáveis de uma tabela
+    function _atualizarIconesOrdenacao(tabelaId) {
+        const tabela = document.getElementById(tabelaId);
+        if (!tabela) return;
+        const estado = _estadoOrdenacaoTabelas[tabelaId] || {};
+        tabela.querySelectorAll('th[data-campo-ordenar]').forEach(th => {
+            th.classList.remove('th-ordenado-asc', 'th-ordenado-desc');
+            if (th.dataset.campoOrdenar === estado.campo) {
+                th.classList.add(estado.dir === 'asc' ? 'th-ordenado-asc' : 'th-ordenado-desc');
+            }
+        });
+    }
+
+    // Mapa de re-renderização por tabela (chamado ao clicar num cabeçalho ordenável)
+    const _RENDER_TABELA = {
+        tabelaPendentesPagar:   () => atualizarTabelaPendentesPagar(),
+        tabelaPendentesReceber: () => atualizarTabelaPendentesReceber(),
+        tabelaPagas:            () => atualizarTabelaPagas(),
+        tabelaRecebidas:        () => atualizarTabelaRecebidas()
+    };
+
+    // Chamado pelo onclick dos <th data-campo-ordenar> das tabelas de lançamentos
+    function ordenarTabelaPor(tabelaId, campo) {
+        const estado = _estadoOrdenacaoTabelas[tabelaId] || { campo: null, dir: 'asc' };
+        if (estado.campo === campo) {
+            estado.dir = estado.dir === 'asc' ? 'desc' : 'asc';
+        } else {
+            estado.campo = campo;
+            estado.dir = 'asc';
+        }
+        _estadoOrdenacaoTabelas[tabelaId] = estado;
+        _atualizarIconesOrdenacao(tabelaId);
+        if (_RENDER_TABELA[tabelaId]) _RENDER_TABELA[tabelaId]();
+    }
+    // ──────────────────────────────────────────────────────────────────────
+
     // UTILITÁRIOS
     function preencherAnos() {
         const selects = document.querySelectorAll('select[id*="Ano"]');
@@ -5621,6 +5804,30 @@
                 select.innerHTML += `<option value="${String(dia).padStart(2, '0')}">${dia}</option>`;
             }
         });
+    }
+
+    // Popula o filtro de Subcategoria da tela "Contas a Pagar", vinculado à Categoria selecionada.
+    // Se nenhuma categoria estiver selecionada, lista todas as subcategorias (com o nome da categoria entre parênteses).
+    function atualizarFiltroSubcategoriaPagar() {
+        const select = document.getElementById('filtroSubcategoriaPagar');
+        if (!select) { atualizarTabelaPendentesPagar(); return; }
+        const categoriaId = document.getElementById('filtroCategoriaPagar').value;
+        const valorAtual = select.value;
+        let lista = (dadosCache.subcategorias || []).filter(s => s.ativo !== false);
+        if (categoriaId) lista = lista.filter(s => s.categoria_id == categoriaId);
+
+        select.innerHTML = '<option value="">Todas</option>';
+        lista.forEach(sub => {
+            let label = sub.nome;
+            if (!categoriaId) {
+                const cat = dadosCache.categorias.find(c => c.id === sub.categoria_id);
+                if (cat) label += ' (' + cat.nome + ')';
+            }
+            select.innerHTML += `<option value="${sub.id}">${label}</option>`;
+        });
+        if (lista.some(s => String(s.id) === valorAtual)) select.value = valorAtual;
+
+        atualizarTabelaPendentesPagar();
     }
 
     function preencherSubcategoriasPagar() {
@@ -8909,7 +9116,13 @@
             if (cardMensal) {
                 cardMensal.style.display = '';
                 document.getElementById('tituloDREMensal').textContent = '📅 DRE Mensal — ' + anoSel;
+                // Guarda os dados usados na tabela mensal para reaproveitar na exportação Excel
+                window._dreLancsMensal = dreLancs;
+                window._dreContasRecMensal = contasRec;
+                window._dreContasPagMensal = contasPag;
+                window._dreAnoSelMensal = anoSel;
                 gerarTabelaMensalDRE(dreLancs, contasRec, contasPag, anoSel);
+                aplicarEstadoOcultarMesesDRE();
             }
         } else {
             const cardMensal = document.getElementById('cardDREMensal');
@@ -9038,7 +9251,7 @@
         // Cabeçalho com meses
         headerRow.innerHTML = '<th style="min-width:180px;text-align:left;">Descrição</th>' +
             mNomes.map(m => '<th style="text-align:right;min-width:90px;">' + m + '/' + String(ano).slice(2) + '</th>').join('') +
-            '<th style="text-align:right;min-width:100px;">Total</th>';
+            '<th style="text-align:right;min-width:120px;">DRE Acumulada</th>';
 
         // Para cada mês, calcular valores por grupo
         const dados = {};
@@ -9089,7 +9302,7 @@
             return { rb, ded, rl, cpv, lb, dc, da, rf, df, ebt, emp, inv, or, od, res };
         };
 
-        const fmtV = v => v !== 0 ? 'R$&nbsp;' + Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '-';
+        const fmtV = v => v !== 0 ? (v > 0 ? '+' : '\u2212') + 'R$&nbsp;' + Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '-';
         const cor  = v => v < 0 ? 'color:#dc3545;' : v > 0 ? 'color:#28a745;' : 'color:#ccc;';
 
         // ---- Subcategorias do CPV por mes ----
@@ -9147,7 +9360,7 @@
             { label: '(-) Investimentos',         fn: m => -calcMes(m).inv, bg: '' },
             { label: '(+) Outras Receitas',       fn: m => calcMes(m).or,   bg: '' },
             { label: '(-) Outras Despesas',       fn: m => -calcMes(m).od,  bg: '' },
-            { label: '= Resultado L\u00edquido',  fn: m => calcMes(m).res,  bg: 'var(--cor-primaria)', cor: 'white', bold: true },
+            { label: '= Resultado L\u00edquido',  fn: m => calcMes(m).res,  bg: 'var(--cor-primaria)', bold: true },
         ];
 
         tbody.innerHTML = '';
@@ -9155,12 +9368,12 @@
             const vals = Array.from({length: 12}, (_, m) => linha.fn(m));
             const total = vals.reduce((s, v) => s + v, 0);
             const rowBg = linha.bg ? 'background:' + linha.bg + ';' : '';
-            const rowFc = linha.cor ? 'color:' + linha.cor + ';' : '';
+            const labelFc = linha.bg === 'var(--cor-primaria)' ? 'color:white;' : '';
             const bold  = linha.bold ? 'font-weight:700;' : '';
-            tbody.innerHTML += '<tr style="' + rowBg + rowFc + bold + '">' +
-                '<td style="padding:5px 8px;' + bold + '">' + linha.label + '</td>' +
-                vals.map(v => '<td style="text-align:right;padding:5px 8px;' + (linha.cor ? '' : cor(v)) + '">' + fmtV(v) + '</td>').join('') +
-                '<td style="text-align:right;padding:5px 8px;font-weight:700;' + (linha.cor ? '' : cor(total)) + '">' + fmtV(total) + '</td>' +
+            tbody.innerHTML += '<tr style="' + rowBg + '">' +
+                '<td style="padding:3px 8px;' + labelFc + bold + '">' + linha.label + '</td>' +
+                vals.map(v => '<td style="text-align:right;padding:3px 8px;' + cor(v) + '">' + fmtV(v) + '</td>').join('') +
+                '<td style="text-align:right;padding:3px 8px;font-weight:700;' + cor(total) + '">' + fmtV(total) + '</td>' +
                 '</tr>';
 
             // Subcategorias expandidas
@@ -9169,14 +9382,119 @@
                     const totalSub = mesesSub.reduce((s,v)=>s+v,0);
                     if (totalSub === 0) return;
                     tbody.innerHTML += '<tr style="background:#fafafa;">' +
-                        '<td style="padding:4px 8px 4px 22px;font-size:11px;color:#888;">' +
+                        '<td style="padding:2px 8px 2px 22px;font-size:11px;color:#888;">' +
                         '<span style="color:#bbb;margin-right:4px;">\u21b3</span>' + nomeSub + '</td>' +
-                        mesesSub.map(v => '<td style="text-align:right;padding:4px 8px;font-size:11px;color:#dc3545;">' + (v > 0 ? fmtV(-v) : '-') + '</td>').join('') +
-                        '<td style="text-align:right;padding:4px 8px;font-size:11px;font-weight:600;color:#dc3545;">' + fmtV(-totalSub) + '</td>' +
+                        mesesSub.map(v => '<td style="text-align:right;padding:2px 8px;font-size:11px;color:#dc3545;">' + (v > 0 ? fmtV(-v) : '-') + '</td>').join('') +
+                        '<td style="text-align:right;padding:2px 8px;font-size:11px;font-weight:600;color:#dc3545;">' + fmtV(-totalSub) + '</td>' +
                         '</tr>';
                 });
             }
         });
+    }
+
+    // Oculta/mostra as colunas de meses (Jan-Dez) na DRE Mensal, mantendo Descrição e DRE Acumulada.
+    // Preferência salva por usuário, aplicada automaticamente ao carregar a DRE.
+    function _chaveOcultarMesesDRE() {
+        const user = usuarioAtual ? usuarioAtual.email : 'guest';
+        return 'cap_dre_ocultar_meses_' + user;
+    }
+
+    function toggleOcultarMesesDRE() {
+        const chk = document.getElementById('chkOcultarMesesDRE');
+        const tabela = document.getElementById('tabelaDREMensal');
+        if (!chk || !tabela) return;
+        tabela.classList.toggle('ocultar-meses-dre', chk.checked);
+        localStorage.setItem(_chaveOcultarMesesDRE(), chk.checked ? '1' : '0');
+    }
+
+    function aplicarEstadoOcultarMesesDRE() {
+        const chk = document.getElementById('chkOcultarMesesDRE');
+        const tabela = document.getElementById('tabelaDREMensal');
+        if (!chk || !tabela) return;
+        const ativo = localStorage.getItem(_chaveOcultarMesesDRE()) === '1';
+        chk.checked = ativo;
+        tabela.classList.toggle('ocultar-meses-dre', ativo);
+    }
+
+    // Exporta a DRE Mensal (Jan-Dez + DRE Acumulada) para uma planilha Excel (.xlsx)
+    function exportarExcelDREMensal() {
+        const dreLancs   = window._dreLancsMensal || [];
+        const contasRec  = window._dreContasRecMensal || [];
+        const contasPag  = window._dreContasPagMensal || [];
+        const ano        = window._dreAnoSelMensal;
+        if (!ano) { alert('Selecione um ano na DRE para exportar a DRE Mensal em Excel.'); return; }
+
+        const mNomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+        const dados = {};
+        DRE_GRUPOS.forEach(g => { dados[g.id] = Array(12).fill(0); });
+        (dreLancs || []).filter(l => l.competencia && l.competencia.startsWith(ano)).forEach(l => {
+            const m = parseInt(l.competencia.substring(5,7)) - 1;
+            if (m < 0 || m > 11 || !dados[l.grupo]) return;
+            dados[l.grupo][m] += parseFloat(l.valor || 0);
+        });
+        contasRec.filter(c => c.data_competencia && c.data_competencia.startsWith(ano)).forEach(c => {
+            const m = parseInt(c.data_competencia.substring(5,7)) - 1;
+            const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
+            const g = (cat && cat.grupo_dre) ? cat.grupo_dre : 'RECEITA_BRUTA';
+            if (m < 0 || m > 11 || !dados[g]) return;
+            dados[g][m] += parseFloat(c.valor || 0);
+        });
+        contasPag.filter(c => c.data_competencia && c.data_competencia.startsWith(ano)).forEach(c => {
+            const m = parseInt(c.data_competencia.substring(5,7)) - 1;
+            const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
+            const g = (cat && cat.grupo_dre) ? cat.grupo_dre : 'DESP_ADMIN';
+            if (m < 0 || m > 11 || !dados[g]) return;
+            dados[g][m] += parseFloat(c.valor || 0);
+        });
+
+        const calcMes = (m) => {
+            const rb = dados['RECEITA_BRUTA'][m];
+            const ded = dados['DEDUCOES'][m];
+            const rl = rb - ded;
+            const cpv = dados['CPV'][m];
+            const lb = rl - cpv;
+            const dc = dados['DESP_COMERCIAL'][m];
+            const da = dados['DESP_ADMIN'][m];
+            const rf = dados['RECEITA_FINANCEIRA'][m];
+            const df = dados['DESP_FINANCEIRA'][m];
+            const ebt = lb - dc - da + rf - df;
+            const emp = dados['EMPRESTIMO'][m];
+            const inv = dados['INVESTIMENTO'][m];
+            const or = dados['OUTRAS_RECEITAS'][m];
+            const od = dados['OUTRAS_DESPESAS'][m];
+            const res = ebt - emp - inv + or - od;
+            return { rb, ded, rl, cpv, lb, dc, da, rf, df, ebt, emp, inv, or, od, res };
+        };
+
+        const linhasExcel = [
+            { label: 'Receita Bruta',             fn: m => calcMes(m).rb },
+            { label: '(-) Deduções',               fn: m => -calcMes(m).ded },
+            { label: '= Receita Líquida',          fn: m => calcMes(m).rl },
+            { label: '(-) CPV/CSP',                fn: m => -calcMes(m).cpv },
+            { label: '= Lucro Bruto',              fn: m => calcMes(m).lb },
+            { label: '(-) Desp. Comerciais',       fn: m => -calcMes(m).dc },
+            { label: '(-) Desp. Administrativas',  fn: m => -calcMes(m).da },
+            { label: '(+) Rec. Financeiras',       fn: m => calcMes(m).rf },
+            { label: '(-) Desp. Financeiras',      fn: m => -calcMes(m).df },
+            { label: '= EBITDA',                   fn: m => calcMes(m).ebt },
+            { label: '(-) Empréstimos',            fn: m => -calcMes(m).emp },
+            { label: '(-) Investimentos',          fn: m => -calcMes(m).inv },
+            { label: '(+) Outras Receitas',        fn: m => calcMes(m).or },
+            { label: '(-) Outras Despesas',        fn: m => -calcMes(m).od },
+            { label: '= Resultado Líquido',        fn: m => calcMes(m).res },
+        ];
+
+        const rows = [['Descrição'].concat(mNomes.map(m => m + '/' + String(ano).slice(2))).concat(['DRE Acumulada'])];
+        linhasExcel.forEach(linha => {
+            const vals = Array.from({length: 12}, (_, m) => linha.fn(m));
+            const total = vals.reduce((s, v) => s + v, 0);
+            rows.push([linha.label].concat(vals.map(v => Math.round(v * 100) / 100)).concat([Math.round(total * 100) / 100]));
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'DRE Mensal');
+        XLSX.writeFile(wb, 'DRE_Mensal_' + ano + '.xlsx');
     }
 
     function criarGraficoDRE(dreLancs, contasRec, contasPag, anoSel) {
