@@ -1454,6 +1454,13 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Filtrar por</label>
+                        <select id="filtroTipoDataReceber" onchange="atualizarTabelaPendentesReceber()">
+                            <option value="vencimento">Vencimento</option>
+                            <option value="competencia">Competência</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Ano</label>
                         <select id="filtroAnoReceber" onchange="atualizarTabelaPendentesReceber()">
                             <option value="">Todos</option>
@@ -2550,6 +2557,7 @@
         <div id="analise-categorias" class="page">
             <div class="page-header">
                 <h1>🔎 Análise de Categorias</h1>
+                <button class="btn btn-secondary" onclick="gerarPDFAnaliseCategorias()" style="background:#e67e22;color:white;">📄 PDF</button>
             </div>
             <div class="filter-container">
                 <div class="filter-row" style="align-items:flex-end;gap:12px;flex-wrap:wrap;">
@@ -2563,6 +2571,13 @@
                         <label>Grupo DRE</label>
                         <select id="filtroGrupoDREAnaliseCat" onchange="renderizarAnaliseCategorias()">
                             <option value="">Todos os grupos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Filtrar por</label>
+                        <select id="filtroTipoDataAnaliseCat" onchange="renderizarAnaliseCategorias()">
+                            <option value="competencia">Competência</option>
+                            <option value="vencimento">Vencimento</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -2584,8 +2599,8 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-title">Valores por Categoria (competência)</div>
-                <div style="font-size:12px;color:#888;margin-bottom:10px;">Somatório de contas a pagar por categoria e mês, com base na Data de Competência. Categorias sem movimento no período selecionado não aparecem na lista.</div>
+                <div class="card-title" id="analiseCatTitulo">Valores por Categoria (competência)</div>
+                <div style="font-size:12px;color:#888;margin-bottom:10px;" id="analiseCatDescricao">Somatório de contas a pagar por categoria e mês, com base na Data de Competência. Categorias sem movimento no período selecionado não aparecem na lista.</div>
                 <div style="overflow-x:auto;">
                     <table id="tabelaAnaliseCategorias" style="font-size:12.5px;min-width:900px;">
                         <thead><tr id="analiseCategoriasCabecalho"></tr></thead>
@@ -3423,7 +3438,7 @@
     const carregarEmpresasDebounced = debounce(() => carregarEmpresas(), 350);
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -4553,10 +4568,12 @@
         const filtroEmpresa = document.getElementById('filtroEmpresaReceber');
         const filtroAno = document.getElementById('filtroAnoReceber');
         const filtroMes = document.getElementById('filtroMesReceber');
+        const filtroTipoData = document.getElementById('filtroTipoDataReceber');
+        const campoData = (filtroTipoData && filtroTipoData.value === 'competencia') ? 'data_competencia' : 'data_vencimento';
         if (filtroCliente && filtroCliente.value) filtrado = filtrado.filter(c => c.cliente_id == filtroCliente.value);
         if (filtroEmpresa && filtroEmpresa.value) filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
-        if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.startsWith(filtroAno.value));
-        if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c.data_vencimento && c.data_vencimento.includes('-' + filtroMes.value + '-'));
+        if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c[campoData] && c[campoData].startsWith(filtroAno.value));
+        if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c[campoData] && c[campoData].includes('-' + filtroMes.value + '-'));
 
         // Ordenação: por cabeçalho clicado, ou por padrão (lançamentos mais recentes primeiro)
         if (_estadoOrdenacaoTabelas.tabelaPendentesReceber && _estadoOrdenacaoTabelas.tabelaPendentesReceber.campo) {
@@ -9716,7 +9733,7 @@
                 larguras: [34, 46, 34, 20, 20, 22, 14, 18],
                 alinhamentos: ['left', 'left', 'left', 'center', 'center', 'right', 'center', 'center'],
                 tableId: 'tabelaPendentesReceber',
-                filtroIds: ['filtroClienteReceber', 'filtroEmpresaReceber', 'filtroAnoReceber', 'filtroMesReceber']
+                filtroIds: ['filtroClienteReceber', 'filtroEmpresaReceber', 'filtroTipoDataReceber', 'filtroAnoReceber', 'filtroMesReceber']
             },
             pagar: {
                 titulo: 'Contas a Pagar (Pendentes)',
@@ -9724,7 +9741,7 @@
                 larguras: [30, 24, 34, 30, 14, 18, 18, 20, 12, 16],
                 alinhamentos: ['left', 'left', 'left', 'left', 'center', 'center', 'center', 'right', 'center', 'center'],
                 tableId: 'tabelaPendentesPagar',
-                filtroIds: ['filtroFornecedorPagar', 'filtroCategoriaPagar', 'filtroEmpresaPagar', 'filtroAnoPagar', 'filtroMesPagar']
+                filtroIds: ['filtroFornecedorPagar', 'filtroCategoriaPagar', 'filtroSubcategoriaPagar', 'filtroEmpresaPagar', 'filtroTipoDataPagar', 'filtroAnoPagar', 'filtroMesPagar']
             },
             recebidas: {
                 titulo: 'Contas Recebidas',
@@ -9952,19 +9969,32 @@
         const selGrupo = document.getElementById('filtroGrupoDREAnaliseCat');
         const selAno = document.getElementById('filtroAnoAnaliseCat');
         const selMes = document.getElementById('filtroMesAnaliseCat');
+        const selTipoData = document.getElementById('filtroTipoDataAnaliseCat');
         const grupoSel = selGrupo ? selGrupo.value : '';
         const anoSel = (selAno && selAno.value) ? selAno.value : String(new Date().getFullYear());
         const mesSel = selMes ? selMes.value : '';
+        const tipoData = (selTipoData && selTipoData.value === 'vencimento') ? 'vencimento' : 'competencia';
+        const campoData = tipoData === 'vencimento' ? 'data_vencimento' : 'data_competencia';
+
+        // Atualiza título e descrição do card conforme a base de data escolhida
+        const tituloEl = document.getElementById('analiseCatTitulo');
+        const descEl = document.getElementById('analiseCatDescricao');
+        if (tituloEl) tituloEl.textContent = 'Valores por Categoria (' + (tipoData === 'vencimento' ? 'vencimento' : 'competência') + ')';
+        if (descEl) descEl.textContent = 'Somatório de contas a pagar por categoria e mês, com base na Data de ' +
+            (tipoData === 'vencimento' ? 'Vencimento' : 'Competência') + '. Categorias sem movimento no período selecionado não aparecem na lista.';
 
         const mesesExibir = mesSel ? [parseInt(mesSel, 10) - 1] : [0,1,2,3,4,5,6,7,8,9,10,11];
         const fmt = v => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-        let headHtml = '<th style="text-align:left;min-width:200px;">Categoria</th><th style="min-width:150px;">Grupo DRE</th>';
-        mesesExibir.forEach(m => headHtml += '<th style="text-align:right;min-width:100px;">' + _MESES_ABREV_ANALISE[m] + '/' + anoSel.slice(2) + '</th>');
-        headHtml += '<th style="text-align:right;min-width:110px;">Total</th>';
+        // Cabeçalho — colunas ordenáveis (clique para classificar)
+        let headHtml = '<th class="th-ordenavel" data-campo-ordenar="categoria" onclick="ordenarAnaliseCategoriaPor(\'categoria\')" style="text-align:left;min-width:200px;">Categoria</th>' +
+            '<th class="th-ordenavel" data-campo-ordenar="grupo" onclick="ordenarAnaliseCategoriaPor(\'grupo\')" style="min-width:150px;">Grupo DRE</th>';
+        mesesExibir.forEach(m => headHtml += '<th class="th-ordenavel" data-campo-ordenar="m' + m + '" onclick="ordenarAnaliseCategoriaPor(\'m' + m + '\')" style="text-align:right;min-width:100px;">' + _MESES_ABREV_ANALISE[m] + '/' + anoSel.slice(2) + '</th>');
+        headHtml += '<th class="th-ordenavel" data-campo-ordenar="total" onclick="ordenarAnaliseCategoriaPor(\'total\')" style="text-align:right;min-width:110px;">Total</th>';
         cabecalho.innerHTML = headHtml;
+        _atualizarIconesOrdenacao('tabelaAnaliseCategorias');
 
-        const contas = (dadosCache.contasAnaliseCategorias || []).filter(c => c.data_competencia && c.data_competencia.startsWith(anoSel));
+        const contas = (dadosCache.contasAnaliseCategorias || []).filter(c => c[campoData] && c[campoData].startsWith(anoSel));
         const filtroEmpresaCat = document.getElementById('filtroEmpresaAnaliseCat');
         const contasFiltradas = (filtroEmpresaCat && filtroEmpresaCat.value)
             ? contas.filter(c => c.empresa_id == filtroEmpresaCat.value)
@@ -9974,15 +10004,16 @@
         const totalPorMes = {};
         mesesExibir.forEach(m => totalPorMes[m] = 0);
         let totalGeral = 0;
-        let corpoHtml = '';
 
+        // Monta os dados de cada linha (categoria) antes de renderizar, para permitir ordenação
+        const linhas = [];
         categorias.forEach(cat => {
             const valoresPorMes = {};
             let totalCategoria = 0;
             mesesExibir.forEach(m => {
                 const mesStr = String(m + 1).padStart(2, '0');
                 const soma = contasFiltradas
-                    .filter(c => c.categoria_id === cat.id && c.data_competencia.substring(5, 7) === mesStr)
+                    .filter(c => c.categoria_id === cat.id && c[campoData].substring(5, 7) === mesStr)
                     .reduce((acc, c) => acc + parseFloat(c.valor || 0), 0);
                 valoresPorMes[m] = soma;
                 totalCategoria += soma;
@@ -9991,11 +10022,35 @@
             if (totalCategoria === 0) return;
             totalGeral += totalCategoria;
             const grupoLabel = cat.grupo_dre ? (_GRUPOS_DRE_LABELS[cat.grupo_dre] || cat.grupo_dre) : '-';
-            corpoHtml += '<tr><td><b>' + cat.nome + '</b></td><td style="font-size:11px;color:#666;">' + grupoLabel + '</td>';
-            mesesExibir.forEach(m => {
-                corpoHtml += '<td style="text-align:right;">' + (valoresPorMes[m] ? fmt(valoresPorMes[m]) : '<span style="color:#ccc;">-</span>') + '</td>';
+            linhas.push({ nome: cat.nome, grupoLabel, valoresPorMes, totalCategoria });
+        });
+
+        // Ordenação por cabeçalho clicado (categoria, grupo, um mês específico ou total)
+        const estadoOrd = _estadoOrdenacaoTabelas.tabelaAnaliseCategorias;
+        if (estadoOrd && estadoOrd.campo) {
+            const dir = estadoOrd.dir === 'asc' ? 1 : -1;
+            linhas.sort((a, b) => {
+                let va, vb;
+                if (estadoOrd.campo === 'categoria') { va = a.nome.toLocaleLowerCase('pt-BR'); vb = b.nome.toLocaleLowerCase('pt-BR'); }
+                else if (estadoOrd.campo === 'grupo') { va = a.grupoLabel.toLocaleLowerCase('pt-BR'); vb = b.grupoLabel.toLocaleLowerCase('pt-BR'); }
+                else if (estadoOrd.campo === 'total') { va = a.totalCategoria; vb = b.totalCategoria; }
+                else if (estadoOrd.campo.charAt(0) === 'm') {
+                    const idx = parseInt(estadoOrd.campo.slice(1), 10);
+                    va = a.valoresPorMes[idx] || 0; vb = b.valoresPorMes[idx] || 0;
+                } else { va = 0; vb = 0; }
+                if (va < vb) return -1 * dir;
+                if (va > vb) return 1 * dir;
+                return 0;
             });
-            corpoHtml += '<td style="text-align:right;font-weight:600;">' + fmt(totalCategoria) + '</td></tr>';
+        }
+
+        let corpoHtml = '';
+        linhas.forEach(linha => {
+            corpoHtml += '<tr><td><b>' + linha.nome + '</b></td><td style="font-size:11px;color:#666;">' + linha.grupoLabel + '</td>';
+            mesesExibir.forEach(m => {
+                corpoHtml += '<td style="text-align:right;">' + (linha.valoresPorMes[m] ? fmt(linha.valoresPorMes[m]) : '<span style="color:#ccc;">-</span>') + '</td>';
+            });
+            corpoHtml += '<td style="text-align:right;font-weight:600;">' + fmt(linha.totalCategoria) + '</td></tr>';
         });
 
         corpo.innerHTML = corpoHtml || ('<tr><td colspan="' + (mesesExibir.length + 3) + '" style="text-align:center;color:#999;padding:24px;">Nenhum lançamento encontrado para os filtros selecionados.</td></tr>');
@@ -10004,6 +10059,50 @@
         mesesExibir.forEach(m => rodapeHtml += '<td style="text-align:right;">' + fmt(totalPorMes[m]) + '</td>');
         rodapeHtml += '<td style="text-align:right;">' + fmt(totalGeral) + '</td></tr>';
         rodape.innerHTML = rodapeHtml;
+    }
+
+    // Clique num cabeçalho da tabela de Análise de Categorias — alterna a ordenação
+    function ordenarAnaliseCategoriaPor(campo) {
+        const estado = _estadoOrdenacaoTabelas.tabelaAnaliseCategorias || { campo: null, dir: 'asc' };
+        if (estado.campo === campo) {
+            estado.dir = estado.dir === 'asc' ? 'desc' : 'asc';
+        } else {
+            estado.campo = campo;
+            estado.dir = 'asc';
+        }
+        _estadoOrdenacaoTabelas.tabelaAnaliseCategorias = estado;
+        renderizarAnaliseCategorias();
+    }
+
+    // Exporta a tabela de Análise de Categorias (como está na tela, incluindo ordenação e filtros aplicados) para PDF
+    function gerarPDFAnaliseCategorias() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+        const tituloEl = document.getElementById('analiseCatTitulo');
+        const titulo = tituloEl ? tituloEl.textContent.trim() : 'Análise de Categorias';
+        doc.setFontSize(14);
+        doc.text(normalizarTexto(titulo), 14, 16);
+        doc.setFontSize(9);
+        doc.text('Gerado em: ' + new Date().toLocaleDateString('pt-BR'), 14, 22);
+
+        const selEmpresa = document.getElementById('filtroEmpresaAnaliseCat');
+        const selGrupo = document.getElementById('filtroGrupoDREAnaliseCat');
+        const filtrosAplicados = [];
+        if (selEmpresa && selEmpresa.value && selEmpresa.selectedOptions[0]) filtrosAplicados.push('Empresa: ' + selEmpresa.selectedOptions[0].textContent.trim());
+        if (selGrupo && selGrupo.value && selGrupo.selectedOptions[0]) filtrosAplicados.push('Grupo DRE: ' + selGrupo.selectedOptions[0].textContent.trim());
+        if (filtrosAplicados.length) {
+            doc.setFontSize(8);
+            doc.text(normalizarTexto('Filtros: ' + filtrosAplicados.join(' | ')), 14, 27);
+        }
+
+        const table = document.getElementById('tabelaAnaliseCategorias');
+        if (table && window.autoTable) {
+            doc.autoTable({ html: table, startY: filtrosAplicados.length ? 31 : 26, styles: { fontSize: 7, cellPadding: 2 }, headStyles: { fillColor: [230,102,34] } });
+        }
+
+        const selAno = document.getElementById('filtroAnoAnaliseCat');
+        doc.save('Analise_Categorias_' + (selAno && selAno.value ? selAno.value : 'todos') + '.pdf');
     }
 
 
