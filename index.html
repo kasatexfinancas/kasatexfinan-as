@@ -10406,7 +10406,16 @@
             .replace(/\u2212/g,   '-')
             .replace(/[\u00a0\u202f\u2007\u2009]/g, ' ')
             .replace(/[""]/g,     '"')
-            .replace(/['']/g,     "'");
+            .replace(/['']/g,     "'")
+            // Setas de sub-item usadas nas tabelas (↳ ⇅ ▲ ▼ →)
+            .replace(/[\u21b3\u2192\u21aa]/g, '>')
+            .replace(/[\u21c5\u25b2\u25bc]/g, '')
+            // Qualquer caractere restante fora do ASCII imprimível (emojis, símbolos)
+            // é removido: a fonte Helvetica padrão do jsPDF não o desenha e isso
+            // provoca espaçamento estranho e texto cortado.
+            .replace(/[^\x20-\x7E]/g, '')
+            .replace(/\s{2,}/g, ' ')
+            .trim();
     }
 
     function gerarPDF(tipo) {
