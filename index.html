@@ -2397,6 +2397,7 @@
                             <option value="mensal">Mensal (Jan a Dez)</option>
                             <option value="total">Total do periodo</option>
                         </select>
+                        <button onclick="gerarPDFDFCCategoria()" class="btn btn-secondary btn-small" style="font-size:11px;background:#e67e22;color:white;">&#128196; PDF</button>
                         <button onclick="exportarDFCCatXLSX()" class="btn btn-secondary btn-small" style="font-size:11px;background:#27ae60;color:white;">&#128190; Excel</button>
                     </div>
                 </div>
@@ -8988,6 +8989,75 @@
             + '</tr>';
     }
 
+    // Gera o PDF do "DFC Detalhado por Categoria", refletindo a visão selecionada
+    // na tela (Mensal Jan-Dez ou Total do período).
+    function gerarPDFDFCCategoria() {
+        const tabela = document.getElementById('tabelaDFCCategoria');
+        if (!tabela || !tabela.querySelector('tbody tr')) {
+            alert('Não há dados para exportar. Carregue a DFC antes de gerar o PDF.');
+            return;
+        }
+        const { jsPDF } = window.jspdf;
+        const visao = (document.getElementById('dfcCatVisao') || {}).value || 'mensal';
+        const doc = new jsPDF({
+            orientation: visao === 'mensal' ? 'landscape' : 'portrait',
+            unit: 'mm', format: 'a4'
+        });
+
+        const anoSel = window._dfcAnoSel || '';
+        const empresaSel = document.getElementById('filtroEmpresaDFC');
+        const empresaTxt = (empresaSel && empresaSel.value && empresaSel.selectedOptions[0])
+            ? empresaSel.selectedOptions[0].textContent.trim() : 'Todas as empresas';
+
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.text(normalizarTexto('DFC Detalhado por Categoria — ' + (anoSel || 'Todos os anos')), 14, 16);
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+        doc.text(normalizarTexto('Empresa: ' + empresaTxt +
+            '  |  Visão: ' + (visao === 'mensal' ? 'Mensal (Jan a Dez)' : 'Total do período')), 14, 22);
+        doc.text('Gerado em: ' + new Date().toLocaleDateString('pt-BR'), 14, 27);
+
+        // Monta cabeçalho, corpo e rodapé a partir da tabela em tela
+        const lerLinhas = seletor => Array.from(tabela.querySelectorAll(seletor))
+            .map(tr => Array.from(tr.querySelectorAll('th,td')).map(c => normalizarTexto(c.innerText.trim())))
+            .filter(linha => linha.length > 0);
+
+        const head = lerLinhas('thead tr');
+        const body = lerLinhas('tbody tr');
+        lerLinhas('tfoot tr').forEach(l => body.push(l));
+
+        const nCols = (head[0] || body[0] || []).length;
+        const fonte = nCols > 12 ? 5.6 : (nCols > 9 ? 6.4 : (nCols > 5 ? 7.5 : 9));
+        const larguraDesc = nCols > 12 ? 38 : (nCols > 9 ? 45 : 70);
+
+        doc.autoTable({
+            head: head,
+            body: body,
+            startY: 31,
+            margin: { left: 8, right: 8 },
+            tableWidth: 'auto',
+            styles: {
+                fontSize: fonte,
+                cellPadding: { top: 1.2, right: 1.6, bottom: 1.2, left: 1.6 },
+                overflow: 'linebreak',
+                valign: 'middle'
+            },
+            headStyles: { fillColor: [230, 102, 34], fontSize: fonte, halign: 'right' },
+            columnStyles: { 0: { cellWidth: larguraDesc, halign: 'left' } },
+            didParseCell: function (data) {
+                if (data.column.index === 0) { data.cell.styles.halign = 'left'; return; }
+                if (data.section !== 'body') return;
+                const txt = (data.cell.raw || '').trim();
+                data.cell.styles.halign = 'right';
+                if (txt === '-' || txt === '') { data.cell.styles.textColor = [170, 170, 170]; return; }
+                if (txt.charAt(0) === '-' || txt.charAt(0) === '\u2212') data.cell.styles.textColor = [220, 53, 69];
+            }
+        });
+
+        doc.save('DFC_Categorias_' + (anoSel || 'todos') + '.pdf');
+    }
+
     function exportarDFCCatXLSX() {
         if (!window.XLSX) { alert('Biblioteca XLSX nao carregada.'); return; }
         var recebidos = window._dfcRecebidos || [];
@@ -9974,16 +10044,33 @@
             body.push(tds.filter((_, i) => !colunasOcultas.includes(i)).map(td => normalizarTexto(td.innerText.trim())));
         });
 
+        // Ajusta o tamanho da fonte conforme a quantidade de colunas visíveis,
+        // para que os valores caibam inteiros e não sejam cortados.
+        const nCols = head[0].length;
+        const fonte = nCols > 12 ? 5.6 : (nCols > 9 ? 6.4 : (nCols > 5 ? 7.5 : 9));
+        const larguraDesc = nCols > 12 ? 38 : (nCols > 9 ? 45 : 60);
+
         doc.autoTable({
             head: head,
             body: body,
             startY: 31,
-            styles: { fontSize: 6.5, cellPadding: 1.4 },
-            headStyles: { fillColor: [230, 102, 34], fontSize: 6.5 },
-            columnStyles: { 0: { cellWidth: 45, halign: 'left' } },
+            margin: { left: 8, right: 8 },
+            tableWidth: 'auto',
+            styles: {
+                fontSize: fonte,
+                cellPadding: { top: 1.2, right: 1.6, bottom: 1.2, left: 1.6 },
+                overflow: 'linebreak',
+                valign: 'middle'
+            },
+            headStyles: { fillColor: [230, 102, 34], fontSize: fonte, halign: 'right' },
+            columnStyles: { 0: { cellWidth: larguraDesc, halign: 'left' } },
             // Valores negativos em vermelho, positivos em verde
             didParseCell: function (data) {
-                if (data.section !== 'body' || data.column.index === 0) return;
+                if (data.column.index === 0) {
+                    data.cell.styles.halign = 'left';
+                    return;
+                }
+                if (data.section !== 'body') return;
                 const txt = (data.cell.raw || '').trim();
                 data.cell.styles.halign = 'right';
                 if (txt === '-' || txt === '') { data.cell.styles.textColor = [170, 170, 170]; return; }
@@ -10316,6 +10403,8 @@
             .replace(/[ý]/g,      'y').replace(/[Ý]/g,       'Y')
             .replace(/[ß]/g,      'ss')
             .replace(/[–—]/g,     '-')
+            .replace(/\u2212/g,   '-')
+            .replace(/[\u00a0\u202f\u2007\u2009]/g, ' ')
             .replace(/[""]/g,     '"')
             .replace(/['']/g,     "'");
     }
