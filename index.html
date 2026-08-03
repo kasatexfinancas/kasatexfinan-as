@@ -1454,6 +1454,16 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Situação</label>
+                        <select id="filtroStatusReceber" onchange="atualizarTabelaPendentesReceber()">
+                            <option value="">Todos</option>
+                            <option value="pendente">Pendentes (em aberto)</option>
+                            <option value="vencido">Vencidos</option>
+                            <option value="avencer">A vencer</option>
+                            <option value="recebido">Recebidos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Filtrar por</label>
                         <select id="filtroTipoDataReceber" onchange="atualizarTabelaPendentesReceber()">
                             <option value="vencimento">Vencimento</option>
@@ -1567,6 +1577,16 @@
                         <label>Empresa</label>
                         <select id="filtroEmpresaPagar" onchange="atualizarTabelaPendentesPagar()">
                             <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Situação</label>
+                        <select id="filtroStatusPagar" onchange="atualizarTabelaPendentesPagar()">
+                            <option value="">Todos</option>
+                            <option value="pendente">Pendentes (em aberto)</option>
+                            <option value="vencido">Vencidos</option>
+                            <option value="avencer">A vencer</option>
+                            <option value="pago">Pagos</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -3446,7 +3466,7 @@
     const carregarEmpresasDebounced = debounce(() => carregarEmpresas(), 350);
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -4559,8 +4579,9 @@
 
     // CONTAS A RECEBER
     async function carregarContasReceber() {
-        const filtro = `status=eq.pendente`;
-        const dados = await fetchSupabase('contas_a_receber', 'GET', null, filtro);
+        // Busca TODOS os lançamentos (pendentes e recebidos) — a tela filtra por
+        // situação no cliente, através do filtro "Situação".
+        const dados = await fetchSupabase('contas_a_receber', 'GET');
         if (dados) {
             dadosCache.contasReceber = dados;
             atualizarTabelaPendentesReceber();
@@ -4577,11 +4598,21 @@
         const filtroAno = document.getElementById('filtroAnoReceber');
         const filtroMes = document.getElementById('filtroMesReceber');
         const filtroTipoData = document.getElementById('filtroTipoDataReceber');
+        const filtroStatus = document.getElementById('filtroStatusReceber');
         const campoData = (filtroTipoData && filtroTipoData.value === 'competencia') ? 'data_competencia' : 'data_vencimento';
         if (filtroCliente && filtroCliente.value) filtrado = filtrado.filter(c => c.cliente_id == filtroCliente.value);
         if (filtroEmpresa && filtroEmpresa.value) filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
         if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c[campoData] && c[campoData].startsWith(filtroAno.value));
         if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c[campoData] && c[campoData].includes('-' + filtroMes.value + '-'));
+
+        // Filtro de situação: recebido / vencido / a vencer / pendente (todos em aberto)
+        const hoje = new Date(); hoje.setHours(0,0,0,0);
+        const estaVencido = c => c.status !== 'recebido' && c.data_vencimento && new Date(c.data_vencimento + 'T12:00:00') < hoje;
+        const statusSel = filtroStatus ? filtroStatus.value : '';
+        if (statusSel === 'recebido')      filtrado = filtrado.filter(c => c.status === 'recebido');
+        else if (statusSel === 'pendente') filtrado = filtrado.filter(c => c.status !== 'recebido');
+        else if (statusSel === 'vencido')  filtrado = filtrado.filter(estaVencido);
+        else if (statusSel === 'avencer')  filtrado = filtrado.filter(c => c.status !== 'recebido' && !estaVencido(c));
 
         // Ordenação: por cabeçalho clicado, ou por padrão (lançamentos mais recentes primeiro)
         if (_estadoOrdenacaoTabelas.tabelaPendentesReceber && _estadoOrdenacaoTabelas.tabelaPendentesReceber.campo) {
@@ -4590,14 +4621,12 @@
             filtrado = [...filtrado].sort((a, b) => b.id - a.id);
         }
 
-        // Calcular totais
-        const hoje = new Date(); hoje.setHours(0,0,0,0);
+        // Calcular totais (o card "Atrasados" considera apenas contas ainda não recebidas)
         let totalFiltro = 0, totalAtrasado = 0;
         filtrado.forEach(c => {
             const v = parseFloat(c.valor || 0);
             totalFiltro += v;
-            const venc = new Date(c.data_vencimento + 'T12:00:00');
-            if (venc < hoje) totalAtrasado += v;
+            if (estaVencido(c)) totalAtrasado += v;
         });
         const elTF = document.getElementById('totalReceberFiltro');
         const elTA = document.getElementById('totalReceberAtrasado');
@@ -4610,7 +4639,9 @@
             const cliente = dadosCache.clientes.find(c => c.id === conta.cliente_id);
             const empresa = dadosCache.empresas.find(e => e.id === conta.empresa_id);
             const venc = new Date(conta.data_vencimento + 'T12:00:00');
-            const status = venc < hoje ? 'atrasado' : 'pendente';
+            const recebido = conta.status === 'recebido';
+            const status = recebido ? 'recebido' : (estaVencido(conta) ? 'atrasado' : 'pendente');
+            const statusLabel = recebido ? 'Recebido' : (status === 'atrasado' ? 'Atrasado' : 'Pendente');
             const parcLabel = conta.custo_fixo
                 ? `<span class="badge-fixo">🔁 Fixo</span>`
                 : (conta.total_parcelas > 1
@@ -4619,6 +4650,10 @@
             const compLabel = conta.data_competencia
                 ? new Date(conta.data_competencia + 'T12:00:00').toLocaleDateString('pt-BR', {month:'2-digit',year:'numeric'})
                 : '-';
+            // Contas já recebidas não exibem o botão "Recebido" — permitem reverter o recebimento
+            const btnAcao = recebido
+                ? `<button class="btn btn-warning btn-small" onclick="reverterRecebimento(${conta.id})" style="background:#ffc107;color:#333;">↩ Reverter</button>`
+                : `<button class="btn btn-success btn-small" onclick="receberConta(${conta.id})">✅ Recebido</button>`;
             tbody.innerHTML += `<tr>
                 <td>${cliente ? cliente.nome : '-'}</td>
                 <td>${conta.descricao}</td>
@@ -4627,9 +4662,9 @@
                 <td>${venc.toLocaleDateString('pt-BR')}</td>
                 <td>R$ ${parseFloat(conta.valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
                 <td>${parcLabel}</td>
-                <td><span class="status-badge status-${status}">${status === 'atrasado' ? 'Atrasado' : 'Pendente'}</span></td>
+                <td><span class="status-badge status-${status}">${statusLabel}</span></td>
                 <td>
-                    <button class="btn btn-success btn-small" onclick="receberConta(${conta.id})">✅ Recebido</button>
+                    ${btnAcao}
                     <button class="btn btn-secondary btn-small" onclick="editarLancamento(${conta.id}, 'receber')">✏️ Editar</button>
                     <button class="btn btn-danger btn-small" onclick="deletarConta(${conta.id}, 'contas_a_receber')">Deletar</button>
                 </td>
@@ -4722,8 +4757,9 @@
 
     // CONTAS A PAGAR
     async function carregarContasPagar() {
-        const filtro = `status=eq.pendente`;
-        const dados = await fetchSupabase('contas_a_pagar', 'GET', null, filtro);
+        // Busca TODOS os lançamentos (pendentes e pagos) — a tela filtra por
+        // situação no cliente, através do filtro "Situação".
+        const dados = await fetchSupabase('contas_a_pagar', 'GET');
         if (dados) {
             dadosCache.contasPagar = dados;
             atualizarTabelaPendentesPagar();
@@ -4742,6 +4778,7 @@
         const filtroAno = document.getElementById('filtroAnoPagar');
         const filtroMes = document.getElementById('filtroMesPagar');
         const filtroTipoData = document.getElementById('filtroTipoDataPagar');
+        const filtroStatus = document.getElementById('filtroStatusPagar');
         const campoData = (filtroTipoData && filtroTipoData.value === 'competencia') ? 'data_competencia' : 'data_vencimento';
         if (filtroFornecedor && filtroFornecedor.value) filtrado = filtrado.filter(c => c.fornecedor_id == filtroFornecedor.value);
         if (filtroCategoria && filtroCategoria.value) filtrado = filtrado.filter(c => c.categoria_id == filtroCategoria.value);
@@ -4750,6 +4787,15 @@
         if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c[campoData] && c[campoData].startsWith(filtroAno.value));
         if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c[campoData] && c[campoData].includes('-' + filtroMes.value + '-'));
 
+        // Filtro de situação: pago / vencido / a vencer / pendente (todos em aberto)
+        const hoje = new Date(); hoje.setHours(0,0,0,0);
+        const estaVencido = c => c.status !== 'pago' && c.data_vencimento && new Date(c.data_vencimento + 'T12:00:00') < hoje;
+        const statusSel = filtroStatus ? filtroStatus.value : '';
+        if (statusSel === 'pago')          filtrado = filtrado.filter(c => c.status === 'pago');
+        else if (statusSel === 'pendente') filtrado = filtrado.filter(c => c.status !== 'pago');
+        else if (statusSel === 'vencido')  filtrado = filtrado.filter(estaVencido);
+        else if (statusSel === 'avencer')  filtrado = filtrado.filter(c => c.status !== 'pago' && !estaVencido(c));
+
         // Ordenação: por cabeçalho clicado, ou por padrão (lançamentos mais recentes primeiro)
         if (_estadoOrdenacaoTabelas.tabelaPendentesPagar && _estadoOrdenacaoTabelas.tabelaPendentesPagar.campo) {
             filtrado = _aplicarOrdenacaoTabela('tabelaPendentesPagar', filtrado);
@@ -4757,14 +4803,12 @@
             filtrado = [...filtrado].sort((a, b) => b.id - a.id);
         }
 
-        // Calcular totais
-        const hoje = new Date(); hoje.setHours(0,0,0,0);
+        // Calcular totais (o card "Atrasados" considera apenas contas ainda não pagas)
         let totalFiltro = 0, totalAtrasado = 0;
         filtrado.forEach(c => {
             const v = parseFloat(c.valor || 0);
             totalFiltro += v;
-            const venc = new Date(c.data_vencimento + 'T12:00:00');
-            if (venc < hoje) totalAtrasado += v;
+            if (estaVencido(c)) totalAtrasado += v;
         });
         const elTF = document.getElementById('totalPagarFiltro');
         const elTA = document.getElementById('totalPagarAtrasado');
@@ -4778,7 +4822,9 @@
             const categoria = dadosCache.categorias.find(cat => cat.id === conta.categoria_id);
             const empresa = dadosCache.empresas.find(e => e.id === conta.empresa_id);
             const venc = new Date(conta.data_vencimento + 'T12:00:00');
-            const status = venc < hoje ? 'atrasado' : 'pendente';
+            const pago = conta.status === 'pago';
+            const status = pago ? 'pago' : (estaVencido(conta) ? 'atrasado' : 'pendente');
+            const statusLabel = pago ? 'Pago' : (status === 'atrasado' ? 'Atrasado' : 'Pendente');
             const parcLabel = conta.custo_fixo
                 ? `<span class="badge-fixo">🔁 Fixo</span>`
                 : (conta.total_parcelas > 1
@@ -4787,6 +4833,10 @@
             const compLabel = conta.data_competencia
                 ? new Date(conta.data_competencia + 'T12:00:00').toLocaleDateString('pt-BR', {month:'2-digit',year:'numeric'})
                 : '-';
+            // Contas já pagas não exibem o botão "Pagar" — no lugar dele, permitem reverter o pagamento
+            const btnAcao = pago
+                ? `<button class="btn btn-warning btn-small" onclick="reverterPagamento(${conta.id})" style="background:#ffc107;color:#333;">↩ Reverter</button>`
+                : `<button class="btn btn-success btn-small" onclick="pagarConta(${conta.id})">💳 Pagar</button>`;
             tbody.innerHTML += `<tr>
                 <td>${fornecedor ? fornecedor.nome : '-'}</td>
                 <td>${categoria ? categoria.nome : '-'}</td>
@@ -4797,9 +4847,9 @@
                 <td>${venc.toLocaleDateString('pt-BR')}</td>
                 <td>R$ ${parseFloat(conta.valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
                 <td>${parcLabel}</td>
-                <td><span class="status-badge status-${status}">${status === 'atrasado' ? 'Atrasado' : 'Pendente'}</span></td>
+                <td><span class="status-badge status-${status}">${statusLabel}</span></td>
                 <td>
-                    <button class="btn btn-success btn-small" onclick="pagarConta(${conta.id})">💳 Pagar</button>
+                    ${btnAcao}
                     <button class="btn btn-secondary btn-small" onclick="editarLancamento(${conta.id}, 'pagar')">✏️ Editar</button>
                     <button class="btn btn-danger btn-small" onclick="deletarConta(${conta.id}, 'contas_a_pagar')">Deletar</button>
                 </td>
@@ -9741,7 +9791,7 @@
                 larguras: [34, 46, 34, 20, 20, 22, 14, 18],
                 alinhamentos: ['left', 'left', 'left', 'center', 'center', 'right', 'center', 'center'],
                 tableId: 'tabelaPendentesReceber',
-                filtroIds: ['filtroClienteReceber', 'filtroEmpresaReceber', 'filtroTipoDataReceber', 'filtroAnoReceber', 'filtroMesReceber']
+                filtroIds: ['filtroClienteReceber', 'filtroEmpresaReceber', 'filtroStatusReceber', 'filtroTipoDataReceber', 'filtroAnoReceber', 'filtroMesReceber']
             },
             pagar: {
                 titulo: 'Contas a Pagar (Pendentes)',
@@ -9749,7 +9799,7 @@
                 larguras: [30, 24, 34, 30, 14, 18, 18, 20, 12, 16],
                 alinhamentos: ['left', 'left', 'left', 'left', 'center', 'center', 'center', 'right', 'center', 'center'],
                 tableId: 'tabelaPendentesPagar',
-                filtroIds: ['filtroFornecedorPagar', 'filtroCategoriaPagar', 'filtroSubcategoriaPagar', 'filtroEmpresaPagar', 'filtroTipoDataPagar', 'filtroAnoPagar', 'filtroMesPagar']
+                filtroIds: ['filtroFornecedorPagar', 'filtroCategoriaPagar', 'filtroSubcategoriaPagar', 'filtroEmpresaPagar', 'filtroStatusPagar', 'filtroTipoDataPagar', 'filtroAnoPagar', 'filtroMesPagar']
             },
             recebidas: {
                 titulo: 'Contas Recebidas',
