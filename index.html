@@ -926,6 +926,7 @@
         .ss-item-ativo { background: #fff1ea; font-weight: 600; }
         .ss-item-vazio { color: #999; cursor: default; font-style: italic; }
         .ss-item-vazio:hover { background: transparent; }
+        .ss-item-todos { border-bottom: 1px solid var(--cor-borda); font-style: italic; color: #666; }
     </style>
 </head>
 <body>
@@ -3467,6 +3468,7 @@
             'lancDRECategoria',
             // Subcategoria
             'subcategoriaPagar', 'lancRapidoSubcategoria', 'subcategoriaCategoriaPai',
+            'filtroSubcategoriaPagar',
             // Banco
             'extratoFiltrobancoId', 'conciliacaoBancoId', 'filtroBancoRecebida',
             'filtroBancoPaga', 'bancoRecebimentoConfirm', 'bancoPagamentoConfirm'
@@ -3499,7 +3501,7 @@
 
         function textoDaOpcaoSelecionada() {
             const opt = select.options[select.selectedIndex];
-            return (opt && opt.value !== '') ? opt.textContent : '';
+            return opt ? opt.textContent : '';
         }
 
         function sincronizarInput() {
@@ -3509,12 +3511,31 @@
         function renderizarOpcoes(filtro) {
             const termo = (filtro || '').toLocaleLowerCase('pt-BR');
             dropdown.innerHTML = '';
-            let algumaOpcao = false;
+
+            // Opção em branco ("Todos"/"Todas"/"Selecione...") sempre fixada no topo da
+            // lista, independente do texto digitado, para que seja sempre possível
+            // limpar a seleção e voltar a ver todos os registros.
+            const optVazia = Array.from(select.options).find(o => o.value === '');
+            if (optVazia) {
+                const itemTodos = document.createElement('div');
+                itemTodos.className = 'ss-item ss-item-todos' + (select.value === '' ? ' ss-item-ativo' : '');
+                itemTodos.textContent = optVazia.textContent;
+                itemTodos.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    select.value = '';
+                    sincronizarInput();
+                    fecharDropdown();
+                    select.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+                dropdown.appendChild(itemTodos);
+            }
+
+            let algumResultadoBusca = false;
             Array.from(select.options).forEach(opt => {
-                if (opt.value === '') return; // não lista o "Selecione..." como item de busca
+                if (opt.value === '') return; // já tratada acima, sempre fixada no topo
                 const texto = opt.textContent;
                 if (!termo || texto.toLocaleLowerCase('pt-BR').includes(termo)) {
-                    algumaOpcao = true;
+                    algumResultadoBusca = true;
                     const item = document.createElement('div');
                     item.className = 'ss-item' + (opt.value === select.value ? ' ss-item-ativo' : '');
                     item.textContent = texto;
@@ -3528,7 +3549,7 @@
                     dropdown.appendChild(item);
                 }
             });
-            if (!algumaOpcao) {
+            if (termo && !algumResultadoBusca) {
                 const vazio = document.createElement('div');
                 vazio.className = 'ss-item ss-item-vazio';
                 vazio.textContent = 'Nenhum resultado encontrado';
@@ -5825,7 +5846,7 @@
             }
             select.innerHTML += `<option value="${sub.id}">${label}</option>`;
         });
-        if (lista.some(s => String(s.id) === valorAtual)) select.value = valorAtual;
+        select.value = lista.some(s => String(s.id) === valorAtual) ? valorAtual : '';
 
         atualizarTabelaPendentesPagar();
     }
