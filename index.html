@@ -540,8 +540,19 @@
         }
 
         /* Ocultar colunas de meses na DRE Mensal (mantém Descrição e DRE Acumulada) */
-        #tabelaDREMensal.ocultar-meses-dre th:nth-child(n+2):nth-child(-n+13),
-        #tabelaDREMensal.ocultar-meses-dre td:nth-child(n+2):nth-child(-n+13) { display: none; }
+        /* Ocultar colunas de meses individuais na DRE Mensal (col 1 = Descrição, cols 2-13 = Jan..Dez) */
+        #tabelaDREMensal.hide-mes-1 th:nth-child(2),  #tabelaDREMensal.hide-mes-1 td:nth-child(2)  { display: none; }
+        #tabelaDREMensal.hide-mes-2 th:nth-child(3),  #tabelaDREMensal.hide-mes-2 td:nth-child(3)  { display: none; }
+        #tabelaDREMensal.hide-mes-3 th:nth-child(4),  #tabelaDREMensal.hide-mes-3 td:nth-child(4)  { display: none; }
+        #tabelaDREMensal.hide-mes-4 th:nth-child(5),  #tabelaDREMensal.hide-mes-4 td:nth-child(5)  { display: none; }
+        #tabelaDREMensal.hide-mes-5 th:nth-child(6),  #tabelaDREMensal.hide-mes-5 td:nth-child(6)  { display: none; }
+        #tabelaDREMensal.hide-mes-6 th:nth-child(7),  #tabelaDREMensal.hide-mes-6 td:nth-child(7)  { display: none; }
+        #tabelaDREMensal.hide-mes-7 th:nth-child(8),  #tabelaDREMensal.hide-mes-7 td:nth-child(8)  { display: none; }
+        #tabelaDREMensal.hide-mes-8 th:nth-child(9),  #tabelaDREMensal.hide-mes-8 td:nth-child(9)  { display: none; }
+        #tabelaDREMensal.hide-mes-9 th:nth-child(10), #tabelaDREMensal.hide-mes-9 td:nth-child(10) { display: none; }
+        #tabelaDREMensal.hide-mes-10 th:nth-child(11),#tabelaDREMensal.hide-mes-10 td:nth-child(11){ display: none; }
+        #tabelaDREMensal.hide-mes-11 th:nth-child(12),#tabelaDREMensal.hide-mes-11 td:nth-child(12){ display: none; }
+        #tabelaDREMensal.hide-mes-12 th:nth-child(13),#tabelaDREMensal.hide-mes-12 td:nth-child(13){ display: none; }
 
         /* Gauge cards no dashboard */
         #dashGauges > div:hover {
@@ -996,6 +1007,7 @@
         <div class="menu-section">
             <div class="menu-section-title">Cadastros</div>
             <div class="menu-item" onclick="showPage('categorias')">📁 Categorias</div>
+            <div class="menu-item" onclick="showPage('grupos-dre')">📊 Grupos DRE</div>
             <div class="menu-item" onclick="showPage('subcategorias')">🏷️ Subcategorias</div>
             <div class="menu-item" onclick="showPage('produtos')">📦 Produtos</div>
             <div class="menu-item" onclick="showPage('fornecedores')">🏭 Fornecedores</div>
@@ -2559,11 +2571,12 @@
             <div class="card" id="cardDREMensal" style="display:none;margin-top:16px;">
                 <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
                     <span id="tituloDREMensal">📅 DRE Mensal</span>
-                    <div style="display:flex;align-items:center;gap:14px;font-size:12px;font-weight:400;">
-                        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
-                            <input type="checkbox" id="chkOcultarMesesDRE" onchange="toggleOcultarMesesDRE()">
-                            Ocultar meses
-                        </label>
+                    <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:400;">
+                        <div class="colunas-btn-wrap">
+                            <button class="btn btn-secondary btn-small" type="button" onclick="toggleMenuMesesDRE(event)" style="background:#555;color:white;">📅 Meses</button>
+                            <div id="menuMesesDRE" class="colunas-dropdown"></div>
+                        </div>
+                        <button class="btn btn-secondary btn-small" onclick="gerarPDFDREMensal()" style="background:#e67e22;color:white;">📄 PDF</button>
                         <button class="btn btn-secondary btn-small" onclick="exportarExcelDREMensal()" style="background:#1D6F42;color:white;">📊 Excel</button>
                     </div>
                 </div>
@@ -2577,6 +2590,42 @@
             <div class="card" style="margin-top:16px;">
                 <div class="card-title">Evolução Mensal — Receita x Resultado</div>
                 <div class="chart-container"><canvas id="chartDRE"></canvas></div>
+            </div>
+        </div>
+
+        <div id="grupos-dre" class="page">
+            <div class="page-header">
+                <h1>📊 Grupos DRE</h1>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-secondary" onclick="restaurarGruposDREPadrao()" style="background:#555;color:white;">↺ Restaurar padrões</button>
+                    <button class="btn btn-primary" onclick="openModalGrupoDRE()">+ Novo Grupo</button>
+                </div>
+            </div>
+            <div class="alert alert-success" id="alertGruposDRE"></div>
+
+            <div style="background:#e8f4fd;border:1px solid #bee5eb;color:#0c5460;border-radius:6px;padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.55;">
+                Os <b>11 grupos estruturais</b> abaixo formam a espinha dorsal do cálculo da DRE
+                (Receita Líquida, Lucro Bruto, EBITDA e Resultado Líquido). Eles podem ser
+                <b>renomeados</b>, mas não excluídos — apagá-los quebraria as fórmulas.<br>
+                Ao criar um <b>grupo personalizado</b>, você escolhe em qual grupo estrutural ele
+                é somado. Assim ele aparece como opção nas categorias e nos filtros, e continua
+                entrando corretamente na DRE.
+            </div>
+
+            <div class="table-container">
+                <table id="tabelaGruposDRE">
+                    <thead>
+                        <tr>
+                            <th>Nome exibido</th>
+                            <th>Tipo</th>
+                            <th>Efeito no resultado</th>
+                            <th>Soma em</th>
+                            <th>Categorias</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
 
@@ -3084,6 +3133,39 @@
 </div>
 
 <!-- MODAIS -->
+<div class="modal" id="modalGrupoDRE">
+    <div class="modal-content" style="max-width:520px;">
+        <div class="modal-header">
+            <span id="modalGrupoDRETitulo">Novo Grupo DRE</span>
+            <button class="modal-close" onclick="closeModal('modalGrupoDRE')">&times;</button>
+        </div>
+        <form onsubmit="salvarGrupoDRE(event)">
+            <input type="hidden" id="grupoDREId">
+            <div class="form-group">
+                <label>Nome exibido*</label>
+                <input type="text" id="grupoDRENome" required placeholder="Ex: Despesas com Pessoal">
+            </div>
+            <div class="form-group" id="grupoDREComportamentoWrap">
+                <label>Soma em (comportamento no cálculo)*</label>
+                <select id="grupoDREComportamento">
+                    <option value="">Selecione...</option>
+                </select>
+                <div style="font-size:11.5px;color:#888;margin-top:6px;">
+                    Define em qual linha estrutural da DRE os valores deste grupo serão somados.
+                </div>
+            </div>
+            <div id="grupoDREAvisoEstrutural" style="display:none;background:#fff3cd;border:1px solid #ffc107;color:#856404;border-radius:6px;padding:10px 12px;font-size:12.5px;">
+                Este é um <b>grupo estrutural</b> da DRE. Você pode alterar apenas o nome exibido —
+                o comportamento no cálculo é fixo.
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modalGrupoDRE')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="modal" id="modalCategoria">
     <div class="modal-content" style="max-width:500px;">
         <div class="modal-header">
@@ -3856,6 +3938,7 @@
         restaurarFiltros();
         _bindFiltrosSave();
         aplicarColunasVisiveisPagar();
+        _reconstruirGruposDRE();
         await carregarCategorias();
         await carregarSubcategorias();
         await carregarProdutos();
@@ -3886,13 +3969,251 @@
         }
     }
 
-    const _GRUPOS_DRE_LABELS = {
-        'RECEITA_BRUTA':'Receita Bruta','DEDUCOES':'Deduções/Impostos','CPV':'CPV/CSP',
-        'DESP_COMERCIAL':'Desp. Comerciais','DESP_ADMIN':'Desp. Administrativas',
-        'DESP_FINANCEIRA':'Desp. Financeiras','RECEITA_FINANCEIRA':'Rec. Financeiras',
-        'EMPRESTIMO':'Empréstimos','INVESTIMENTO':'Investimentos',
-        'OUTRAS_RECEITAS':'Outras Receitas','OUTRAS_DESPESAS':'Outras Despesas'
-    };
+    // ── GRUPOS DRE (configuráveis) ───────────────────────────────────────────
+    // Os 11 grupos abaixo são ESTRUTURAIS: as fórmulas da DRE (Receita Líquida,
+    // Lucro Bruto, EBITDA, Resultado Líquido) dependem deles, então não podem ser
+    // excluídos — apenas renomeados. Grupos personalizados criados pelo usuário
+    // apontam para um destes através da propriedade "somaEm".
+    const _GRUPOS_DRE_ESTRUTURAIS = [
+        { id: 'RECEITA_BRUTA',      label: 'Receita Bruta',        sinal:  1 },
+        { id: 'DEDUCOES',           label: 'Deduções/Impostos',    sinal: -1 },
+        { id: 'CPV',                label: 'CPV/CSP',              sinal: -1 },
+        { id: 'DESP_COMERCIAL',     label: 'Desp. Comerciais',     sinal: -1 },
+        { id: 'DESP_ADMIN',         label: 'Desp. Administrativas',sinal: -1 },
+        { id: 'DESP_FINANCEIRA',    label: 'Desp. Financeiras',    sinal: -1 },
+        { id: 'RECEITA_FINANCEIRA', label: 'Rec. Financeiras',     sinal:  1 },
+        { id: 'EMPRESTIMO',         label: 'Empréstimos',          sinal: -1 },
+        { id: 'INVESTIMENTO',       label: 'Investimentos',        sinal: -1 },
+        { id: 'OUTRAS_RECEITAS',    label: 'Outras Receitas',      sinal:  1 },
+        { id: 'OUTRAS_DESPESAS',    label: 'Outras Despesas',      sinal: -1 }
+    ];
+
+    function _chaveGruposDRE() {
+        const user = usuarioAtual ? usuarioAtual.email : 'guest';
+        return 'cap_grupos_dre_' + user;
+    }
+
+    // { renomeados: { ID: 'novo nome' }, personalizados: [{ id, label, somaEm }] }
+    function _configGruposDRE() {
+        try {
+            const salvo = localStorage.getItem(_chaveGruposDRE());
+            const cfg = salvo ? JSON.parse(salvo) : {};
+            return { renomeados: cfg.renomeados || {}, personalizados: cfg.personalizados || [] };
+        } catch (e) { return { renomeados: {}, personalizados: [] }; }
+    }
+
+    function _salvarConfigGruposDRE(cfg) {
+        localStorage.setItem(_chaveGruposDRE(), JSON.stringify(cfg));
+        _reconstruirGruposDRE();
+    }
+
+    // Lista efetiva de grupos: estruturais (com nomes personalizados aplicados) + personalizados
+    function gruposDREEfetivos() {
+        const cfg = _configGruposDRE();
+        const estruturais = _GRUPOS_DRE_ESTRUTURAIS.map(g => ({
+            id: g.id,
+            label: cfg.renomeados[g.id] || g.label,
+            labelPadrao: g.label,
+            sinal: g.sinal,
+            estrutural: true,
+            somaEm: g.id
+        }));
+        const personalizados = (cfg.personalizados || []).map(p => {
+            const pai = _GRUPOS_DRE_ESTRUTURAIS.find(g => g.id === p.somaEm) || _GRUPOS_DRE_ESTRUTURAIS[0];
+            return { id: p.id, label: p.label, sinal: pai.sinal, estrutural: false, somaEm: pai.id };
+        });
+        return estruturais.concat(personalizados);
+    }
+
+    // Converte qualquer grupo (inclusive personalizado) no grupo estrutural em que ele é somado
+    function grupoEstruturalDRE(grupoId) {
+        if (!grupoId) return null;
+        if (_GRUPOS_DRE_ESTRUTURAIS.some(g => g.id === grupoId)) return grupoId;
+        const cfg = _configGruposDRE();
+        const p = (cfg.personalizados || []).find(x => x.id === grupoId);
+        return p ? p.somaEm : null;
+    }
+
+    // Mapa id → nome exibido, usado em telas e relatórios
+    let _GRUPOS_DRE_LABELS = {};
+
+    function _reconstruirGruposDRE() {
+        _GRUPOS_DRE_LABELS = {};
+        gruposDREEfetivos().forEach(g => { _GRUPOS_DRE_LABELS[g.id] = g.label; });
+
+        // Mantém os rótulos da tabela estruturada da DRE em sincronia
+        if (typeof DRE_GRUPOS !== 'undefined') {
+            DRE_GRUPOS.forEach(dg => {
+                const g = gruposDREEfetivos().find(x => x.id === dg.id);
+                if (g) dg.label = dg.prefixo + g.label;
+            });
+        }
+
+        _preencherSelectsGrupoDRE();
+    }
+
+    // Repovoa todos os <select> que oferecem a lista de grupos DRE
+    function _preencherSelectsGrupoDRE() {
+        const grupos = gruposDREEfetivos();
+
+        // Cadastro de categoria e lançamento direto na DRE
+        [['categoriaGrupoDRE', 'Nenhum'], ['lancDREGrupo', 'Selecione...']].forEach(([id, vazio]) => {
+            const sel = document.getElementById(id);
+            if (!sel) return;
+            const atual = sel.value;
+            sel.innerHTML = '<option value="">' + vazio + '</option>';
+            grupos.forEach(g => {
+                sel.innerHTML += '<option value="' + g.id + '">' + g.label + (g.sinal > 0 ? ' (+)' : ' (-)') + '</option>';
+            });
+            sel.value = atual;
+        });
+
+        // Filtros por grupo (Contas a Pagar e Análise de Categorias)
+        [['filtroGrupoDREPagar', 'Todos os grupos'], ['filtroGrupoDREAnaliseCat', 'Todos os grupos']].forEach(([id, vazio]) => {
+            const sel = document.getElementById(id);
+            if (!sel) return;
+            const atual = sel.value;
+            sel.innerHTML = '<option value="">' + vazio + '</option>';
+            grupos.forEach(g => {
+                sel.innerHTML += '<option value="' + g.id + '">' + g.label + '</option>';
+            });
+            sel.value = atual;
+        });
+    }
+
+    function carregarGruposDRE() {
+        _reconstruirGruposDRE();
+        atualizarTabelaGruposDRE();
+    }
+
+    function atualizarTabelaGruposDRE() {
+        const tbody = document.querySelector('#tabelaGruposDRE tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const grupos = gruposDREEfetivos();
+        grupos.forEach(g => {
+            const qtdCats = (dadosCache.categorias || []).filter(c => c.grupo_dre === g.id).length;
+            const paiLabel = g.estrutural
+                ? '<span style="color:#aaa;">—</span>'
+                : (_GRUPOS_DRE_LABELS[g.somaEm] || g.somaEm);
+            const tipoBadge = g.estrutural
+                ? '<span style="background:#e8f4fd;color:#1565c0;padding:2px 8px;border-radius:10px;font-size:11px;">Estrutural</span>'
+                : '<span style="background:#f3e8fd;color:#6f2da8;padding:2px 8px;border-radius:10px;font-size:11px;">Personalizado</span>';
+            const efeito = g.sinal > 0
+                ? '<span style="color:#28a745;font-weight:600;">(+) Aumenta</span>'
+                : '<span style="color:#dc3545;font-weight:600;">(−) Reduz</span>';
+            const btnExcluir = g.estrutural
+                ? ''
+                : '<button class="btn btn-danger btn-small" onclick="deletarGrupoDRE(\'' + g.id + '\')">Deletar</button>';
+            tbody.innerHTML += '<tr>' +
+                '<td><b>' + g.label + '</b></td>' +
+                '<td>' + tipoBadge + '</td>' +
+                '<td>' + efeito + '</td>' +
+                '<td style="font-size:12px;color:#666;">' + paiLabel + '</td>' +
+                '<td style="text-align:center;">' + (qtdCats || '<span style="color:#ccc;">0</span>') + '</td>' +
+                '<td><button class="btn btn-secondary btn-small" onclick="editarGrupoDRE(\'' + g.id + '\')">Editar</button> ' + btnExcluir + '</td>' +
+                '</tr>';
+        });
+    }
+
+    function openModalGrupoDRE() {
+        document.getElementById('grupoDREId').value = '';
+        document.getElementById('grupoDRENome').value = '';
+        document.getElementById('grupoDREComportamentoWrap').style.display = '';
+        document.getElementById('grupoDREAvisoEstrutural').style.display = 'none';
+        const sel = document.getElementById('grupoDREComportamento');
+        sel.innerHTML = '<option value="">Selecione...</option>';
+        _GRUPOS_DRE_ESTRUTURAIS.forEach(g => {
+            const label = _GRUPOS_DRE_LABELS[g.id] || g.label;
+            sel.innerHTML += '<option value="' + g.id + '">' + label + (g.sinal > 0 ? ' (+)' : ' (-)') + '</option>';
+        });
+        sel.required = true;
+        document.getElementById('modalGrupoDRETitulo').textContent = 'Novo Grupo DRE';
+        document.getElementById('modalGrupoDRE').classList.add('active');
+    }
+
+    function editarGrupoDRE(id) {
+        const g = gruposDREEfetivos().find(x => x.id === id);
+        if (!g) return;
+        openModalGrupoDRE();
+        document.getElementById('grupoDREId').value = id;
+        document.getElementById('grupoDRENome').value = g.label;
+        document.getElementById('modalGrupoDRETitulo').textContent = 'Editar Grupo DRE';
+        const sel = document.getElementById('grupoDREComportamento');
+        if (g.estrutural) {
+            // Grupo estrutural: só o nome pode mudar
+            document.getElementById('grupoDREComportamentoWrap').style.display = 'none';
+            document.getElementById('grupoDREAvisoEstrutural').style.display = '';
+            sel.required = false;
+            sel.value = '';
+        } else {
+            sel.value = g.somaEm;
+        }
+    }
+
+    function salvarGrupoDRE(event) {
+        event.preventDefault();
+        const id = document.getElementById('grupoDREId').value;
+        const nome = document.getElementById('grupoDRENome').value.trim();
+        const somaEm = document.getElementById('grupoDREComportamento').value;
+        if (!nome) return;
+
+        const cfg = _configGruposDRE();
+        const ehEstrutural = id && _GRUPOS_DRE_ESTRUTURAIS.some(g => g.id === id);
+
+        if (ehEstrutural) {
+            // Apenas renomeia o grupo estrutural
+            cfg.renomeados[id] = nome;
+        } else {
+            if (!somaEm) { showAlert('Escolha em qual grupo estrutural este grupo será somado.', 'alertGruposDRE', 'error'); return; }
+            if (id) {
+                const p = cfg.personalizados.find(x => x.id === id);
+                if (p) { p.label = nome; p.somaEm = somaEm; }
+            } else {
+                // Gera um ID estável a partir do nome, sem colidir com os existentes
+                let novoId = 'CUSTOM_' + nome.toUpperCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '').substring(0, 30);
+                if (!novoId || novoId === 'CUSTOM_') novoId = 'CUSTOM_GRUPO';
+                let idFinal = novoId, n = 2;
+                const usados = gruposDREEfetivos().map(g => g.id);
+                while (usados.includes(idFinal)) { idFinal = novoId + '_' + n; n++; }
+                cfg.personalizados.push({ id: idFinal, label: nome, somaEm: somaEm });
+            }
+        }
+
+        _salvarConfigGruposDRE(cfg);
+        atualizarTabelaGruposDRE();
+        atualizarTabelaCategorias();
+        closeModal('modalGrupoDRE');
+        showAlert('Grupo DRE salvo com sucesso!', 'alertGruposDRE', 'success');
+    }
+
+    function deletarGrupoDRE(id) {
+        const emUso = (dadosCache.categorias || []).filter(c => c.grupo_dre === id);
+        if (emUso.length) {
+            alert('Não é possível deletar: ' + emUso.length + ' categoria(s) ainda usam este grupo.\n\n' +
+                  'Altere o Grupo DRE dessas categorias antes de excluir.');
+            return;
+        }
+        if (!confirm('Tem certeza que deseja deletar este grupo personalizado?')) return;
+        const cfg = _configGruposDRE();
+        cfg.personalizados = cfg.personalizados.filter(p => p.id !== id);
+        _salvarConfigGruposDRE(cfg);
+        atualizarTabelaGruposDRE();
+        showAlert('Grupo DRE deletado.', 'alertGruposDRE', 'success');
+    }
+
+    function restaurarGruposDREPadrao() {
+        if (!confirm('Restaurar os nomes originais dos grupos estruturais?\n\nOs grupos personalizados que você criou NÃO serão removidos.')) return;
+        const cfg = _configGruposDRE();
+        cfg.renomeados = {};
+        _salvarConfigGruposDRE(cfg);
+        atualizarTabelaGruposDRE();
+        atualizarTabelaCategorias();
+        showAlert('Nomes padrão restaurados.', 'alertGruposDRE', 'success');
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     function atualizarTabelaCategorias() {
         const tbody = document.querySelector('#tabelaCategorias tbody');
@@ -5580,7 +5901,7 @@
                 if (anoF && !comp.startsWith(anoF)) return;
                 if (mesF && !comp.includes('-'+mesF+'-')) return;
                 const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-                const g   = (cat && cat.grupo_dre) ? cat.grupo_dre : defaultGrupo;
+                const g   = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || defaultGrupo) : defaultGrupo;
                 grupos[g] = (grupos[g] || 0) + parseFloat(c.valor || 0);
             });
         };
@@ -5917,14 +6238,9 @@
     // Se nenhuma categoria estiver selecionada, lista todas as subcategorias (com o nome da categoria entre parênteses).
     // Popula o filtro de Grupo DRE da tela "Contas a Pagar" (chamado uma vez, ao carregar as categorias)
     function preencherFiltroGrupoDREPagar() {
-        const select = document.getElementById('filtroGrupoDREPagar');
-        if (!select || select.options.length > 1) return;
-        Object.keys(_GRUPOS_DRE_LABELS).forEach(g => {
-            const opt = document.createElement('option');
-            opt.value = g;
-            opt.textContent = _GRUPOS_DRE_LABELS[g];
-            select.appendChild(opt);
-        });
+        // A montagem das opções é centralizada em _preencherSelectsGrupoDRE(),
+        // para que grupos personalizados e renomeados apareçam em todos os selects.
+        _preencherSelectsGrupoDRE();
     }
 
     // Ao trocar o Grupo DRE, a lista de Categorias passa a mostrar apenas as
@@ -6012,6 +6328,7 @@
             // Carrega dados quando a página for exibida
             if (pageId === 'categorias') carregarCategorias();
             else if (pageId === 'subcategorias') carregarSubcategorias();
+            else if (pageId === 'grupos-dre') carregarGruposDRE();
             else if (pageId === 'produtos') carregarProdutos();
             else if (pageId === 'fornecedores') carregarFornecedores();
             else if (pageId === 'clientes') carregarClientes();
@@ -9079,18 +9396,20 @@
     // DRE COMPLETA — por Competência
     // ================================================================
 
+    // O rótulo final é montado como prefixo + nome do grupo (o nome vem da tela
+    // "Grupos DRE" e pode ser personalizado pelo usuário).
     const DRE_GRUPOS = [
-        { id: 'RECEITA_BRUTA',      label: '1. Receita Bruta de Vendas/Serviços', sinal: 1  },
-        { id: 'DEDUCOES',           label: '  (-) Deduções / Impostos s/ Receita', sinal: -1 },
-        { id: 'CPV',                label: '  (-) CPV / Custo dos Serviços',       sinal: -1 },
-        { id: 'DESP_COMERCIAL',     label: '  (-) Despesas Comerciais',            sinal: -1 },
-        { id: 'DESP_ADMIN',         label: '  (-) Despesas Administrativas',       sinal: -1 },
-        { id: 'RECEITA_FINANCEIRA', label: '  (+) Receitas Financeiras',           sinal:  1 },
-        { id: 'DESP_FINANCEIRA',    label: '  (-) Despesas Financeiras',           sinal: -1 },
-        { id: 'EMPRESTIMO',         label: '  (-) Amortiz. Empréstimos/Financ.',   sinal: -1 },
-        { id: 'INVESTIMENTO',       label: '  (-) Investimentos',                  sinal: -1 },
-        { id: 'OUTRAS_RECEITAS',    label: '  (+) Outras Receitas',                sinal:  1 },
-        { id: 'OUTRAS_DESPESAS',    label: '  (-) Outras Despesas',                sinal: -1 },
+        { id: 'RECEITA_BRUTA',      prefixo: '1. ',      label: '1. Receita Bruta de Vendas/Serviços', sinal: 1  },
+        { id: 'DEDUCOES',           prefixo: '  (-) ',   label: '  (-) Deduções / Impostos s/ Receita', sinal: -1 },
+        { id: 'CPV',                prefixo: '  (-) ',   label: '  (-) CPV / Custo dos Serviços',       sinal: -1 },
+        { id: 'DESP_COMERCIAL',     prefixo: '  (-) ',   label: '  (-) Despesas Comerciais',            sinal: -1 },
+        { id: 'DESP_ADMIN',         prefixo: '  (-) ',   label: '  (-) Despesas Administrativas',       sinal: -1 },
+        { id: 'RECEITA_FINANCEIRA', prefixo: '  (+) ',   label: '  (+) Receitas Financeiras',           sinal:  1 },
+        { id: 'DESP_FINANCEIRA',    prefixo: '  (-) ',   label: '  (-) Despesas Financeiras',           sinal: -1 },
+        { id: 'EMPRESTIMO',         prefixo: '  (-) ',   label: '  (-) Amortiz. Empréstimos/Financ.',   sinal: -1 },
+        { id: 'INVESTIMENTO',       prefixo: '  (-) ',   label: '  (-) Investimentos',                  sinal: -1 },
+        { id: 'OUTRAS_RECEITAS',    prefixo: '  (+) ',   label: '  (+) Outras Receitas',                sinal:  1 },
+        { id: 'OUTRAS_DESPESAS',    prefixo: '  (-) ',   label: '  (-) Outras Despesas',                sinal: -1 },
     ];
 
     async function carregarDRE() {
@@ -9182,7 +9501,7 @@
         // Contas recebidas sem grupo específico → RECEITA_BRUTA por padrão
         recComp.forEach(c => {
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            const grupo = (cat && cat.grupo_dre) ? cat.grupo_dre : 'RECEITA_BRUTA';
+            const grupo = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || 'RECEITA_BRUTA') : 'RECEITA_BRUTA';
             if (!porGrupo[grupo]) return;
             porGrupo[grupo].total += parseFloat(c.valor || 0);
             const comp = c.data_competencia || c.data_recebimento || '';
@@ -9196,7 +9515,7 @@
         // Contas pagas → grupo conforme categoria.grupo_dre
         pagComp.forEach(c => {
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            const grupo = (cat && cat.grupo_dre) ? cat.grupo_dre : 'DESP_ADMIN';
+            const grupo = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || 'DESP_ADMIN') : 'DESP_ADMIN';
             if (!porGrupo[grupo]) return;
             porGrupo[grupo].total += parseFloat(c.valor || 0);
             const comp = c.data_competencia || c.data_pagamento || '';
@@ -9282,31 +9601,36 @@
         const fmtV = v => v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
         const pct  = v => recBruta > 0 ? (v / recBruta * 100).toFixed(1) + '%' : '-';
         const cor  = v => v >= 0 ? '#28a745' : '#dc3545';
+        // Valor com sinal explícito (+ / −) e cor verde/vermelha conforme o resultado
+        const fmtSinal = v => v === 0 ? '-' : (v > 0 ? '+' : '\u2212') + 'R$ ' + fmtV(Math.abs(v));
 
         const linhaGrupo = (g, valor, grupo_id) => {
             const itens = porGrupo[grupo_id] ? porGrupo[grupo_id].itens : [];
             const temItens = itens.length > 0;
             return `<tr style="font-size:13px;">
-                <td style="padding-left:16px;">${g}</td>
-                <td style="text-align:right;color:${valor < 0 ? '#dc3545' : '#333'};">${valor !== 0 ? 'R$ ' + fmtV(Math.abs(valor)) : '-'}</td>
-                <td style="text-align:right;color:#777;">${valor !== 0 ? pct(Math.abs(valor)) : '-'}</td>
-                <td style="text-align:center;">${temItens ? `<button onclick="verDetalheDRE('${grupo_id}')" style="background:none;border:1px solid #ddd;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:11px;">+${itens.length}</button>` : ''}</td>
+                <td style="padding:3px 8px 3px 16px;">${g}</td>
+                <td style="text-align:right;padding:3px 8px;color:${valor === 0 ? '#ccc' : cor(valor)};">${fmtSinal(valor)}</td>
+                <td style="text-align:right;padding:3px 8px;color:#777;">${valor !== 0 ? pct(Math.abs(valor)) : '-'}</td>
+                <td style="text-align:center;padding:3px 8px;">${temItens ? `<button onclick="verDetalheDRE('${grupo_id}')" style="background:none;border:1px solid #ddd;border-radius:4px;padding:1px 7px;cursor:pointer;font-size:11px;">+${itens.length}</button>` : ''}</td>
             </tr>`;
         };
 
+        // "destaque" = linha de fecho (Resultado Líquido): fundo branco, apenas
+        // realçada por borda e negrito — o valor mantém a cor verde/vermelha.
         const linhaSubtotal = (label, valor, destaque) => {
-            const bg = destaque ? 'var(--cor-primaria)' : '#f0f0f0';
-            const fc = destaque ? 'white' : '#333';
-            return `<tr style="font-weight:700;background:${bg};color:${fc};">
-                <td style="padding:8px 12px;">${label}</td>
-                <td style="text-align:right;padding:8px;color:${destaque ? 'white' : cor(valor)};">R$ ${fmtV(Math.abs(valor))} ${!destaque ? '' : ''}</td>
-                <td style="text-align:right;color:${destaque?'rgba(255,255,255,0.8)':'#777'};">${pct(Math.abs(valor))}</td>
+            const estiloLinha = destaque
+                ? 'font-weight:700;background:#fff;border-top:2px solid var(--cor-primaria);border-bottom:2px solid var(--cor-primaria);'
+                : 'font-weight:700;background:#f0f0f0;color:#333;';
+            return `<tr style="${estiloLinha}">
+                <td style="padding:${destaque ? '7px 12px' : '5px 12px'};">${label}</td>
+                <td style="text-align:right;padding:${destaque ? '7px 8px' : '5px 8px'};color:${cor(valor)};">${fmtSinal(valor)}</td>
+                <td style="text-align:right;padding:${destaque ? '7px 8px' : '5px 8px'};color:#777;">${pct(Math.abs(valor))}</td>
                 <td></td>
-            </tr><tr><td colspan="4" style="height:4px;background:#f9f9f9;"></td></tr>`;
+            </tr><tr><td colspan="4" style="height:3px;background:#f9f9f9;"></td></tr>`;
         };
 
         const linhaSecao = (label) =>
-            `<tr style="background:#f5f5f5;"><td colspan="4" style="font-weight:700;font-size:12px;color:#555;padding:6px 12px;text-transform:uppercase;letter-spacing:0.5px;">${label}</td></tr>`;
+            `<tr style="background:#f5f5f5;"><td colspan="4" style="font-weight:700;font-size:12px;color:#555;padding:4px 12px;text-transform:uppercase;letter-spacing:0.5px;">${label}</td></tr>`;
 
         let html = '';
         html += linhaSecao('RECEITAS');
@@ -9328,9 +9652,9 @@
             // Ordenar por valor desc
             Object.entries(cpvPorCat).sort((a,b) => b[1]-a[1]).forEach(([cat, val]) => {
                 html += `<tr style="font-size:12px;color:#666;background:#fafafa;">
-                    <td style="padding-left:36px;">↳ ${cat}</td>
-                    <td style="text-align:right;color:#dc3545;">R$ ${fmtV(val)}</td>
-                    <td style="text-align:right;color:#aaa;">${recBruta > 0 ? (val/recBruta*100).toFixed(1)+'%' : '-'}</td>
+                    <td style="padding:2px 8px 2px 36px;">↳ ${cat}</td>
+                    <td style="text-align:right;padding:2px 8px;color:#dc3545;">\u2212R$ ${fmtV(val)}</td>
+                    <td style="text-align:right;padding:2px 8px;color:#aaa;">${recBruta > 0 ? (val/recBruta*100).toFixed(1)+'%' : '-'}</td>
                     <td></td>
                 </tr>`;
             });
@@ -9408,7 +9732,7 @@
         contasRec.filter(c => c.data_competencia && c.data_competencia.startsWith(ano)).forEach(c => {
             const m = parseInt(c.data_competencia.substring(5,7)) - 1;
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            const g = (cat && cat.grupo_dre) ? cat.grupo_dre : 'RECEITA_BRUTA';
+            const g = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || 'RECEITA_BRUTA') : 'RECEITA_BRUTA';
             if (m < 0 || m > 11 || !dados[g]) return;
             dados[g][m] += parseFloat(c.valor || 0);
         });
@@ -9417,7 +9741,7 @@
         contasPag.filter(c => c.data_competencia && c.data_competencia.startsWith(ano)).forEach(c => {
             const m = parseInt(c.data_competencia.substring(5,7)) - 1;
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            const g = (cat && cat.grupo_dre) ? cat.grupo_dre : 'DESP_ADMIN';
+            const g = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || 'DESP_ADMIN') : 'DESP_ADMIN';
             if (m < 0 || m > 11 || !dados[g]) return;
             dados[g][m] += parseFloat(c.valor || 0);
         });
@@ -9450,7 +9774,7 @@
         const cpvSubcats = {};
         contasPag.filter(c => {
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            return cat && cat.grupo_dre === 'CPV' && c.data_competencia && c.data_competencia.startsWith(ano);
+            return cat && grupoEstruturalDRE(cat.grupo_dre) === 'CPV' && c.data_competencia && c.data_competencia.startsWith(ano);
         }).forEach(c => {
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
             const nome = cat ? cat.nome : 'Sem Categoria';
@@ -9473,7 +9797,7 @@
         const daSubcats = {};
         contasPag.filter(c => {
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            return cat && cat.grupo_dre === 'DESP_ADMIN' && c.data_competencia && c.data_competencia.startsWith(ano);
+            return cat && grupoEstruturalDRE(cat.grupo_dre) === 'DESP_ADMIN' && c.data_competencia && c.data_competencia.startsWith(ano);
         }).forEach(c => {
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
             const nome = cat ? cat.nome : 'Sem Categoria';
@@ -9500,15 +9824,18 @@
             { label: '(-) Investimentos',         fn: m => -calcMes(m).inv, bg: '' },
             { label: '(+) Outras Receitas',       fn: m => calcMes(m).or,   bg: '' },
             { label: '(-) Outras Despesas',       fn: m => -calcMes(m).od,  bg: '' },
-            { label: '= Resultado L\u00edquido',  fn: m => calcMes(m).res,  bg: 'var(--cor-primaria)', bold: true },
+            { label: '= Resultado L\u00edquido',  fn: m => calcMes(m).res,  bg: '', bold: true, destaque: true },
         ];
 
         tbody.innerHTML = '';
         linhas.forEach(linha => {
             const vals = Array.from({length: 12}, (_, m) => linha.fn(m));
             const total = vals.reduce((s, v) => s + v, 0);
-            const rowBg = linha.bg ? 'background:' + linha.bg + ';' : '';
-            const labelFc = linha.bg === 'var(--cor-primaria)' ? 'color:white;' : '';
+            // Linha de fecho (Resultado Líquido): fundo branco, destacada por bordas
+            const rowBg = linha.destaque
+                ? 'background:#fff;border-top:2px solid var(--cor-primaria);border-bottom:2px solid var(--cor-primaria);'
+                : (linha.bg ? 'background:' + linha.bg + ';' : '');
+            const labelFc = '';
             const bold  = linha.bold ? 'font-weight:700;' : '';
             tbody.innerHTML += '<tr style="' + rowBg + '">' +
                 '<td style="padding:3px 8px;' + labelFc + bold + '">' + linha.label + '</td>' +
@@ -9532,29 +9859,142 @@
         });
     }
 
-    // Oculta/mostra as colunas de meses (Jan-Dez) na DRE Mensal, mantendo Descrição e DRE Acumulada.
-    // Preferência salva por usuário, aplicada automaticamente ao carregar a DRE.
+    // ── OCULTAR MESES INDIVIDUAIS NA DRE MENSAL ──────────────────────────────
+    // O usuário escolhe quais meses aparecem; a preferência fica salva por usuário.
+    const _MESES_DRE_NOMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                              'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
     function _chaveOcultarMesesDRE() {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
-        return 'cap_dre_ocultar_meses_' + user;
+        return 'cap_dre_meses_ocultos_' + user;
     }
 
-    function toggleOcultarMesesDRE() {
-        const chk = document.getElementById('chkOcultarMesesDRE');
-        const tabela = document.getElementById('tabelaDREMensal');
-        if (!chk || !tabela) return;
-        tabela.classList.toggle('ocultar-meses-dre', chk.checked);
-        localStorage.setItem(_chaveOcultarMesesDRE(), chk.checked ? '1' : '0');
+    // Retorna array com os números dos meses ocultos (1 a 12)
+    function _mesesOcultosDRE() {
+        try {
+            const salvo = localStorage.getItem(_chaveOcultarMesesDRE());
+            return salvo ? JSON.parse(salvo) : [];
+        } catch (e) { return []; }
+    }
+
+    function montarMenuMesesDRE() {
+        const menu = document.getElementById('menuMesesDRE');
+        if (!menu) return;
+        const ocultos = _mesesOcultosDRE();
+        let html = '<div class="colunas-dropdown-title">Mostrar meses</div>';
+        _MESES_DRE_NOMES.forEach((nome, i) => {
+            const mes = i + 1;
+            const marcado = !ocultos.includes(mes) ? 'checked' : '';
+            html += `<label><input type="checkbox" ${marcado} onchange="toggleMesDRE(${mes}, this.checked)"> ${nome}</label>`;
+        });
+        html += `<div class="colunas-dropdown-actions">
+            <button type="button" class="btn btn-secondary" onclick="marcarTodosMesesDRE(true)">Mostrar todos</button>
+            <button type="button" class="btn btn-secondary" onclick="marcarTodosMesesDRE(false)">Ocultar todos</button>
+        </div>`;
+        menu.innerHTML = html;
     }
 
     function aplicarEstadoOcultarMesesDRE() {
-        const chk = document.getElementById('chkOcultarMesesDRE');
         const tabela = document.getElementById('tabelaDREMensal');
-        if (!chk || !tabela) return;
-        const ativo = localStorage.getItem(_chaveOcultarMesesDRE()) === '1';
-        chk.checked = ativo;
-        tabela.classList.toggle('ocultar-meses-dre', ativo);
+        if (!tabela) return;
+        const ocultos = _mesesOcultosDRE();
+        for (let m = 1; m <= 12; m++) {
+            tabela.classList.toggle('hide-mes-' + m, ocultos.includes(m));
+        }
     }
+
+    function toggleMesDRE(mes, visivel) {
+        let ocultos = _mesesOcultosDRE();
+        if (visivel) ocultos = ocultos.filter(m => m !== mes);
+        else if (!ocultos.includes(mes)) ocultos.push(mes);
+        localStorage.setItem(_chaveOcultarMesesDRE(), JSON.stringify(ocultos));
+        aplicarEstadoOcultarMesesDRE();
+    }
+
+    function marcarTodosMesesDRE(mostrar) {
+        const ocultos = mostrar ? [] : [1,2,3,4,5,6,7,8,9,10,11,12];
+        localStorage.setItem(_chaveOcultarMesesDRE(), JSON.stringify(ocultos));
+        aplicarEstadoOcultarMesesDRE();
+        montarMenuMesesDRE();
+    }
+
+    function toggleMenuMesesDRE(event) {
+        if (event) event.stopPropagation();
+        const menu = document.getElementById('menuMesesDRE');
+        if (!menu) return;
+        const abrindo = !menu.classList.contains('aberto');
+        if (abrindo) montarMenuMesesDRE();
+        menu.classList.toggle('aberto', abrindo);
+    }
+
+    // Fecha o menu de meses ao clicar fora dele
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('menuMesesDRE');
+        if (!menu || !menu.classList.contains('aberto')) return;
+        if (!menu.contains(event.target) && !event.target.closest('.colunas-btn-wrap')) {
+            menu.classList.remove('aberto');
+        }
+    });
+
+    // Gera o PDF da DRE Mensal, respeitando os meses que estão visíveis na tela
+    function gerarPDFDREMensal() {
+        const tabela = document.getElementById('tabelaDREMensal');
+        if (!tabela || !tabela.querySelector('tbody tr')) {
+            alert('Selecione um ano na DRE para gerar o PDF da DRE Mensal.');
+            return;
+        }
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+        const ano = (document.getElementById('filtroAnoDRE') || {}).value || '';
+        const empresaSel = document.getElementById('filtroEmpresaDRE');
+        const empresaTxt = (empresaSel && empresaSel.value && empresaSel.selectedOptions[0])
+            ? empresaSel.selectedOptions[0].textContent.trim() : 'Todas as empresas';
+
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.text(normalizarTexto('DRE Mensal — ' + (ano || 'Todos os anos')), 14, 16);
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+        doc.text(normalizarTexto('Empresa: ' + empresaTxt), 14, 22);
+        doc.text('Gerado em: ' + new Date().toLocaleDateString('pt-BR'), 14, 27);
+
+        // Índices das colunas ocultas (para não sairem no PDF)
+        const ocultos = _mesesOcultosDRE();
+        const colunasOcultas = ocultos.map(m => m); // col 0 = Descrição, col m = mês m
+
+        const head = [];
+        const body = [];
+        const ths = Array.from(tabela.querySelectorAll('thead th'));
+        head.push(ths.filter((_, i) => !colunasOcultas.includes(i)).map(th => normalizarTexto(th.innerText.trim())));
+
+        Array.from(tabela.querySelectorAll('tbody tr')).forEach(tr => {
+            const tds = Array.from(tr.querySelectorAll('td'));
+            if (!tds.length) return;
+            body.push(tds.filter((_, i) => !colunasOcultas.includes(i)).map(td => normalizarTexto(td.innerText.trim())));
+        });
+
+        doc.autoTable({
+            head: head,
+            body: body,
+            startY: 31,
+            styles: { fontSize: 6.5, cellPadding: 1.4 },
+            headStyles: { fillColor: [230, 102, 34], fontSize: 6.5 },
+            columnStyles: { 0: { cellWidth: 45, halign: 'left' } },
+            // Valores negativos em vermelho, positivos em verde
+            didParseCell: function (data) {
+                if (data.section !== 'body' || data.column.index === 0) return;
+                const txt = (data.cell.raw || '').trim();
+                data.cell.styles.halign = 'right';
+                if (txt === '-' || txt === '') { data.cell.styles.textColor = [170, 170, 170]; return; }
+                if (txt.charAt(0) === '-' || txt.charAt(0) === '\u2212') data.cell.styles.textColor = [220, 53, 69];
+                else if (txt.charAt(0) === '+') data.cell.styles.textColor = [40, 167, 69];
+            }
+        });
+
+        doc.save('DRE_Mensal_' + (ano || 'todos') + '.pdf');
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     // Exporta a DRE Mensal (Jan-Dez + DRE Acumulada) para uma planilha Excel (.xlsx)
     // Exporta a tabela de Contas a Pagar para Excel (.xlsx), exatamente como está
@@ -9624,14 +10064,14 @@
         contasRec.filter(c => c.data_competencia && c.data_competencia.startsWith(ano)).forEach(c => {
             const m = parseInt(c.data_competencia.substring(5,7)) - 1;
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            const g = (cat && cat.grupo_dre) ? cat.grupo_dre : 'RECEITA_BRUTA';
+            const g = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || 'RECEITA_BRUTA') : 'RECEITA_BRUTA';
             if (m < 0 || m > 11 || !dados[g]) return;
             dados[g][m] += parseFloat(c.valor || 0);
         });
         contasPag.filter(c => c.data_competencia && c.data_competencia.startsWith(ano)).forEach(c => {
             const m = parseInt(c.data_competencia.substring(5,7)) - 1;
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            const g = (cat && cat.grupo_dre) ? cat.grupo_dre : 'DESP_ADMIN';
+            const g = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || 'DESP_ADMIN') : 'DESP_ADMIN';
             if (m < 0 || m > 11 || !dados[g]) return;
             dados[g][m] += parseFloat(c.valor || 0);
         });
@@ -10097,14 +10537,8 @@
         const contas = await fetchSupabase('contas_a_pagar', 'GET');
         if (contas) dadosCache.contasAnaliseCategorias = contas;
 
-        const selGrupo = document.getElementById('filtroGrupoDREAnaliseCat');
-        if (selGrupo && selGrupo.options.length <= 1) {
-            Object.keys(_GRUPOS_DRE_LABELS).forEach(g => {
-                const opt = document.createElement('option');
-                opt.value = g; opt.textContent = _GRUPOS_DRE_LABELS[g];
-                selGrupo.appendChild(opt);
-            });
-        }
+        // Opções de Grupo DRE (inclui grupos personalizados criados na tela "Grupos DRE")
+        _preencherSelectsGrupoDRE();
 
         const selAno = document.getElementById('filtroAnoAnaliseCat');
         if (selAno && selAno.options.length === 0) {
