@@ -1547,6 +1547,7 @@
                         <button class="btn btn-secondary" type="button" onclick="toggleMenuColunasPagar(event)" style="background:#555;color:white;">🧩 Colunas</button>
                         <div id="menuColunasPagar" class="colunas-dropdown"></div>
                     </div>
+                    <button class="btn btn-secondary" onclick="exportarExcelContasPagar()" style="background:#1D6F42;color:white;">📊 Excel</button>
                     <button class="btn btn-secondary" onclick="gerarPDF('pagar')" style="background:#e67e22;color:white;">📄 PDF</button>
                     <button class="btn btn-primary" onclick="openModalLancarPagar()">+ Novo Lançamento</button>
                 </div>
@@ -1559,6 +1560,12 @@
                         <label>Fornecedor</label>
                         <select id="filtroFornecedorPagar" onchange="atualizarTabelaPendentesPagar()">
                             <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Grupo DRE</label>
+                        <select id="filtroGrupoDREPagar" onchange="atualizarFiltroCategoriaPagarPorGrupo()">
+                            <option value="">Todos os grupos</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -3466,7 +3473,7 @@
     const carregarEmpresasDebounced = debounce(() => carregarEmpresas(), 350);
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroGrupoDREPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -3875,6 +3882,7 @@
             dadosCache.categorias = dados;
             atualizarTabelaCategorias();
             atualizarSelectCategorias();
+            preencherFiltroGrupoDREPagar();
         }
     }
 
@@ -3921,10 +3929,15 @@
         // IDs de todos os selects que recebem lista de categorias
         const ids = ['categoriaProduto', 'categoriaPagar', 'filtroCategoriaPagar', 'editLancCategoria'];
         const itens = dadosCache.categorias.filter(c => c.ativo !== false);
+        // O filtro de categoria da tela "Contas a Pagar" respeita o Grupo DRE selecionado
+        const grupoPagar = (document.getElementById('filtroGrupoDREPagar') || {}).value || '';
         ids.forEach(id => {
             const select = document.getElementById(id);
             if (!select) return;
-            _repovoarSelect(select, itens, c => c.id, c => c.nome);
+            const listaId = (id === 'filtroCategoriaPagar' && grupoPagar)
+                ? itens.filter(c => c.grupo_dre === grupoPagar)
+                : itens;
+            _repovoarSelect(select, listaId, c => c.id, c => c.nome);
         });
     }
 
@@ -4772,6 +4785,7 @@
         tbody.innerHTML = '';
         let filtrado = dadosCache.contasPagar;
         const filtroFornecedor = document.getElementById('filtroFornecedorPagar');
+        const filtroGrupoDRE = document.getElementById('filtroGrupoDREPagar');
         const filtroCategoria = document.getElementById('filtroCategoriaPagar');
         const filtroSubcategoria = document.getElementById('filtroSubcategoriaPagar');
         const filtroEmpresa = document.getElementById('filtroEmpresaPagar');
@@ -4781,6 +4795,12 @@
         const filtroStatus = document.getElementById('filtroStatusPagar');
         const campoData = (filtroTipoData && filtroTipoData.value === 'competencia') ? 'data_competencia' : 'data_vencimento';
         if (filtroFornecedor && filtroFornecedor.value) filtrado = filtrado.filter(c => c.fornecedor_id == filtroFornecedor.value);
+        if (filtroGrupoDRE && filtroGrupoDRE.value) {
+            filtrado = filtrado.filter(c => {
+                const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
+                return cat && cat.grupo_dre === filtroGrupoDRE.value;
+            });
+        }
         if (filtroCategoria && filtroCategoria.value) filtrado = filtrado.filter(c => c.categoria_id == filtroCategoria.value);
         if (filtroSubcategoria && filtroSubcategoria.value) filtrado = filtrado.filter(c => c.subcategoria_id == filtroSubcategoria.value);
         if (filtroEmpresa && filtroEmpresa.value) filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
@@ -5895,6 +5915,39 @@
 
     // Popula o filtro de Subcategoria da tela "Contas a Pagar", vinculado à Categoria selecionada.
     // Se nenhuma categoria estiver selecionada, lista todas as subcategorias (com o nome da categoria entre parênteses).
+    // Popula o filtro de Grupo DRE da tela "Contas a Pagar" (chamado uma vez, ao carregar as categorias)
+    function preencherFiltroGrupoDREPagar() {
+        const select = document.getElementById('filtroGrupoDREPagar');
+        if (!select || select.options.length > 1) return;
+        Object.keys(_GRUPOS_DRE_LABELS).forEach(g => {
+            const opt = document.createElement('option');
+            opt.value = g;
+            opt.textContent = _GRUPOS_DRE_LABELS[g];
+            select.appendChild(opt);
+        });
+    }
+
+    // Ao trocar o Grupo DRE, a lista de Categorias passa a mostrar apenas as
+    // categorias daquele grupo (e a seleção atual é limpa se não pertencer a ele).
+    function atualizarFiltroCategoriaPagarPorGrupo() {
+        const selGrupo = document.getElementById('filtroGrupoDREPagar');
+        const selCategoria = document.getElementById('filtroCategoriaPagar');
+        if (!selCategoria) { atualizarTabelaPendentesPagar(); return; }
+        const grupoSel = selGrupo ? selGrupo.value : '';
+        const valorAtual = selCategoria.value;
+
+        let lista = (dadosCache.categorias || []).filter(c => c.ativo !== false);
+        if (grupoSel) lista = lista.filter(c => c.grupo_dre === grupoSel);
+
+        selCategoria.innerHTML = '<option value="">Todos</option>';
+        lista.forEach(cat => {
+            selCategoria.innerHTML += `<option value="${cat.id}">${cat.nome}</option>`;
+        });
+        selCategoria.value = lista.some(c => String(c.id) === valorAtual) ? valorAtual : '';
+
+        atualizarFiltroSubcategoriaPagar();
+    }
+
     function atualizarFiltroSubcategoriaPagar() {
         const select = document.getElementById('filtroSubcategoriaPagar');
         if (!select) { atualizarTabelaPendentesPagar(); return; }
@@ -9504,6 +9557,55 @@
     }
 
     // Exporta a DRE Mensal (Jan-Dez + DRE Acumulada) para uma planilha Excel (.xlsx)
+    // Exporta a tabela de Contas a Pagar para Excel (.xlsx), exatamente como está
+    // na tela: mesmos filtros, mesma ordenação e mesmas colunas visíveis.
+    function exportarExcelContasPagar() {
+        const tabela = document.getElementById('tabelaPendentesPagar');
+        const linhas = tabela ? Array.from(tabela.querySelectorAll('tbody tr')) : [];
+        if (!linhas.length) { alert('Não há dados para exportar.'); return; }
+
+        // Colunas visíveis (respeita o menu "🧩 Colunas"), ignorando a coluna "Ações"
+        const ocultas = _colunasPagarOcultas();
+        const colunasVisiveis = COLUNAS_PAGAR
+            .map((col, i) => ({ col, idx: i + 1 }))
+            .filter(({ col, idx }) => col.chave !== 'acoes' && !ocultas.includes(idx));
+
+        const rows = [colunasVisiveis.map(({ col }) => col.label)];
+
+        linhas.forEach(tr => {
+            const tds = tr.querySelectorAll('td');
+            if (tds.length < COLUNAS_PAGAR.length) return; // ignora linhas de aviso/vazias
+            rows.push(colunasVisiveis.map(({ col, idx }) => {
+                const txt = (tds[idx - 1].innerText || '').trim();
+                // Valor vira número para permitir somas/filtros no Excel
+                if (col.chave === 'valor') {
+                    const num = parseFloat(txt.replace(/[^\d,-]/g, '').replace(/\./g, '').replace(',', '.'));
+                    return isNaN(num) ? txt : num;
+                }
+                return txt;
+            }));
+        });
+
+        // Linha de total do que está filtrado em tela
+        const posValor = colunasVisiveis.findIndex(({ col }) => col.chave === 'valor');
+        if (posValor >= 0) {
+            const totalLinha = new Array(colunasVisiveis.length).fill('');
+            totalLinha[0] = 'TOTAL FILTRADO';
+            totalLinha[posValor] = rows.slice(1).reduce((s, r) => s + (typeof r[posValor] === 'number' ? r[posValor] : 0), 0);
+            rows.push([]);
+            rows.push(totalLinha);
+        }
+
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Contas a Pagar');
+
+        const ano = (document.getElementById('filtroAnoPagar') || {}).value || '';
+        const mes = (document.getElementById('filtroMesPagar') || {}).value || '';
+        const sufixo = (ano || mes) ? '_' + (ano || 'todos') + (mes ? '-' + mes : '') : '';
+        XLSX.writeFile(wb, 'Contas_a_Pagar' + sufixo + '.xlsx');
+    }
+
     function exportarExcelDREMensal() {
         const dreLancs   = window._dreLancsMensal || [];
         const contasRec  = window._dreContasRecMensal || [];
@@ -9799,7 +9901,7 @@
                 larguras: [30, 24, 34, 30, 14, 18, 18, 20, 12, 16],
                 alinhamentos: ['left', 'left', 'left', 'left', 'center', 'center', 'center', 'right', 'center', 'center'],
                 tableId: 'tabelaPendentesPagar',
-                filtroIds: ['filtroFornecedorPagar', 'filtroCategoriaPagar', 'filtroSubcategoriaPagar', 'filtroEmpresaPagar', 'filtroStatusPagar', 'filtroTipoDataPagar', 'filtroAnoPagar', 'filtroMesPagar']
+                filtroIds: ['filtroFornecedorPagar', 'filtroGrupoDREPagar', 'filtroCategoriaPagar', 'filtroSubcategoriaPagar', 'filtroEmpresaPagar', 'filtroStatusPagar', 'filtroTipoDataPagar', 'filtroAnoPagar', 'filtroMesPagar']
             },
             recebidas: {
                 titulo: 'Contas Recebidas',
