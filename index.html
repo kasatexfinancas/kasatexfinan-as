@@ -1561,6 +1561,7 @@
                     </div>
                     <button class="btn btn-secondary" onclick="exportarExcelContasPagar()" style="background:#1D6F42;color:white;">📊 Excel</button>
                     <button class="btn btn-secondary" onclick="gerarPDF('pagar')" style="background:#e67e22;color:white;">📄 PDF</button>
+                    <button class="btn btn-secondary" onclick="abrirModalRelatorioDiaPagar()" style="background:#8e44ad;color:white;">📅 Por Dia</button>
                     <button class="btn btn-primary" onclick="openModalLancarPagar()">+ Novo Lançamento</button>
                 </div>
             </div>
@@ -10627,6 +10628,237 @@
     }
 
     // ================================================================
+    // RELATÓRIO PERSONALIZADO POR DIA DE VENCIMENTO (Contas a Pagar)
+    // - o usuário escolhe quais colunas aparecem
+    // - os lançamentos são agrupados por dia de vencimento, com subtotal
+    //   por dia e total geral ao final
+    // ================================================================
+
+    // Alinhamento por coluna dentro do relatório por dia
+    const _RELDIA_COLINFO = {
+        fornecedor:  { align: 'left'   },
+        categoria:   { align: 'left'   },
+        descricao:   { align: 'left'   },
+        empresa:     { align: 'left'   },
+        nf:          { align: 'center' },
+        competencia: { align: 'center' },
+        vencimento:  { align: 'center' },
+        valor:       { align: 'right'  },
+        parcela:     { align: 'center' },
+        status:      { align: 'center' }
+    };
+
+    // Colunas de dados da tabela de Contas a Pagar (exclui "Ações")
+    function _colunasDadosPagar() {
+        return COLUNAS_PAGAR.filter(c => c.chave !== 'acoes');
+    }
+
+    function _chaveRelDiaPagar() {
+        const user = (typeof usuarioAtual !== 'undefined' && usuarioAtual) ? usuarioAtual.email : 'guest';
+        return 'cap_relatorio_dia_pagar_cols_' + user;
+    }
+
+    // Seleção de colunas salva (padrão: todas menos "Vencimento", que já vira subtítulo)
+    function _relDiaColsSalvas() {
+        try {
+            const s = localStorage.getItem(_chaveRelDiaPagar());
+            if (s) return JSON.parse(s);
+        } catch (e) {}
+        return _colunasDadosPagar().filter(c => c.chave !== 'vencimento').map(c => c.chave);
+    }
+
+    function _marcarRelDiaCols(valor) {
+        document.querySelectorAll('.relDiaPagarCol').forEach(cb => { cb.checked = valor; });
+    }
+
+    function abrirModalRelatorioDiaPagar() {
+        const cont = document.getElementById('relDiaPagarColunas');
+        if (!cont) return;
+        const sel = _relDiaColsSalvas();
+        let html = '';
+        _colunasDadosPagar().forEach(c => {
+            const chk = sel.includes(c.chave) ? 'checked' : '';
+            html += `<label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;"
+                        onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='transparent'">
+                        <input type="checkbox" class="relDiaPagarCol" value="${c.chave}" ${chk}> ${c.label}</label>`;
+        });
+        cont.innerHTML = html;
+        document.getElementById('modalRelatorioDiaPagar').classList.add('active');
+    }
+
+    function gerarRelatorioPorDiaPagar() {
+        const chosen = Array.from(document.querySelectorAll('.relDiaPagarCol'))
+            .filter(cb => cb.checked).map(cb => cb.value);
+        if (chosen.length === 0) { alert('Selecione ao menos uma coluna para o relatório.'); return; }
+        try { localStorage.setItem(_chaveRelDiaPagar(), JSON.stringify(chosen)); } catch (e) {}
+
+        const dados = _colunasDadosPagar();
+        const idxMap = {};
+        dados.forEach((c, i) => { idxMap[c.chave] = i; });
+        const vencIdx  = idxMap['vencimento'];
+        const valorIdx = idxMap['valor'];
+
+        const tbody = document.querySelector('#tabelaPendentesPagar tbody');
+        if (!tbody) return;
+        const linhas = Array.from(tbody.querySelectorAll('tr'));
+        if (linhas.length === 0) { alert('Não há dados para exportar.'); return; }
+
+        // --- Agrupar por dia de vencimento ---
+        const grupos = {}; // 'dd/mm/yyyy' -> { rows, sortKey, total, matchDate }
+        linhas.forEach(linha => {
+            const cells = linha.querySelectorAll('td');
+            if (cells.length === 0) return;
+            const vTxt = (cells[vencIdx] ? cells[vencIdx].innerText.trim() : '') || 'Sem data';
+            let sortKey = Number.MAX_SAFE_INTEGER;
+            const m = vTxt.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            if (m) sortKey = new Date(+m[3], +m[2] - 1, +m[1]).getTime();
+            if (!grupos[vTxt]) grupos[vTxt] = { rows: [], sortKey: sortKey, total: 0, matchDate: m };
+            grupos[vTxt].rows.push(cells);
+            if (cells[valorIdx]) {
+                const t = cells[valorIdx].innerText.trim();
+                if (t.startsWith('R$')) {
+                    const val = parseFloat(t.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
+                    if (!isNaN(val)) grupos[vTxt].total += val;
+                }
+            }
+        });
+        const chavesOrdenadas = Object.keys(grupos).sort((a, b) => grupos[a].sortKey - grupos[b].sortKey);
+
+        // --- PDF ---
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        const pageW = doc.internal.pageSize.getWidth();
+        const pageH = doc.internal.pageSize.getHeight();
+
+        doc.setFillColor(255, 122, 66);
+        doc.rect(0, 0, pageW, 18, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(14); doc.setFont(undefined, 'bold');
+        doc.text('CAP Gestao Financeira', 10, 11);
+        doc.setFontSize(9); doc.setFont(undefined, 'normal');
+        const hoje = new Date().toLocaleDateString('pt-BR');
+        doc.text('Gerado em: ' + hoje, pageW - 10, 11, { align: 'right' });
+
+        doc.setTextColor(40, 40, 40);
+        doc.setFontSize(13); doc.setFont(undefined, 'bold');
+        doc.text(normalizarTexto('Contas a Pagar - Por Dia de Vencimento'), pageW / 2, 27, { align: 'center' });
+
+        // Filtros aplicados (mesma lógica do gerarPDF)
+        const filtroIds = ['filtroFornecedorPagar', 'filtroGrupoDREPagar', 'filtroCategoriaPagar', 'filtroSubcategoriaPagar', 'filtroEmpresaPagar', 'filtroStatusPagar', 'filtroTipoDataPagar', 'filtroAnoPagar', 'filtroMesPagar'];
+        const filtrosAplicados = [];
+        filtroIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.value && el.selectedOptions && el.selectedOptions[0]) {
+                const label = (el.previousElementSibling && el.previousElementSibling.textContent) || '';
+                filtrosAplicados.push((label ? label.trim() + ': ' : '') + el.selectedOptions[0].textContent.trim());
+            } else if (el && el.value) {
+                filtrosAplicados.push(el.value);
+            }
+        });
+        let startY = 31;
+        if (filtrosAplicados.length > 0) {
+            doc.setFontSize(8.5); doc.setFont(undefined, 'normal'); doc.setTextColor(110, 110, 110);
+            doc.text(normalizarTexto('Filtros: ' + filtrosAplicados.join('  |  ')), pageW / 2, 33, { align: 'center' });
+            startY = 37;
+        }
+
+        // Colunas de saída (na ordem original da tabela)
+        const outCols = dados.filter(c => chosen.includes(c.chave));
+        const numCols = outCols.length;
+        const head = [outCols.map(c => normalizarTexto(c.label))];
+
+        const columnStyles = {};
+        outCols.forEach((c, i) => {
+            columnStyles[i] = { halign: (_RELDIA_COLINFO[c.chave] && _RELDIA_COLINFO[c.chave].align) || 'left' };
+        });
+        const statusOutIdx = outCols.findIndex(c => c.chave === 'status');
+
+        const DIAS_SEMANA = ['Domingo', 'Segunda-feira', 'Terca-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sabado'];
+
+        // Monta o corpo com cabeçalho de grupo + linhas + subtotal por dia
+        const body = [];
+        let totalGeral = 0, totalLancamentos = 0;
+        chavesOrdenadas.forEach(dateKey => {
+            const g = grupos[dateKey];
+            let subtitulo;
+            if (g.matchDate) {
+                const d = new Date(+g.matchDate[3], +g.matchDate[2] - 1, +g.matchDate[1]);
+                subtitulo = DIAS_SEMANA[d.getDay()] + ', ' + dateKey;
+            } else {
+                subtitulo = 'Sem data de vencimento';
+            }
+            body.push([{ content: normalizarTexto('  ' + subtitulo), colSpan: numCols,
+                styles: { fillColor: [255, 224, 208], textColor: [120, 50, 10], fontStyle: 'bold', halign: 'left', fontSize: 8.6, cellPadding: 2.6 } }]);
+
+            g.rows.forEach(cells => {
+                const row = outCols.map(c => {
+                    const cel = cells[idxMap[c.chave]];
+                    return cel ? normalizarTexto(cel.innerText.trim().replace(/\n/g, ' ')) : '';
+                });
+                body.push(row);
+            });
+
+            const nLanc = g.rows.length;
+            totalGeral += g.total; totalLancamentos += nLanc;
+            const subtxt = 'Subtotal ' + dateKey + ':   R$ ' +
+                g.total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+                '   (' + nLanc + (nLanc === 1 ? ' lancamento' : ' lancamentos') + ')';
+            body.push([{ content: normalizarTexto(subtxt), colSpan: numCols,
+                styles: { fillColor: [245, 245, 245], textColor: [90, 90, 90], fontStyle: 'bold', halign: 'right', fontSize: 7.8, cellPadding: 2 } }]);
+        });
+
+        doc.autoTable({
+            head: head,
+            body: body,
+            startY: startY,
+            margin: { left: 8, right: 8, bottom: 14 },
+            theme: 'grid',
+            styles: {
+                fontSize: 7.6, cellPadding: 2, overflow: 'linebreak', valign: 'middle',
+                lineColor: [225, 225, 225], lineWidth: 0.1, textColor: [55, 55, 55], fillColor: [255, 255, 255]
+            },
+            headStyles: {
+                fillColor: [255, 122, 66], textColor: [255, 255, 255], fontStyle: 'bold',
+                halign: 'left', fontSize: 8, cellPadding: 2.4
+            },
+            alternateRowStyles: { fillColor: [255, 255, 255] },
+            columnStyles: columnStyles,
+            didParseCell: function (data) {
+                // Ignora as linhas de grupo/subtotal (célula única com colSpan)
+                const raw = data.row.raw;
+                if (Array.isArray(raw) && raw.length === 1 && raw[0] && raw[0].colSpan) return;
+                if (data.section === 'body' && statusOutIdx >= 0 && data.column.index === statusOutIdx) {
+                    const t = (data.cell.text[0] || '').toLowerCase();
+                    if (t === 'atrasado') { data.cell.styles.textColor = [180, 0, 0]; data.cell.styles.fontStyle = 'bold'; }
+                    else if (t === 'pendente') { data.cell.styles.textColor = [150, 100, 0]; data.cell.styles.fontStyle = 'bold'; }
+                    else if (t === 'pago') { data.cell.styles.textColor = [30, 130, 76]; data.cell.styles.fontStyle = 'bold'; }
+                }
+            },
+            didDrawPage: function (data) {
+                doc.setFontSize(7); doc.setTextColor(140, 140, 140); doc.setFont(undefined, 'normal');
+                const pageNum = doc.internal.getNumberOfPages();
+                doc.text('Pagina ' + data.pageNumber + ' de ' + pageNum, pageW / 2, pageH - 6, { align: 'center' });
+            }
+        });
+
+        // Total geral (caixa de destaque)
+        let finalY = doc.lastAutoTable.finalY + 6;
+        if (finalY + 6 > pageH - 10) { doc.addPage(); finalY = 24; }
+        const totalTexto = 'TOTAL GERAL: R$ ' +
+            totalGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+            '  (' + totalLancamentos + (totalLancamentos === 1 ? ' lancamento' : ' lancamentos') + ')';
+        doc.setFontSize(10); doc.setFont(undefined, 'bold');
+        const boxW = doc.getTextWidth(normalizarTexto(totalTexto)) + 10;
+        doc.setFillColor(255, 122, 66);
+        doc.roundedRect(pageW - 10 - boxW, finalY - 5, boxW, 8, 1.5, 1.5, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.text(normalizarTexto(totalTexto), pageW - 10 - boxW / 2, finalY, { align: 'center' });
+
+        closeModal('modalRelatorioDiaPagar');
+        doc.save('relatorio_pagar_por_dia_' + hoje.replace(/\//g, '-') + '.pdf');
+    }
+
+    // ================================================================
     // ANÁLISE DE CATEGORIAS (pivot por mês, com filtro de Grupo DRE)
     // ================================================================
     const _MESES_ABREV_ANALISE = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -11256,6 +11488,30 @@
                 <button type="button" class="btn btn-secondary" onclick="closeModal('modalEditarLancamento')">Cancelar</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- MODAL RELATÓRIO POR DIA DE VENCIMENTO (Contas a Pagar) -->
+<div class="modal" id="modalRelatorioDiaPagar">
+    <div class="modal-content" style="max-width:460px;">
+        <div class="modal-header">
+            <span>📅 Relatório por Dia de Vencimento</span>
+            <button class="modal-close" onclick="closeModal('modalRelatorioDiaPagar')">&times;</button>
+        </div>
+        <div style="font-size:12px;color:#888;margin-bottom:12px;line-height:1.5;">
+            Marque as colunas que devem aparecer no relatório. Os lançamentos são
+            agrupados por <b>dia de vencimento</b>, com subtotal por dia e total geral ao final.
+            O relatório respeita os filtros aplicados na tela.
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <button type="button" class="btn btn-secondary btn-small" onclick="_marcarRelDiaCols(true)">Marcar todas</button>
+            <button type="button" class="btn btn-secondary btn-small" onclick="_marcarRelDiaCols(false)">Desmarcar todas</button>
+        </div>
+        <div id="relDiaPagarColunas" style="display:flex;flex-direction:column;gap:2px;max-height:320px;overflow:auto;border:1px solid #eee;border-radius:8px;padding:6px;"></div>
+        <div class="form-actions" style="margin-top:16px;">
+            <button type="button" class="btn btn-primary" onclick="gerarRelatorioPorDiaPagar()">📄 Gerar PDF</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modalRelatorioDiaPagar')">Cancelar</button>
+        </div>
     </div>
 </div>
 
