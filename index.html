@@ -1594,6 +1594,10 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>NF</label>
+                        <input type="text" id="filtroNFPagar" placeholder="Nº da nota" oninput="atualizarTabelaPendentesPagar()">
+                    </div>
+                    <div class="form-group">
                         <label>Empresa</label>
                         <select id="filtroEmpresaPagar" onchange="atualizarTabelaPendentesPagar()">
                             <option value="">Todas</option>
@@ -5111,6 +5115,7 @@
         const filtroGrupoDRE = document.getElementById('filtroGrupoDREPagar');
         const filtroCategoria = document.getElementById('filtroCategoriaPagar');
         const filtroSubcategoria = document.getElementById('filtroSubcategoriaPagar');
+        const filtroNF = document.getElementById('filtroNFPagar');
         const filtroEmpresa = document.getElementById('filtroEmpresaPagar');
         const filtroAno = document.getElementById('filtroAnoPagar');
         const filtroMes = document.getElementById('filtroMesPagar');
@@ -5126,6 +5131,10 @@
         }
         if (filtroCategoria && filtroCategoria.value) filtrado = filtrado.filter(c => c.categoria_id == filtroCategoria.value);
         if (filtroSubcategoria && filtroSubcategoria.value) filtrado = filtrado.filter(c => c.subcategoria_id == filtroSubcategoria.value);
+        if (filtroNF && filtroNF.value.trim()) {
+            const termoNF = filtroNF.value.trim().toLowerCase();
+            filtrado = filtrado.filter(c => (c.nota_fiscal || '').toString().toLowerCase().includes(termoNF));
+        }
         if (filtroEmpresa && filtroEmpresa.value) filtrado = filtrado.filter(c => c.empresa_id == filtroEmpresa.value);
         if (filtroAno && filtroAno.value) filtrado = filtrado.filter(c => c[campoData] && c[campoData].startsWith(filtroAno.value));
         if (filtroMes && filtroMes.value) filtrado = filtrado.filter(c => c[campoData] && c[campoData].includes('-' + filtroMes.value + '-'));
