@@ -1009,8 +1009,8 @@
             <div class="menu-item" onclick="showPage('categorias')">📁 Categorias</div>
             <div class="menu-item" onclick="showPage('grupos-dre')">📊 Grupos DRE</div>
             <div class="menu-item" onclick="showPage('subcategorias')">🏷️ Subcategorias</div>
-            <div class="menu-item" onclick="showPage('produtos')">📦 Produtos</div>
-            <div class="menu-item" onclick="showPage('fornecedores')">🏭 Fornecedores</div>
+            <div class="menu-item" onclick="showPage('produtos')">📦 Itens</div>
+            <div class="menu-item" onclick="showPage('fornecedores')">🏭 Despesas/Fornecedores</div>
             <div class="menu-item" onclick="showPage('clientes')">👥 Clientes</div>
             <div class="menu-item" onclick="showPage('bancos')">🏦 Bancos</div>
             <div class="menu-item" onclick="showPage('empresas')">🏢 Empresas</div>
@@ -1073,24 +1073,24 @@
                 </div>
             </div>
 
-            <!-- Cards resumo -->
+            <!-- Cards resumo (clique para ver os lançamentos) -->
             <div class="dashboard-grid">
-                <div class="stat-card">
+                <div class="stat-card" style="cursor:pointer;" onclick="abrirLancamentosDashboard('receber')" title="Ver lançamentos">
                     <div class="stat-label">A Receber</div>
                     <div class="stat-value" id="totalReceber">R$ 0,00</div>
                     <div class="stat-change" id="countReceber">0 pendentes</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" style="cursor:pointer;" onclick="abrirLancamentosDashboard('pagar')" title="Ver lançamentos">
                     <div class="stat-label">A Pagar</div>
                     <div class="stat-value" id="totalPagar">R$ 0,00</div>
                     <div class="stat-change" id="countPagar">0 pendentes</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" style="cursor:pointer;" onclick="abrirLancamentosDashboard('recebido')" title="Ver lançamentos">
                     <div class="stat-label">Recebido (Este Mês)</div>
                     <div class="stat-value" id="recebidoMes">R$ 0,00</div>
                     <div class="stat-change" id="countRecebidoMes">0 transações</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" style="cursor:pointer;" onclick="abrirLancamentosDashboard('pago')" title="Ver lançamentos">
                     <div class="stat-label">Pago (Este Mês)</div>
                     <div class="stat-value" id="pagoMes">R$ 0,00</div>
                     <div class="stat-change" id="countPagoMes">0 transações</div>
@@ -1126,13 +1126,13 @@
 
             <!-- Maiores Fornecedores — tabela -->
             <div class="card" style="margin-top:16px;">
-                <div class="card-title">📋 Maiores Fornecedores (A Pagar Pendente)</div>
+                <div class="card-title">📋 Maiores Despesas/Fornecedores (A Pagar Pendente)</div>
                 <div class="table-container">
                     <table id="tabelaFornecedoresDash" style="font-size:13px;">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Fornecedor</th>
+                                <th>Despesas/Fornecedor</th>
                                 <th style="text-align:right;">Total Pendente</th>
                                 <th style="text-align:right;">Atrasado</th>
                                 <th style="text-align:center;">Contas</th>
@@ -1222,8 +1222,8 @@
         <!-- PRODUTOS -->
         <div id="produtos" class="page">
             <div class="page-header">
-                <h1>Produtos</h1>
-                <button class="btn btn-primary btn-small" onclick="openModalProduto()">+ Novo Produto</button>
+                <h1>Itens</h1>
+                <button class="btn btn-primary btn-small" onclick="openModalProduto()">+ Novo Item</button>
             </div>
 
             <div class="alert alert-success" id="alertProdutos"></div>
@@ -1247,8 +1247,8 @@
         <!-- FORNECEDORES -->
         <div id="fornecedores" class="page">
             <div class="page-header">
-                <h1>Fornecedores</h1>
-                <button class="btn btn-primary btn-small" onclick="openModalFornecedor()">+ Novo Fornecedor</button>
+                <h1>Despesas/Fornecedores</h1>
+                <button class="btn btn-primary btn-small" onclick="openModalFornecedor()">+ Nova Despesa/Fornecedor</button>
             </div>
 
             <div class="alert alert-success" id="alertFornecedores"></div>
@@ -1570,7 +1570,7 @@
             <div class="filter-container">
                 <div class="filter-row">
                     <div class="form-group">
-                        <label>Fornecedor</label>
+                        <label>Despesas/Fornecedor</label>
                         <select id="filtroFornecedorPagar" onchange="atualizarTabelaPendentesPagar()">
                             <option value="">Todos</option>
                         </select>
@@ -1674,7 +1674,7 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <th class="th-ordenavel" data-campo-ordenar="fornecedor" onclick="ordenarTabelaPor('tabelaPendentesPagar','fornecedor')">Fornecedor</th>
+                            <th class="th-ordenavel" data-campo-ordenar="fornecedor" onclick="ordenarTabelaPor('tabelaPendentesPagar','fornecedor')">Despesas/Fornecedor</th>
                             <th class="th-ordenavel" data-campo-ordenar="categoria" onclick="ordenarTabelaPor('tabelaPendentesPagar','categoria')">Categoria</th>
                             <th class="th-ordenavel" data-campo-ordenar="descricao" onclick="ordenarTabelaPor('tabelaPendentesPagar','descricao')">Descrição</th>
                             <th class="th-ordenavel" data-campo-ordenar="empresa" onclick="ordenarTabelaPor('tabelaPendentesPagar','empresa')">Empresa</th>
@@ -1804,7 +1804,7 @@
             <div class="filter-container">
                 <div class="filter-row">
                     <div class="form-group">
-                        <label>Fornecedor</label>
+                        <label>Despesas/Fornecedor</label>
                         <select id="filtroFornecedorPaga" onchange="carregarContasPagas()">
                             <option value="">Todos</option>
                         </select>
@@ -1881,7 +1881,7 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <th class="th-ordenavel" data-campo-ordenar="fornecedor" onclick="ordenarTabelaPor('tabelaPagas','fornecedor')">Fornecedor</th>
+                            <th class="th-ordenavel" data-campo-ordenar="fornecedor" onclick="ordenarTabelaPor('tabelaPagas','fornecedor')">Despesas/Fornecedor</th>
                             <th class="th-ordenavel" data-campo-ordenar="categoria" onclick="ordenarTabelaPor('tabelaPagas','categoria')">Categoria</th>
                             <th class="th-ordenavel" data-campo-ordenar="descricao" onclick="ordenarTabelaPor('tabelaPagas','descricao')">Descrição</th>
                             <th class="th-ordenavel" data-campo-ordenar="empresa" onclick="ordenarTabelaPor('tabelaPagas','empresa')">Empresa</th>
@@ -2051,13 +2051,6 @@
             </div>
 
             <div class="card">
-                <div class="card-title">Top 10 Clientes - Maiores Recebimentos</div>
-                <div class="chart-container">
-                    <canvas id="chartTopClientesReceber"></canvas>
-                </div>
-            </div>
-
-            <div class="card">
                 <div class="card-title">Ranking de Clientes</div>
                 <div class="table-container">
                     <table id="tabelaRankingClientes">
@@ -2120,10 +2113,10 @@
                             <option value="">Todos</option>
                         </select>
                     </div>
-                    <div class="form-group" style="margin-bottom:0;">
+                    <div class="form-group" style="margin-bottom:0;display:none;">
                         <label style="font-size:11px;">Visão por</label>
                         <div style="display:flex;gap:6px;margin-top:2px;">
-                            <button id="btnVisaoPagar-fornecedor" onclick="alternarVisaoPagar('fornecedor')" class="btn btn-primary btn-small" style="font-size:12px;">🏭 Fornecedor</button>
+                            <button id="btnVisaoPagar-fornecedor" onclick="alternarVisaoPagar('fornecedor')" class="btn btn-primary btn-small" style="font-size:12px;">🏭 Despesas/Fornecedor</button>
                             <button id="btnVisaoPagar-categoria" onclick="alternarVisaoPagar('categoria')" class="btn btn-secondary btn-small" style="font-size:12px;">📁 Categoria</button>
                         </div>
                     </div>
@@ -2173,17 +2166,17 @@
                 </div>
             </div>
 
-            <!-- Visão por Fornecedor -->
-            <div id="visaoPagarFornecedor" style="margin-top:16px;">
+            <!-- Visão por Fornecedor (oculta — ranking passou a ser somente por Categoria) -->
+            <div id="visaoPagarFornecedor" style="margin-top:16px;display:none;">
                 <div class="card">
-                    <div class="card-title">Top 10 Fornecedores - Maiores Pagamentos</div>
+                    <div class="card-title">Top 10 Despesas/Fornecedores - Maiores Pagamentos</div>
                     <div class="chart-container"><canvas id="chartTopFornecedoresPagar"></canvas></div>
                 </div>
                 <div class="card" style="margin-top:16px;">
-                    <div class="card-title">Ranking de Fornecedores</div>
+                    <div class="card-title">Ranking de Despesas/Fornecedores</div>
                     <div class="table-container">
                         <table id="tabelaRankingFornecedores">
-                            <thead><tr><th>#</th><th>Fornecedor</th><th>Quantidade</th><th>Valor Total</th><th>% do Total</th></tr></thead>
+                            <thead><tr><th>#</th><th>Despesas/Fornecedor</th><th>Quantidade</th><th>Valor Total</th><th>% do Total</th></tr></thead>
                             <tbody></tbody>
                         </table>
                     </div>
@@ -2191,13 +2184,7 @@
             </div>
 
             <!-- Visao por Categoria -->
-            <div id="visaoPagarCategoria" style="display:none;margin-top:16px;">
-
-                <!-- Grafico geral Top 10 categorias -->
-                <div class="card">
-                    <div class="card-title">Top 10 Categorias - Maiores Pagamentos</div>
-                    <div class="chart-container"><canvas id="chartTopCategoriasPagar"></canvas></div>
-                </div>
+            <div id="visaoPagarCategoria" style="margin-top:16px;">
 
                 <!-- Grafico Jan-Dez por categoria -->
                 <div class="card" style="margin-top:16px;">
@@ -2558,7 +2545,7 @@
                     <div class="stat-change" id="dreCardMargemLiq">Margem: 0%</div>
                 </div>
             </div>
-            <div class="card">
+            <div class="card" id="cardDRECompetencia" style="display:none;">
                 <div class="card-title" id="dreTituloPeriodo">DRE por Competência</div>
                 <div class="table-container">
                     <table id="tabelaDRE" style="font-size:13px;width:auto;min-width:600px;max-width:900px;">
@@ -2615,13 +2602,15 @@
                 <b>renomeados</b>, mas não excluídos — apagá-los quebraria as fórmulas.<br>
                 Ao criar um <b>grupo personalizado</b>, você escolhe em qual grupo estrutural ele
                 é somado. Assim ele aparece como opção nas categorias e nos filtros, e continua
-                entrando corretamente na DRE.
+                entrando corretamente na DRE.<br>
+                Use as <b>setas ▲▼</b> da coluna <b>Ordem</b> para reorganizar a lista como preferir.
             </div>
 
             <div class="table-container">
                 <table id="tabelaGruposDRE">
                     <thead>
                         <tr>
+                            <th style="width:70px;text-align:center;">Ordem</th>
                             <th>Nome exibido</th>
                             <th>Tipo</th>
                             <th>Efeito no resultado</th>
@@ -2871,10 +2860,10 @@
         </div>
         <form onsubmit="salvarContaPagar(event)">
             <div class="form-section">
-                <div class="form-section-title">🏭 Fornecedor e Categoria</div>
+                <div class="form-section-title">🏭 Despesas/Fornecedor e Categoria</div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Fornecedor*</label>
+                        <label>Despesas/Fornecedor*</label>
                         <select id="fornecedorPagar" required>
                             <option value="">Selecione...</option>
                         </select>
@@ -2996,7 +2985,7 @@
             <input type="hidden" id="lancRapidoIdx">
             <input type="hidden" id="lancRapidoTipo">
             <div class="form-group" id="lancRapidoFornecedorWrap">
-                <label>Fornecedor*</label>
+                <label>Despesas/Fornecedor*</label>
                 <select id="lancRapidoFornecedor" required>
                     <option value="">Selecione...</option>
                 </select>
@@ -3265,7 +3254,7 @@
 <div class="modal" id="modalProduto">
     <div class="modal-content">
         <div class="modal-header">
-            <span id="modalProdutoTitulo">Novo Produto</span>
+            <span id="modalProdutoTitulo">Novo Item</span>
             <button class="modal-close" onclick="closeModal('modalProduto')">&times;</button>
         </div>
         <form onsubmit="salvarProduto(event)">
@@ -3300,7 +3289,7 @@
 <div class="modal" id="modalFornecedor">
     <div class="modal-content">
         <div class="modal-header">
-            <span id="modalFornecedorTitulo">Novo Fornecedor</span>
+            <span id="modalFornecedorTitulo">Nova Despesa/Fornecedor</span>
             <button class="modal-close" onclick="closeModal('modalFornecedor')">&times;</button>
         </div>
         <form onsubmit="salvarFornecedor(event)">
@@ -3561,7 +3550,7 @@
     const carregarEmpresasDebounced = debounce(() => carregarEmpresas(), 350);
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroGrupoDREPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroGrupoDREPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "filtroAnoAnaliseCat", "filtroMesAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -3594,6 +3583,27 @@
             el.addEventListener('input',  salvarFiltros);
         });
     }
+
+    // Quando o usuário ainda NÃO tem preferência salva num filtro de Ano/Mês,
+    // aplica o padrão = ano e mês atuais (ex.: agosto/2026). Se ele já pesquisou
+    // algo (inclusive "Todos" = valor vazio salvo), a escolha dele é respeitada.
+    function _aplicarPadraoAnoMes() {
+        const anoAtual = String(new Date().getFullYear());
+        const mesAtual = String(new Date().getMonth() + 1).padStart(2, '0');
+        _FILTER_IDS.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el || el.tagName !== 'SELECT') return;
+            const saved = localStorage.getItem(_filtroKey(id));
+            if (saved !== null) return; // já existe preferência do usuário
+            const temOpt = val => Array.from(el.options).some(o => o.value === val);
+            if (/Ano/.test(id) && temOpt(anoAtual)) {
+                el.value = anoAtual;
+            } else if (/Mes/.test(id) && !/AnaliseCat/.test(id) && temOpt(mesAtual)) {
+                // Análise de Categorias mantém a visão de 12 meses (não força o mês)
+                el.value = mesAtual;
+            }
+        });
+    }
     // ────────────────────────────────────────────────────────────────────────
 
 
@@ -3603,6 +3613,9 @@
         inicializarPing();
         preencherAnos();
         preencherDias();
+        // DRE: por padrão já mostra a DRE Mensal do ano atual (o quadro "por Competência" fica oculto)
+        const _selAnoDRE = document.getElementById('filtroAnoDRE');
+        if (_selAnoDRE && !_selAnoDRE.value) _selAnoDRE.value = String(new Date().getFullYear());
         inicializarSelectsPesquisaveis();
     });
 
@@ -3943,6 +3956,7 @@
         atualizarLegendaMetas();
         restaurarFiltros();
         _bindFiltrosSave();
+        _aplicarPadraoAnoMes();
         aplicarColunasVisiveisPagar();
         _reconstruirGruposDRE();
         await carregarCategorias();
@@ -3999,13 +4013,13 @@
         return 'cap_grupos_dre_' + user;
     }
 
-    // { renomeados: { ID: 'novo nome' }, personalizados: [{ id, label, somaEm }] }
+    // { renomeados: { ID: 'novo nome' }, personalizados: [{ id, label, somaEm }], ordem: [id,...] }
     function _configGruposDRE() {
         try {
             const salvo = localStorage.getItem(_chaveGruposDRE());
             const cfg = salvo ? JSON.parse(salvo) : {};
-            return { renomeados: cfg.renomeados || {}, personalizados: cfg.personalizados || [] };
-        } catch (e) { return { renomeados: {}, personalizados: [] }; }
+            return { renomeados: cfg.renomeados || {}, personalizados: cfg.personalizados || [], ordem: cfg.ordem || [] };
+        } catch (e) { return { renomeados: {}, personalizados: [], ordem: [] }; }
     }
 
     function _salvarConfigGruposDRE(cfg) {
@@ -4028,7 +4042,18 @@
             const pai = _GRUPOS_DRE_ESTRUTURAIS.find(g => g.id === p.somaEm) || _GRUPOS_DRE_ESTRUTURAIS[0];
             return { id: p.id, label: p.label, sinal: pai.sinal, estrutural: false, somaEm: pai.id };
         });
-        return estruturais.concat(personalizados);
+        const todos = estruturais.concat(personalizados);
+        // Aplica a ordem salva pelo usuário (setas na tela Grupos DRE)
+        const ordem = cfg.ordem || [];
+        if (ordem.length) {
+            todos.sort((a, b) => {
+                const ia = ordem.indexOf(a.id); const ib = ordem.indexOf(b.id);
+                const va = ia === -1 ? 9999 : ia;
+                const vb = ib === -1 ? 9999 : ib;
+                return va - vb;
+            });
+        }
+        return todos;
     }
 
     // Converte qualquer grupo (inclusive personalizado) no grupo estrutural em que ele é somado
@@ -4097,7 +4122,7 @@
         if (!tbody) return;
         tbody.innerHTML = '';
         const grupos = gruposDREEfetivos();
-        grupos.forEach(g => {
+        grupos.forEach((g, idx) => {
             const qtdCats = (dadosCache.categorias || []).filter(c => c.grupo_dre === g.id).length;
             const paiLabel = g.estrutural
                 ? '<span style="color:#aaa;">—</span>'
@@ -4111,7 +4136,14 @@
             const btnExcluir = g.estrutural
                 ? ''
                 : '<button class="btn btn-danger btn-small" onclick="deletarGrupoDRE(\'' + g.id + '\')">Deletar</button>';
+            const btnSubir = idx > 0
+                ? '<button class="btn btn-secondary btn-small" title="Subir" onclick="moverGrupoDRE(\'' + g.id + '\',-1)" style="padding:2px 7px;font-size:13px;line-height:1;">▲</button>'
+                : '<button class="btn btn-secondary btn-small" disabled style="padding:2px 7px;font-size:13px;line-height:1;opacity:.3;">▲</button>';
+            const btnDescer = idx < grupos.length - 1
+                ? '<button class="btn btn-secondary btn-small" title="Descer" onclick="moverGrupoDRE(\'' + g.id + '\',1)" style="padding:2px 7px;font-size:13px;line-height:1;">▼</button>'
+                : '<button class="btn btn-secondary btn-small" disabled style="padding:2px 7px;font-size:13px;line-height:1;opacity:.3;">▼</button>';
             tbody.innerHTML += '<tr>' +
+                '<td style="text-align:center;white-space:nowrap;"><div style="display:inline-flex;gap:3px;">' + btnSubir + btnDescer + '</div></td>' +
                 '<td><b>' + g.label + '</b></td>' +
                 '<td>' + tipoBadge + '</td>' +
                 '<td>' + efeito + '</td>' +
@@ -4120,6 +4152,19 @@
                 '<td><button class="btn btn-secondary btn-small" onclick="editarGrupoDRE(\'' + g.id + '\')">Editar</button> ' + btnExcluir + '</td>' +
                 '</tr>';
         });
+    }
+
+    // Move um grupo para cima (-1) ou para baixo (+1) e persiste a ordem
+    function moverGrupoDRE(id, dir) {
+        const ordemAtual = gruposDREEfetivos().map(g => g.id);
+        const i = ordemAtual.indexOf(id);
+        const j = i + dir;
+        if (i === -1 || j < 0 || j >= ordemAtual.length) return;
+        const tmp = ordemAtual[i]; ordemAtual[i] = ordemAtual[j]; ordemAtual[j] = tmp;
+        const cfg = _configGruposDRE();
+        cfg.ordem = ordemAtual;
+        _salvarConfigGruposDRE(cfg);
+        atualizarTabelaGruposDRE();
     }
 
     function openModalGrupoDRE() {
@@ -4211,13 +4256,14 @@
     }
 
     function restaurarGruposDREPadrao() {
-        if (!confirm('Restaurar os nomes originais dos grupos estruturais?\n\nOs grupos personalizados que você criou NÃO serão removidos.')) return;
+        if (!confirm('Restaurar os nomes e a ordem originais dos grupos estruturais?\n\nOs grupos personalizados que você criou NÃO serão removidos.')) return;
         const cfg = _configGruposDRE();
         cfg.renomeados = {};
+        cfg.ordem = [];
         _salvarConfigGruposDRE(cfg);
         atualizarTabelaGruposDRE();
         atualizarTabelaCategorias();
-        showAlert('Nomes padrão restaurados.', 'alertGruposDRE', 'success');
+        showAlert('Nomes e ordem padrão restaurados.', 'alertGruposDRE', 'success');
     }
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -4521,7 +4567,7 @@
         document.getElementById('categoriaProduto').value = '';
         document.getElementById('descricaoProduto').value = '';
         document.getElementById('ativoProduto').checked = true;
-        document.getElementById('modalProdutoTitulo').textContent = 'Novo Produto';
+        document.getElementById('modalProdutoTitulo').textContent = 'Novo Item';
         document.getElementById('modalProduto').classList.add('active');
     }
 
@@ -4534,7 +4580,7 @@
             document.getElementById('categoriaProduto').value = produto.categoria_id;
             document.getElementById('descricaoProduto').value = produto.descricao || '';
             document.getElementById('ativoProduto').checked = produto.ativo;
-            document.getElementById('modalProdutoTitulo').textContent = 'Editar Produto';
+            document.getElementById('modalProdutoTitulo').textContent = 'Editar Item';
             document.getElementById('modalProduto').classList.add('active');
         }
     }
@@ -4557,17 +4603,17 @@
         }
 
         if (resultado !== null) {
-            showAlert('Produto salvo com sucesso!', 'alertProdutos', 'success');
+            showAlert('Item salvo com sucesso!', 'alertProdutos', 'success');
             closeModal('modalProduto');
             await carregarProdutos();
         }
     }
 
     async function deletarProduto(id) {
-        if (confirm('Tem certeza que deseja deletar este produto?')) {
+        if (confirm('Tem certeza que deseja deletar este item?')) {
             const resultado = await fetchSupabase('produtos', 'DELETE', null, `id=eq.${id}`);
             if (resultado !== null) {
-                showAlert('Produto deletado com sucesso!', 'alertProdutos', 'success');
+                showAlert('Item deletado com sucesso!', 'alertProdutos', 'success');
                 carregarProdutos();
             }
         }
@@ -4631,7 +4677,7 @@
         document.getElementById('telefoneFornecedor').value = '';
         document.getElementById('enderecoFornecedor').value = '';
         document.getElementById('ativoFornecedor').checked = true;
-        document.getElementById('modalFornecedorTitulo').textContent = 'Novo Fornecedor';
+        document.getElementById('modalFornecedorTitulo').textContent = 'Nova Despesa/Fornecedor';
         document.getElementById('modalFornecedor').classList.add('active');
     }
 
@@ -4646,7 +4692,7 @@
             document.getElementById('telefoneFornecedor').value = fornecedor.telefone || '';
             document.getElementById('enderecoFornecedor').value = fornecedor.endereco || '';
             document.getElementById('ativoFornecedor').checked = fornecedor.ativo;
-            document.getElementById('modalFornecedorTitulo').textContent = 'Editar Fornecedor';
+            document.getElementById('modalFornecedorTitulo').textContent = 'Editar Despesa/Fornecedor';
             document.getElementById('modalFornecedor').classList.add('active');
         }
     }
@@ -4671,17 +4717,17 @@
         }
 
         if (resultado !== null) {
-            showAlert('Fornecedor salvo com sucesso!', 'alertFornecedores', 'success');
+            showAlert('Despesa/Fornecedor salvo com sucesso!', 'alertFornecedores', 'success');
             closeModal('modalFornecedor');
             await carregarFornecedores();
         }
     }
 
     async function deletarFornecedor(id) {
-        if (confirm('Tem certeza que deseja deletar este fornecedor?')) {
+        if (confirm('Tem certeza que deseja deletar esta despesa/fornecedor?')) {
             const resultado = await fetchSupabase('fornecedores', 'DELETE', null, `id=eq.${id}`);
             if (resultado !== null) {
-                showAlert('Fornecedor deletado com sucesso!', 'alertFornecedores', 'success');
+                showAlert('Despesa/Fornecedor deletado com sucesso!', 'alertFornecedores', 'success');
                 carregarFornecedores();
             }
         }
@@ -4919,6 +4965,10 @@
 
     // CONTAS A RECEBER
     async function carregarContasReceber() {
+        // Renderiza já do cache (troca de tela instantânea) e revalida em segundo plano
+        if (dadosCache.contasReceber && dadosCache.contasReceber.length) {
+            atualizarTabelaPendentesReceber();
+        }
         // Busca TODOS os lançamentos (pendentes e recebidos) — a tela filtra por
         // situação no cliente, através do filtro "Situação".
         const dados = await fetchSupabase('contas_a_receber', 'GET');
@@ -4975,7 +5025,7 @@
         if (elTA) elTA.textContent = 'R$ ' + totalAtrasado.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
         if (elCF) elCF.textContent = filtrado.length;
 
-        filtrado.forEach(conta => {
+        const _linhasRec = filtrado.map(conta => {
             const cliente = dadosCache.clientes.find(c => c.id === conta.cliente_id);
             const empresa = dadosCache.empresas.find(e => e.id === conta.empresa_id);
             const venc = new Date(conta.data_vencimento + 'T12:00:00');
@@ -4994,7 +5044,7 @@
             const btnAcao = recebido
                 ? `<button class="btn btn-warning btn-small" onclick="reverterRecebimento(${conta.id})" style="background:#ffc107;color:#333;">↩ Reverter</button>`
                 : `<button class="btn btn-success btn-small" onclick="receberConta(${conta.id})">✅ Recebido</button>`;
-            tbody.innerHTML += `<tr>
+            return `<tr>
                 <td>${cliente ? cliente.nome : '-'}</td>
                 <td>${conta.descricao}</td>
                 <td>${empresa ? empresa.nome : '-'}</td>
@@ -5010,6 +5060,7 @@
                 </td>
             </tr>`;
         });
+        tbody.innerHTML = _linhasRec.join('');
     }
 
 
@@ -5097,6 +5148,10 @@
 
     // CONTAS A PAGAR
     async function carregarContasPagar() {
+        // Renderiza já do cache (troca de tela instantânea) e revalida em segundo plano
+        if (dadosCache.contasPagar && dadosCache.contasPagar.length) {
+            atualizarTabelaPendentesPagar();
+        }
         // Busca TODOS os lançamentos (pendentes e pagos) — a tela filtra por
         // situação no cliente, através do filtro "Situação".
         const dados = await fetchSupabase('contas_a_pagar', 'GET');
@@ -5169,10 +5224,14 @@
         if (elTA) elTA.textContent = 'R$ ' + totalAtrasado.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
         if (elCF) elCF.textContent = filtrado.length;
 
-        filtrado.forEach(conta => {
-            const fornecedor = dadosCache.fornecedores.find(f => f.id === conta.fornecedor_id);
-            const categoria = dadosCache.categorias.find(cat => cat.id === conta.categoria_id);
-            const empresa = dadosCache.empresas.find(e => e.id === conta.empresa_id);
+        // Mapas de lookup (evita .find() O(n) por linha — grande ganho com muitos registros)
+        const _mapForn = new Map((dadosCache.fornecedores||[]).map(f => [f.id, f]));
+        const _mapCat  = new Map((dadosCache.categorias||[]).map(c => [c.id, c]));
+        const _mapEmp  = new Map((dadosCache.empresas||[]).map(e => [e.id, e]));
+        const _linhasPag = filtrado.map(conta => {
+            const fornecedor = _mapForn.get(conta.fornecedor_id);
+            const categoria = _mapCat.get(conta.categoria_id);
+            const empresa = _mapEmp.get(conta.empresa_id);
             const venc = new Date(conta.data_vencimento + 'T12:00:00');
             const pago = conta.status === 'pago';
             const status = pago ? 'pago' : (estaVencido(conta) ? 'atrasado' : 'pendente');
@@ -5189,7 +5248,7 @@
             const btnAcao = pago
                 ? `<button class="btn btn-warning btn-small" onclick="reverterPagamento(${conta.id})" style="background:#ffc107;color:#333;">↩ Reverter</button>`
                 : `<button class="btn btn-success btn-small" onclick="pagarConta(${conta.id})">💳 Pagar</button>`;
-            tbody.innerHTML += `<tr>
+            return `<tr>
                 <td>${fornecedor ? fornecedor.nome : '-'}</td>
                 <td>${categoria ? categoria.nome : '-'}</td>
                 <td>${conta.descricao}</td>
@@ -5207,11 +5266,13 @@
                 </td>
             </tr>`;
         });
+        tbody.innerHTML = _linhasPag.join('');
+        aplicarColunasVisiveisPagar();
     }
 
     // ── OCULTAR/MOSTRAR COLUNAS (Contas a Pagar) ─────────────────────────────
     const COLUNAS_PAGAR = [
-        { chave: 'fornecedor',   label: 'Fornecedor' },
+        { chave: 'fornecedor',   label: 'Despesas/Fornecedor' },
         { chave: 'categoria',    label: 'Categoria' },
         { chave: 'descricao',    label: 'Descrição' },
         { chave: 'empresa',      label: 'Empresa' },
@@ -5596,7 +5657,7 @@
         document.getElementById('bancoPagamentoConfirm').value = '';
         document.getElementById('obsPagamentoConfirm').value = '';
         document.getElementById('infoConfirmarPagamento').innerHTML =
-            '<b>Fornecedor:</b> ' + (forn ? forn.nome : '-') + '<br>' +
+            '<b>Despesas/Fornecedor:</b> ' + (forn ? forn.nome : '-') + '<br>' +
             '<b>Descrição:</b> ' + conta.descricao + '<br>' +
             '<b>Valor:</b> R$ ' + parseFloat(conta.valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) +
             (conta.total_parcelas > 1 ? ' &nbsp;<span style="background:#e3f2fd;color:#1565c0;padding:2px 7px;border-radius:10px;font-size:11px;">' + conta.parcela_atual + '/' + conta.total_parcelas + '</span>' : '') +
@@ -5895,6 +5956,28 @@
 
         // ── Grafico fluxo (sempre ultimos 30 dias) ──
         criarGraficoFluxo(contasReceber, contasPagar);
+    }
+
+    // ── CLIQUE NOS CARDS DO DASHBOARD → abre lançamentos ──────────────────────
+    function abrirLancamentosDashboard(tipo) {
+        const hoje = new Date();
+        const mesAtual = String(hoje.getMonth()+1).padStart(2,'0');
+        const anoAtual = String(hoje.getFullYear());
+        let contas = [], kind = 'pagar', titulo = '', parteLabel = 'Despesas/Fornecedor';
+        if (tipo === 'receber') {
+            contas = (_dashContasRec || []).filter(c => c.status === 'pendente');
+            kind = 'receber'; titulo = 'A Receber — pendentes'; parteLabel = 'Cliente';
+        } else if (tipo === 'pagar') {
+            contas = (_dashContasPag || []).filter(c => c.status === 'pendente');
+            kind = 'pagar'; titulo = 'A Pagar — pendentes'; parteLabel = 'Despesas/Fornecedor';
+        } else if (tipo === 'recebido') {
+            contas = (_dashContasRec || []).filter(c => c.status === 'recebido' && c.data_recebimento && c.data_recebimento.startsWith(anoAtual+'-'+mesAtual));
+            kind = 'receber'; titulo = 'Recebido neste mês'; parteLabel = 'Cliente';
+        } else if (tipo === 'pago') {
+            contas = (_dashContasPag || []).filter(c => c.status === 'pago' && c.data_pagamento && c.data_pagamento.startsWith(anoAtual+'-'+mesAtual));
+            kind = 'pagar'; titulo = 'Pago neste mês'; parteLabel = 'Despesas/Fornecedor';
+        }
+        abrirModalLancamentosGen(titulo, _rowsDeContas(contas, kind), { parteLabel: parteLabel });
     }
 
     // ── GAUGES DRE ────────────────────────────────────────────────────────────
@@ -6334,7 +6417,9 @@
             page.classList.add('active');
 
             // Marca o menu como ativo
-            event.target.classList.add('active');
+            if (typeof event !== 'undefined' && event && event.target && event.target.classList) {
+                event.target.classList.add('active');
+            }
 
             // Carrega dados quando a página for exibida
             if (pageId === 'categorias') carregarCategorias();
@@ -6645,7 +6730,7 @@
     // ================================================================
     // VISAO POR CATEGORIA - RELATORIO PAGAR
     // ================================================================
-    let _visaoPagarAtual = 'fornecedor';
+    let _visaoPagarAtual = 'categoria';
     let _dadosPagarFiltrados = [];
 
     function alternarVisaoPagar(tipo) {
@@ -6793,6 +6878,26 @@
         criarTabelaCatMensal(dados, catPref, anoSel, abrirSub);
     }
 
+    // Clique numa linha do Detalhe Mensal (Resumo de Pagamentos) → abre os lançamentos
+    function abrirLancamentosDetalheMensal(pref, subNome) {
+        var anoSel = ((document.getElementById('filtroAnoCatMensal') || {}).value || '').trim();
+        var base = (_dadosPagarFiltrados || []).filter(function(c){
+            if (anoSel && !(c.data_pagamento && c.data_pagamento.startsWith(anoSel))) return false;
+            return getCatPrefixo(getCatNome(c)) === pref;
+        });
+        if (subNome) {
+            base = base.filter(function(c){
+                var nome = getCatNome(c);
+                if (nome === subNome) return true;
+                var forn = dadosCache.fornecedores.find(function(f){ return f.id === c.fornecedor_id; });
+                var chaveForn = pref + ' / ' + (forn ? forn.nome : '');
+                return chaveForn === subNome;
+            });
+        }
+        var titulo = 'Pagamentos — ' + pref + (subNome && subNome !== pref ? ' · ' + subNome : '') + (anoSel ? ' · ' + anoSel : '');
+        abrirModalLancamentosGen(titulo, _rowsDeContas(base, 'pagar'), { parteLabel: 'Despesas/Fornecedor' });
+    }
+
     // ================================================================
     // buildGruposData — o nucleo de todo o agrupamento
     // catPref  = prefixo filtrado ("Materia-Prima") ou "" = todos
@@ -6852,6 +6957,72 @@
         return 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
     }
 
+    // Formatador de eixo/rótulo SEM abreviação (usado nos gráficos de pagamentos)
+    function fmtValCheio(v) {
+        if (!v || v === 0) return '';
+        return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+    }
+
+    // ── MODAL GENÉRICO DE LANÇAMENTOS ────────────────────────────────────────
+    // Reaproveitado ao clicar em cards do dashboard, linhas da DRE, análise de
+    // categorias e detalhe mensal. Recebe contas (a_pagar/a_receber) já filtradas.
+    function _rowsDeContas(contas, kind) {
+        return (contas || []).map(function(c){
+            const cat = dadosCache.categorias.find(function(x){ return x.id === c.categoria_id; });
+            const emp = dadosCache.empresas.find(function(e){ return e.id === c.empresa_id; });
+            let parte = '-';
+            if (kind === 'pagar') {
+                const f = dadosCache.fornecedores.find(function(x){ return x.id === c.fornecedor_id; });
+                parte = f ? f.nome : '-';
+            } else {
+                const cl = dadosCache.clientes.find(function(x){ return x.id === c.cliente_id; });
+                parte = cl ? cl.nome : '-';
+            }
+            const pago = c.status === 'pago' || c.status === 'recebido';
+            const dataRef = c.data_vencimento || c.data_competencia || c.data_pagamento || c.data_recebimento || '';
+            return {
+                _ord: dataRef,
+                data: dataRef ? new Date(dataRef + 'T12:00:00').toLocaleDateString('pt-BR') : '-',
+                descricao: c.descricao || '-',
+                categoria: cat ? cat.nome : '-',
+                parte: parte,
+                empresa: emp ? emp.nome : '-',
+                nf: c.nota_fiscal || '-',
+                valor: parseFloat(c.valor || 0),
+                status: pago ? (kind === 'pagar' ? 'Pago' : 'Recebido') : 'Pendente',
+                statusClass: pago ? 'pago' : 'pendente'
+            };
+        });
+    }
+
+    function abrirModalLancamentosGen(titulo, rows, opts) {
+        opts = opts || {};
+        const tit = document.getElementById('tituloLancamentosGen');
+        if (tit) tit.textContent = titulo;
+        const thParte = document.getElementById('thParteLancGen');
+        if (thParte) thParte.textContent = opts.parteLabel || 'Parte';
+        rows = (rows || []).slice().sort(function(a,b){ return a._ord < b._ord ? 1 : (a._ord > b._ord ? -1 : 0); });
+        const total = rows.reduce(function(s,r){ return s + r.valor; }, 0);
+        const resumo = document.getElementById('resumoLancamentosGen');
+        if (resumo) resumo.innerHTML = '<b>' + rows.length + '</b> lançamento(s) — Total: <b>' + fmtValFull(total) + '</b>';
+        const tbody = document.querySelector('#tabelaLancamentosGen tbody');
+        if (tbody) {
+            tbody.innerHTML = rows.length ? rows.map(function(r){
+                return '<tr>' +
+                    '<td style="white-space:nowrap;">' + r.data + '</td>' +
+                    '<td>' + r.descricao + '</td>' +
+                    '<td>' + r.categoria + '</td>' +
+                    '<td>' + r.parte + '</td>' +
+                    '<td>' + r.empresa + '</td>' +
+                    '<td style="font-weight:600;">' + r.nf + '</td>' +
+                    '<td style="text-align:right;white-space:nowrap;font-weight:600;">' + fmtValFull(r.valor) + '</td>' +
+                    '<td><span class="status-badge status-' + r.statusClass + '">' + r.status + '</span></td>' +
+                '</tr>';
+            }).join('') : '<tr><td colspan="8" style="text-align:center;color:#999;padding:20px;">Nenhum lançamento encontrado.</td></tr>';
+        }
+        document.getElementById('modalLancamentosGen').classList.add('active');
+    }
+
     function criarGraficoCatMensalLinha(dados, catId, anoSel, abrirSubcat) {
         const ctx = document.getElementById('chartCatMensal');
         if (!ctx) return;
@@ -6904,7 +7075,7 @@
                     offset: 2,
                     font: { size: 10, weight: '600' },
                     color: coresLinha[idx % coresLinha.length],
-                    formatter: function(v) { return fmtVal(v); }
+                    formatter: function(v) { return fmtValCheio(v); }
                 }
             };
         });
@@ -6928,7 +7099,7 @@
                     }
                 },
                 scales: {
-                    y: { beginAtZero: true, ticks: { callback: function(v){ return fmtVal(v) || '0'; } } }
+                    y: { beginAtZero: true, ticks: { callback: function(v){ return fmtValCheio(v) || '0'; } } }
                 }
             },
             plugins: [window.ChartDataLabels || null].filter(Boolean)
@@ -6971,7 +7142,7 @@
                     align: comparativo ? 'top' : 'center',
                     font: { size: 9, weight: '600' },
                     color: comparativo ? cor : 'white',
-                    formatter: function(v) { return v > 0 ? fmtVal(v) : ''; }
+                    formatter: function(v) { return v > 0 ? fmtValCheio(v) : ''; }
                 }
             };
         });
@@ -6998,7 +7169,7 @@
                 },
                 scales: {
                     x: { stacked: !comparativo },
-                    y: { stacked: !comparativo, beginAtZero: true, ticks: { callback: function(v){ return fmtVal(v)||'0'; } } }
+                    y: { stacked: !comparativo, beginAtZero: true, ticks: { callback: function(v){ return fmtValCheio(v)||'0'; } } }
                 }
             },
             plugins: [window.ChartDataLabels || null].filter(Boolean)
@@ -7074,9 +7245,10 @@
 
             // Linha principal (prefixo)
             var temSubs = Object.keys(g.subs).length > 0;
-            tbody.innerHTML += '<tr style="background:'+bg+';border-top:'+(idx>0?'1px solid #f0f0f0':'none')+'">'
+            var prefEsc = pref.replace(/'/g, "\\'");
+            tbody.innerHTML += '<tr style="background:'+bg+';border-top:'+(idx>0?'1px solid #f0f0f0':'none')+';cursor:pointer;" onclick="abrirLancamentosDetalheMensal(\''+prefEsc+'\')" title="Ver lançamentos">'
                 + '<td style="font-weight:700;padding:6px 10px;font-size:12px;position:sticky;left:0;background:'+bg+';color:#444;">'
-                + pref + '</td>'
+                + pref + ' <span style="color:#bbb;font-size:11px;">🔍</span></td>'
                 + g.valores.map(function(v){
                     return '<td style="text-align:right;padding:6px 8px;font-size:12px;color:'+(v>0?'#555':'#ccc')+';white-space:nowrap;font-weight:'+(v>0?'600':'400')+'">'
                         + (v>0?fmtValFull(v):'—')+'</td>';
@@ -7087,7 +7259,8 @@
             // Subcategorias ↳
             Object.keys(g.subs).sort(function(a,b){ return g.subs[b].total-g.subs[a].total; }).forEach(function(subNome) {
                 var s = g.subs[subNome];
-                tbody.innerHTML += '<tr style="background:'+bg+'">'
+                var subEsc = subNome.replace(/'/g, "\\'");
+                tbody.innerHTML += '<tr style="background:'+bg+';cursor:pointer;" onclick="abrirLancamentosDetalheMensal(\''+prefEsc+'\',\''+subEsc+'\')" title="Ver lançamentos">'
                     + '<td style="padding:3px 10px 3px 26px;font-size:11px;color:#888;position:sticky;left:0;background:'+bg+';">'
                     + '<span style="color:#ccc;margin-right:4px;">↳</span>'+subNome+'</td>'
                     + s.valores.map(function(v){
@@ -9890,20 +10063,20 @@
         );
 
         const linhas = [
-            { label: 'Receita Bruta',             fn: m => calcMes(m).rb,   bg: '' },
-            { label: '(-) Dedu\u00e7\u00f5es',   fn: m => -calcMes(m).ded, bg: '' },
+            { label: 'Receita Bruta',             fn: m => calcMes(m).rb,   bg: '', grupoId: 'RECEITA_BRUTA' },
+            { label: '(-) Dedu\u00e7\u00f5es',   fn: m => -calcMes(m).ded, bg: '', grupoId: 'DEDUCOES' },
             { label: '= Receita L\u00edquida',    fn: m => calcMes(m).rl,   bg: '#f5f5f5', bold: true },
-            { label: '(-) CPV/CSP',               fn: m => -calcMes(m).cpv, bg: '', bold: false, expandir: cpvSubOrdenado },
+            { label: '(-) CPV/CSP',               fn: m => -calcMes(m).cpv, bg: '', bold: false, expandir: cpvSubOrdenado, grupoId: 'CPV' },
             { label: '= Lucro Bruto',             fn: m => calcMes(m).lb,   bg: '#f5f5f5', bold: true },
-            { label: '(-) Desp. Comerciais',      fn: m => -calcMes(m).dc,  bg: '' },
-            { label: '(-) Desp. Administrativas', fn: m => -calcMes(m).da,  bg: '', expandir: daSubOrdenado },
-            { label: '(+) Rec. Financeiras',      fn: m => calcMes(m).rf,   bg: '' },
-            { label: '(-) Desp. Financeiras',     fn: m => -calcMes(m).df,  bg: '' },
+            { label: '(-) Desp. Comerciais',      fn: m => -calcMes(m).dc,  bg: '', grupoId: 'DESP_COMERCIAL' },
+            { label: '(-) Desp. Administrativas', fn: m => -calcMes(m).da,  bg: '', expandir: daSubOrdenado, grupoId: 'DESP_ADMIN' },
+            { label: '(+) Rec. Financeiras',      fn: m => calcMes(m).rf,   bg: '', grupoId: 'RECEITA_FINANCEIRA' },
+            { label: '(-) Desp. Financeiras',     fn: m => -calcMes(m).df,  bg: '', grupoId: 'DESP_FINANCEIRA' },
             { label: '= EBITDA',                  fn: m => calcMes(m).ebt,  bg: '#e8f4fd', bold: true },
-            { label: '(-) Empr\u00e9stimos',      fn: m => -calcMes(m).emp, bg: '' },
-            { label: '(-) Investimentos',         fn: m => -calcMes(m).inv, bg: '' },
-            { label: '(+) Outras Receitas',       fn: m => calcMes(m).or,   bg: '' },
-            { label: '(-) Outras Despesas',       fn: m => -calcMes(m).od,  bg: '' },
+            { label: '(-) Empr\u00e9stimos',      fn: m => -calcMes(m).emp, bg: '', grupoId: 'EMPRESTIMO' },
+            { label: '(-) Investimentos',         fn: m => -calcMes(m).inv, bg: '', grupoId: 'INVESTIMENTO' },
+            { label: '(+) Outras Receitas',       fn: m => calcMes(m).or,   bg: '', grupoId: 'OUTRAS_RECEITAS' },
+            { label: '(-) Outras Despesas',       fn: m => -calcMes(m).od,  bg: '', grupoId: 'OUTRAS_DESPESAS' },
             { label: '= Resultado L\u00edquido',  fn: m => calcMes(m).res,  bg: '', bold: true, destaque: true },
         ];
 
@@ -9917,8 +10090,11 @@
                 : (linha.bg ? 'background:' + linha.bg + ';' : '');
             const labelFc = '';
             const bold  = linha.bold ? 'font-weight:700;' : '';
-            tbody.innerHTML += '<tr style="' + rowBg + '">' +
-                '<td style="padding:3px 8px;' + labelFc + bold + '">' + linha.label + '</td>' +
+            const clicavel = linha.grupoId ? ' cursor:pointer;' : '';
+            const onclickAttr = linha.grupoId ? ' onclick="abrirLancamentosDRE(\'' + linha.grupoId + '\')" title="Ver lançamentos"' : '';
+            const setaLupa = linha.grupoId ? ' <span style="color:#bbb;font-size:11px;">🔍</span>' : '';
+            tbody.innerHTML += '<tr style="' + rowBg + clicavel + '"' + onclickAttr + '>' +
+                '<td style="padding:3px 8px;' + labelFc + bold + '">' + linha.label + setaLupa + '</td>' +
                 vals.map(v => '<td style="text-align:right;padding:3px 8px;' + cor(v) + '">' + fmtV(v) + '</td>').join('') +
                 '<td style="text-align:right;padding:3px 8px;font-weight:700;' + cor(total) + '">' + fmtV(total) + '</td>' +
                 '</tr>';
@@ -9928,7 +10104,10 @@
                 linha.expandir.forEach(([nomeSub, mesesSub]) => {
                     const totalSub = mesesSub.reduce((s,v)=>s+v,0);
                     if (totalSub === 0) return;
-                    tbody.innerHTML += '<tr style="background:#fafafa;">' +
+                    const subClick = linha.grupoId
+                        ? ' style="background:#fafafa;cursor:pointer;" onclick="abrirLancamentosDRECategoria(\'' + linha.grupoId + '\',\'' + (nomeSub.replace(/'/g,"\\'")) + '\')" title="Ver lançamentos"'
+                        : ' style="background:#fafafa;"';
+                    tbody.innerHTML += '<tr' + subClick + '>' +
                         '<td style="padding:2px 8px 2px 22px;font-size:11px;color:#888;">' +
                         '<span style="color:#bbb;margin-right:4px;">\u21b3</span>' + nomeSub + '</td>' +
                         mesesSub.map(v => '<td style="text-align:right;padding:2px 8px;font-size:11px;color:#dc3545;">' + (v > 0 ? fmtV(-v) : '-') + '</td>').join('') +
@@ -9937,6 +10116,41 @@
                 });
             }
         });
+    }
+
+    // Determina o grupo estrutural de uma conta (mesma lógica da tabela mensal)
+    function _grupoDeConta(c, kind) {
+        const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
+        const fallback = kind === 'receber' ? 'RECEITA_BRUTA' : 'DESP_ADMIN';
+        return (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || fallback) : fallback;
+    }
+
+    // Clique numa linha da DRE Mensal → abre os lançamentos daquele grupo no ano exibido
+    function abrirLancamentosDRE(grupoId) {
+        const ano = window._dreAnoSelMensal || String(new Date().getFullYear());
+        const rec = (window._dreContasRecMensal || []).filter(c => c.data_competencia && c.data_competencia.startsWith(ano) && _grupoDeConta(c, 'receber') === grupoId);
+        const pag = (window._dreContasPagMensal || []).filter(c => c.data_competencia && c.data_competencia.startsWith(ano) && _grupoDeConta(c, 'pagar') === grupoId);
+        let rows = _rowsDeContas(rec, 'receber').concat(_rowsDeContas(pag, 'pagar'));
+        // Lançamentos DRE diretos
+        (window._dreLancsMensal || []).filter(l => l.competencia && l.competencia.startsWith(ano) && grupoEstruturalDRE(l.grupo) === grupoId).forEach(l => {
+            rows.push({ _ord: l.competencia, data: (l.competencia||'').substring(0,7), descricao: l.descricao || '-', categoria: l.categoria || '-', parte: '-', empresa: '-', nf: '-', valor: parseFloat(l.valor||0), status: 'DRE', statusClass: 'pago' });
+        });
+        const label = (_GRUPOS_DRE_LABELS[grupoId] || grupoId);
+        abrirModalLancamentosGen('DRE — ' + label + ' · ' + ano, rows, { parteLabel: 'Cliente / Despesas/Fornecedor' });
+    }
+
+    // Clique numa subcategoria da DRE Mensal → abre os lançamentos daquela categoria
+    function abrirLancamentosDRECategoria(grupoId, nomeCat) {
+        const ano = window._dreAnoSelMensal || String(new Date().getFullYear());
+        const pag = (window._dreContasPagMensal || []).filter(c => {
+            if (!(c.data_competencia && c.data_competencia.startsWith(ano))) return false;
+            if (_grupoDeConta(c, 'pagar') !== grupoId) return false;
+            const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
+            const nome = cat ? cat.nome : 'Sem Categoria';
+            // subcategoria pode ser "Categoria / Fornecedor" — casa pelo início
+            return nome === nomeCat || nomeCat.indexOf(nome) === 0;
+        });
+        abrirModalLancamentosGen('DRE — ' + nomeCat + ' · ' + ano, _rowsDeContas(pag, 'pagar'), { parteLabel: 'Despesas/Fornecedor' });
     }
 
     // ── OCULTAR MESES INDIVIDUAIS NA DRE MENSAL ──────────────────────────────
@@ -10967,7 +11181,7 @@
             if (totalCategoria === 0) return;
             totalGeral += totalCategoria;
             const grupoLabel = cat.grupo_dre ? (_GRUPOS_DRE_LABELS[cat.grupo_dre] || cat.grupo_dre) : '-';
-            linhas.push({ nome: cat.nome, grupoLabel, valoresPorMes, totalCategoria });
+            linhas.push({ catId: cat.id, nome: cat.nome, grupoLabel, valoresPorMes, totalCategoria });
         });
 
         // Ordenação por cabeçalho clicado (categoria, grupo, um mês específico ou total)
@@ -10991,7 +11205,8 @@
 
         let corpoHtml = '';
         linhas.forEach(linha => {
-            corpoHtml += '<tr><td><b>' + linha.nome + '</b></td><td style="font-size:11px;color:#666;">' + linha.grupoLabel + '</td>';
+            const nomeEsc = (linha.nome || '').replace(/'/g, "\\'");
+            corpoHtml += '<tr style="cursor:pointer;" onclick="abrirLancamentosAnaliseCat(' + linha.catId + ',\'' + nomeEsc + '\')" title="Ver lançamentos"><td><b>' + linha.nome + '</b> <span style="color:#bbb;font-size:11px;">🔍</span></td><td style="font-size:11px;color:#666;">' + linha.grupoLabel + '</td>';
             mesesExibir.forEach(m => {
                 corpoHtml += '<td style="text-align:right;">' + (linha.valoresPorMes[m] ? fmt(linha.valoresPorMes[m]) : '<span style="color:#ccc;">-</span>') + '</td>';
             });
@@ -11004,6 +11219,24 @@
         mesesExibir.forEach(m => rodapeHtml += '<td style="text-align:right;">' + fmt(totalPorMes[m]) + '</td>');
         rodapeHtml += '<td style="text-align:right;">' + fmt(totalGeral) + '</td></tr>';
         rodape.innerHTML = rodapeHtml;
+    }
+
+    // Clique numa categoria da Análise de Categorias → abre os lançamentos
+    function abrirLancamentosAnaliseCat(catId, catNome) {
+        const selAno = document.getElementById('filtroAnoAnaliseCat');
+        const selMes = document.getElementById('filtroMesAnaliseCat');
+        const selTipoData = document.getElementById('filtroTipoDataAnaliseCat');
+        const selStatus = document.getElementById('filtroStatusAnaliseCat');
+        const selEmpresa = document.getElementById('filtroEmpresaAnaliseCat');
+        const anoSel = (selAno && selAno.value) ? selAno.value : String(new Date().getFullYear());
+        const mesSel = selMes ? selMes.value : '';
+        const campoData = (selTipoData && selTipoData.value === 'vencimento') ? 'data_vencimento' : 'data_competencia';
+        const statusSel = selStatus ? selStatus.value : '';
+        let contas = (dadosCache.contasAnaliseCategorias || []).filter(c => c.categoria_id === catId && c[campoData] && c[campoData].startsWith(anoSel));
+        if (statusSel) contas = contas.filter(c => c.status === statusSel);
+        if (mesSel) contas = contas.filter(c => c[campoData].substring(5, 7) === mesSel);
+        if (selEmpresa && selEmpresa.value) contas = contas.filter(c => c.empresa_id == selEmpresa.value);
+        abrirModalLancamentosGen('Categoria: ' + (catNome || '') + ' · ' + anoSel, _rowsDeContas(contas, 'pagar'), { parteLabel: 'Despesas/Fornecedor' });
     }
 
     // Clique num cabeçalho da tabela de Análise de Categorias — alterna a ordenação
@@ -11391,7 +11624,7 @@
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Fornecedor / Cliente</label>
+                    <label>Despesas/Fornecedor / Cliente</label>
                     <input type="text" id="lancDREParte" placeholder="Nome opcional">
                 </div>
                 <div class="form-group">
@@ -11435,6 +11668,35 @@
     </div>
 </div>
 
+<!-- Modal genérico de lançamentos (clique em cards, DRE, análise de categorias, etc.) -->
+<div class="modal" id="modalLancamentosGen">
+    <div class="modal-content" style="max-width:920px;">
+        <div class="modal-header">
+            <span id="tituloLancamentosGen">Lançamentos</span>
+            <button class="modal-close" onclick="closeModal('modalLancamentosGen')">&times;</button>
+        </div>
+        <div id="resumoLancamentosGen" style="font-size:13px;color:#555;margin-bottom:10px;"></div>
+        <div class="table-container" style="max-height:60vh;overflow:auto;">
+            <table id="tabelaLancamentosGen" style="font-size:13px;">
+                <thead><tr>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th id="thParteLancGen">Parte</th>
+                    <th>Empresa</th>
+                    <th>NF</th>
+                    <th style="text-align:right;">Valor</th>
+                    <th>Status</th>
+                </tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="form-actions" style="margin-top:12px;">
+            <button class="btn btn-secondary" onclick="closeModal('modalLancamentosGen')">Fechar</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal" id="modalEditarLancamento">
     <div class="modal-content" style="max-width:500px;">
         <div class="modal-header">
@@ -11445,7 +11707,7 @@
             <input type="hidden" id="editLancId">
             <input type="hidden" id="editLancTipo">
             <div class="form-group" id="editLancFornecedorWrap">
-                <label>Fornecedor*</label>
+                <label>Despesas/Fornecedor*</label>
                 <select id="editLancFornecedor">
                     <option value="">Selecione...</option>
                 </select>
