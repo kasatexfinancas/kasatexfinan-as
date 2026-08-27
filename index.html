@@ -10881,6 +10881,11 @@
         return 'cap_relatorio_dia_pagar_cols_' + user;
     }
 
+    function _chaveRelDiaPagarOrient() {
+        const user = (typeof usuarioAtual !== 'undefined' && usuarioAtual) ? usuarioAtual.email : 'guest';
+        return 'cap_relatorio_dia_pagar_orient_' + user;
+    }
+
     // Seleção de colunas salva (padrão: todas menos "Vencimento", que já vira subtítulo)
     function _relDiaColsSalvas() {
         try {
@@ -10906,6 +10911,11 @@
                         <input type="checkbox" class="relDiaPagarCol" value="${c.chave}" ${chk}> ${c.label}</label>`;
         });
         cont.innerHTML = html;
+        // Restaura a orientação salva (padrão: paisagem)
+        let orientSalva = 'landscape';
+        try { orientSalva = localStorage.getItem(_chaveRelDiaPagarOrient()) || 'landscape'; } catch (e) {}
+        const radioOrient = document.querySelector('input[name="relDiaPagarOrient"][value="' + orientSalva + '"]');
+        if (radioOrient) radioOrient.checked = true;
         document.getElementById('modalRelatorioDiaPagar').classList.add('active');
     }
 
@@ -10948,8 +10958,10 @@
         const chavesOrdenadas = Object.keys(grupos).sort((a, b) => grupos[a].sortKey - grupos[b].sortKey);
 
         // --- PDF ---
+        const orient = (document.querySelector('input[name="relDiaPagarOrient"]:checked') || {}).value || 'landscape';
+        try { localStorage.setItem(_chaveRelDiaPagarOrient(), orient); } catch (e) {}
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        const doc = new jsPDF({ orientation: orient, unit: 'mm', format: 'a4' });
         const pageW = doc.internal.pageSize.getWidth();
         const pageH = doc.internal.pageSize.getHeight();
 
@@ -11011,7 +11023,7 @@
                 subtitulo = 'Sem data de vencimento';
             }
             body.push([{ content: normalizarTexto('  ' + subtitulo), colSpan: numCols,
-                styles: { fillColor: [255, 224, 208], textColor: [120, 50, 10], fontStyle: 'bold', halign: 'left', fontSize: 8.6, cellPadding: 2.6 } }]);
+                styles: { fillColor: [255, 224, 208], textColor: [120, 50, 10], fontStyle: 'bold', halign: 'left', fontSize: 10, cellPadding: 2 } }]);
 
             g.rows.forEach(cells => {
                 const row = outCols.map(c => {
@@ -11027,7 +11039,7 @@
                 g.total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
                 '   (' + nLanc + (nLanc === 1 ? ' lancamento' : ' lancamentos') + ')';
             body.push([{ content: normalizarTexto(subtxt), colSpan: numCols,
-                styles: { fillColor: [245, 245, 245], textColor: [90, 90, 90], fontStyle: 'bold', halign: 'right', fontSize: 7.8, cellPadding: 2 } }]);
+                styles: { fillColor: [245, 245, 245], textColor: [90, 90, 90], fontStyle: 'bold', halign: 'right', fontSize: 9.2, cellPadding: 1.6 } }]);
         });
 
         doc.autoTable({
@@ -11037,12 +11049,12 @@
             margin: { left: 8, right: 8, bottom: 14 },
             theme: 'grid',
             styles: {
-                fontSize: 7.6, cellPadding: 2, overflow: 'linebreak', valign: 'middle',
+                fontSize: 9, cellPadding: 1.2, overflow: 'linebreak', valign: 'middle',
                 lineColor: [225, 225, 225], lineWidth: 0.1, textColor: [55, 55, 55], fillColor: [255, 255, 255]
             },
             headStyles: {
                 fillColor: [255, 122, 66], textColor: [255, 255, 255], fontStyle: 'bold',
-                halign: 'left', fontSize: 8, cellPadding: 2.4
+                halign: 'left', fontSize: 9.5, cellPadding: 1.8
             },
             alternateRowStyles: { fillColor: [255, 255, 255] },
             columnStyles: columnStyles,
@@ -11050,6 +11062,8 @@
                 // Ignora as linhas de grupo/subtotal (célula única com colSpan)
                 const raw = data.row.raw;
                 if (Array.isArray(raw) && raw.length === 1 && raw[0] && raw[0].colSpan) return;
+                // Lançamentos em negrito
+                if (data.section === 'body') data.cell.styles.fontStyle = 'bold';
                 if (data.section === 'body' && statusOutIdx >= 0 && data.column.index === statusOutIdx) {
                     const t = (data.cell.text[0] || '').toLowerCase();
                     if (t === 'atrasado') { data.cell.styles.textColor = [180, 0, 0]; data.cell.styles.fontStyle = 'bold'; }
@@ -11773,6 +11787,15 @@
             Marque as colunas que devem aparecer no relatório. Os lançamentos são
             agrupados por <b>dia de vencimento</b>, com subtotal por dia e total geral ao final.
             O relatório respeita os filtros aplicados na tela.
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;font-size:13px;padding:8px 10px;background:#f7f7f9;border:1px solid #eee;border-radius:8px;">
+            <span style="font-weight:600;color:#555;">Orientação:</span>
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+                <input type="radio" name="relDiaPagarOrient" value="landscape" checked> Paisagem
+            </label>
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+                <input type="radio" name="relDiaPagarOrient" value="portrait"> Retrato
+            </label>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:8px;">
             <button type="button" class="btn btn-secondary btn-small" onclick="_marcarRelDiaCols(true)">Marcar todas</button>
