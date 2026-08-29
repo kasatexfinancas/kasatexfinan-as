@@ -10899,6 +10899,41 @@
         document.querySelectorAll('.relDiaPagarCol').forEach(cb => { cb.checked = valor; });
     }
 
+    // --- Tamanho da letra do relatório por dia (base do corpo da tabela) ---
+    const _RELDIA_FONTE_MIN = 7;
+    const _RELDIA_FONTE_MAX = 15;
+    const _RELDIA_FONTE_PADRAO = 9;
+
+    function _chaveRelDiaPagarFonte() {
+        const user = (typeof usuarioAtual !== 'undefined' && usuarioAtual) ? usuarioAtual.email : 'guest';
+        return 'cap_relatorio_dia_pagar_fonte_' + user;
+    }
+
+    function _relDiaFonteSalva() {
+        try {
+            const s = parseInt(localStorage.getItem(_chaveRelDiaPagarFonte()), 10);
+            if (!isNaN(s) && s >= _RELDIA_FONTE_MIN && s <= _RELDIA_FONTE_MAX) return s;
+        } catch (e) {}
+        return _RELDIA_FONTE_PADRAO;
+    }
+
+    function _setRelDiaFonteLabel(v) {
+        const el = document.getElementById('relDiaPagarFonteVal');
+        if (el) el.textContent = v + ' pt';
+    }
+
+    function _lerRelDiaFonte() {
+        const el = document.getElementById('relDiaPagarFonteVal');
+        let v = el ? parseInt(el.textContent, 10) : _RELDIA_FONTE_PADRAO;
+        if (isNaN(v)) v = _RELDIA_FONTE_PADRAO;
+        return Math.min(_RELDIA_FONTE_MAX, Math.max(_RELDIA_FONTE_MIN, v));
+    }
+
+    function _ajustarFonteRelDia(delta) {
+        const novo = Math.min(_RELDIA_FONTE_MAX, Math.max(_RELDIA_FONTE_MIN, _lerRelDiaFonte() + delta));
+        _setRelDiaFonteLabel(novo);
+    }
+
     function abrirModalRelatorioDiaPagar() {
         const cont = document.getElementById('relDiaPagarColunas');
         if (!cont) return;
@@ -10916,6 +10951,8 @@
         try { orientSalva = localStorage.getItem(_chaveRelDiaPagarOrient()) || 'landscape'; } catch (e) {}
         const radioOrient = document.querySelector('input[name="relDiaPagarOrient"][value="' + orientSalva + '"]');
         if (radioOrient) radioOrient.checked = true;
+        // Restaura o tamanho da letra salvo (padrão: 9 pt)
+        _setRelDiaFonteLabel(_relDiaFonteSalva());
         document.getElementById('modalRelatorioDiaPagar').classList.add('active');
     }
 
@@ -10960,6 +10997,16 @@
         // --- PDF ---
         const orient = (document.querySelector('input[name="relDiaPagarOrient"]:checked') || {}).value || 'landscape';
         try { localStorage.setItem(_chaveRelDiaPagarOrient(), orient); } catch (e) {}
+
+        // Tamanho da letra escolhido pelo usuário (base do corpo da tabela)
+        const fonteBase = _lerRelDiaFonte();
+        try { localStorage.setItem(_chaveRelDiaPagarFonte(), String(fonteBase)); } catch (e) {}
+        // Fatores derivados: cabeçalho, subtítulo de grupo e subtotal escalam junto
+        const fonteHead     = fonteBase + 0.5;
+        const fonteGrupo    = fonteBase + 1;
+        const fonteSubtotal = fonteBase + 0.2;
+        const padFator      = fonteBase / _RELDIA_FONTE_PADRAO; // 1 = padrão (9 pt)
+
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: orient, unit: 'mm', format: 'a4' });
         const pageW = doc.internal.pageSize.getWidth();
@@ -11023,7 +11070,7 @@
                 subtitulo = 'Sem data de vencimento';
             }
             body.push([{ content: normalizarTexto('  ' + subtitulo), colSpan: numCols,
-                styles: { fillColor: [255, 224, 208], textColor: [120, 50, 10], fontStyle: 'bold', halign: 'left', fontSize: 10, cellPadding: 2 } }]);
+                styles: { fillColor: [255, 224, 208], textColor: [120, 50, 10], fontStyle: 'bold', halign: 'left', fontSize: fonteGrupo, cellPadding: 2 * padFator } }]);
 
             g.rows.forEach(cells => {
                 const row = outCols.map(c => {
@@ -11039,7 +11086,7 @@
                 g.total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
                 '   (' + nLanc + (nLanc === 1 ? ' lancamento' : ' lancamentos') + ')';
             body.push([{ content: normalizarTexto(subtxt), colSpan: numCols,
-                styles: { fillColor: [245, 245, 245], textColor: [90, 90, 90], fontStyle: 'bold', halign: 'right', fontSize: 9.2, cellPadding: 1.6 } }]);
+                styles: { fillColor: [245, 245, 245], textColor: [90, 90, 90], fontStyle: 'bold', halign: 'right', fontSize: fonteSubtotal, cellPadding: 1.6 * padFator } }]);
         });
 
         doc.autoTable({
@@ -11049,12 +11096,12 @@
             margin: { left: 8, right: 8, bottom: 14 },
             theme: 'grid',
             styles: {
-                fontSize: 9, cellPadding: 1.2, overflow: 'linebreak', valign: 'middle',
+                fontSize: fonteBase, cellPadding: 1.2 * padFator, overflow: 'linebreak', valign: 'middle',
                 lineColor: [225, 225, 225], lineWidth: 0.1, textColor: [55, 55, 55], fillColor: [255, 255, 255]
             },
             headStyles: {
                 fillColor: [255, 122, 66], textColor: [255, 255, 255], fontStyle: 'bold',
-                halign: 'left', fontSize: 9.5, cellPadding: 1.8
+                halign: 'left', fontSize: fonteHead, cellPadding: 1.8 * padFator
             },
             alternateRowStyles: { fillColor: [255, 255, 255] },
             columnStyles: columnStyles,
@@ -11078,18 +11125,22 @@
             }
         });
 
-        // Total geral (caixa de destaque)
-        let finalY = doc.lastAutoTable.finalY + 6;
-        if (finalY + 6 > pageH - 10) { doc.addPage(); finalY = 24; }
+        // Total geral (caixa de destaque) — dimensões acompanham o tamanho da letra
+        const totalFont = fonteBase + 1;
+        const boxAcima  = totalFont * 0.42 + 1.3; // espaço acima da linha de base
+        const boxAbaixo = totalFont * 0.20 + 1;   // espaço abaixo da linha de base
+        const boxH      = boxAcima + boxAbaixo;
+        let baseline = doc.lastAutoTable.finalY + 6 + boxAcima;
+        if (baseline + boxAbaixo > pageH - 10) { doc.addPage(); baseline = 20 + boxAcima; }
         const totalTexto = 'TOTAL GERAL: R$ ' +
             totalGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
             '  (' + totalLancamentos + (totalLancamentos === 1 ? ' lancamento' : ' lancamentos') + ')';
-        doc.setFontSize(10); doc.setFont(undefined, 'bold');
+        doc.setFontSize(totalFont); doc.setFont(undefined, 'bold');
         const boxW = doc.getTextWidth(normalizarTexto(totalTexto)) + 10;
         doc.setFillColor(255, 122, 66);
-        doc.roundedRect(pageW - 10 - boxW, finalY - 5, boxW, 8, 1.5, 1.5, 'F');
+        doc.roundedRect(pageW - 10 - boxW, baseline - boxAcima, boxW, boxH, 1.5, 1.5, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.text(normalizarTexto(totalTexto), pageW - 10 - boxW / 2, finalY, { align: 'center' });
+        doc.text(normalizarTexto(totalTexto), pageW - 10 - boxW / 2, baseline, { align: 'center' });
 
         closeModal('modalRelatorioDiaPagar');
         doc.save('relatorio_pagar_por_dia_' + hoje.replace(/\//g, '-') + '.pdf');
@@ -11796,6 +11847,14 @@
             <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
                 <input type="radio" name="relDiaPagarOrient" value="portrait"> Retrato
             </label>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;font-size:13px;padding:8px 10px;background:#f7f7f9;border:1px solid #eee;border-radius:8px;">
+            <span style="font-weight:600;color:#555;">Tamanho da letra:</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <button type="button" class="btn btn-secondary btn-small" style="min-width:36px;font-size:18px;line-height:1;padding:3px 8px;" title="Diminuir letra" onclick="_ajustarFonteRelDia(-1)">&minus;</button>
+                <span id="relDiaPagarFonteVal" style="min-width:52px;text-align:center;font-weight:700;color:#333;">9 pt</span>
+                <button type="button" class="btn btn-secondary btn-small" style="min-width:36px;font-size:18px;line-height:1;padding:3px 8px;" title="Aumentar letra" onclick="_ajustarFonteRelDia(1)">+</button>
+            </div>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:8px;">
             <button type="button" class="btn btn-secondary btn-small" onclick="_marcarRelDiaCols(true)">Marcar todas</button>
