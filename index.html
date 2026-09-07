@@ -1148,6 +1148,52 @@
                 <div id="pmpPmrConteudo" style="display:flex;flex-wrap:wrap;gap:16px;padding:8px 0 4px;justify-content:center;"></div>
                 <div id="pmpPmrAlerta" style="margin-top:10px;padding:10px 14px;border-radius:8px;font-size:13px;display:none;"></div>
             </div>
+
+            <!-- DRE resumida no Dashboard -->
+            <div class="card" style="margin-top:16px;" id="cardDREDash">
+                <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                    <span>📊 DRE — Demonstração do Resultado</span>
+                    <button class="btn btn-secondary btn-small" onclick="showPage('dre')" style="font-size:11px;">Abrir DRE completa →</button>
+                </div>
+                <div style="font-size:11px;color:#999;margin-bottom:8px;" id="dreDashDescricao">Por competência, seguindo os filtros de ano/mês do dashboard.</div>
+                <div class="table-container">
+                    <table id="tabelaDREDash" style="font-size:13px;width:auto;min-width:520px;max-width:760px;">
+                        <thead>
+                            <tr>
+                                <th style="min-width:230px;">Descrição</th>
+                                <th style="width:160px;text-align:right;">Valor (R$)</th>
+                                <th style="width:110px;text-align:right;">% s/ Rec. Líquida</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dreDashCorpo"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Análise de Categorias no Dashboard -->
+            <div class="card" style="margin-top:16px;" id="cardAnaliseCatDash">
+                <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                    <span>🔎 Análise de Categorias</span>
+                    <button class="btn btn-secondary btn-small" onclick="showPage('analise-categorias')" style="font-size:11px;">Abrir análise completa →</button>
+                </div>
+                <div style="font-size:11px;color:#999;margin-bottom:8px;" id="analiseCatDashDescricao">Despesas por categoria (competência), seguindo os filtros de ano/mês do dashboard.</div>
+                <div class="table-container">
+                    <table id="tabelaAnaliseCatDash" style="font-size:13px;min-width:560px;">
+                        <thead>
+                            <tr>
+                                <th style="width:36px;">#</th>
+                                <th style="min-width:180px;">Categoria</th>
+                                <th style="min-width:140px;">Grupo DRE</th>
+                                <th style="text-align:right;width:150px;">Total</th>
+                                <th style="text-align:right;width:70px;">%</th>
+                                <th style="width:130px;">Participação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analiseCatDashCorpo"></tbody>
+                        <tfoot id="analiseCatDashRodape"></tfoot>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- CATEGORIAS -->
@@ -2523,7 +2569,7 @@
                     <div class="stat-value" id="dreCardReceita" style="color:#28a745;font-size:20px;">R$ 0,00</div>
                 </div>
                 <div class="stat-card" style="border-left-color:#17a2b8;">
-                    <div class="stat-label">🧾 Deduções</div>
+                    <div class="stat-label">🧾 Impostos e Devoluções</div>
                     <div class="stat-value" id="dreCardDeducoes" style="color:#17a2b8;font-size:20px;">R$ 0,00</div>
                 </div>
                 <div class="stat-card" style="border-left-color:#FF7A42;">
@@ -2540,7 +2586,7 @@
                     <div class="stat-change" id="dreCardMargemBruta">Margem: 0%</div>
                 </div>
                 <div class="stat-card" id="dreCardResultadoBox">
-                    <div class="stat-label">🏆 Resultado Líquido</div>
+                    <div class="stat-label">🏆 Geração de Caixa Após as Dívidas</div>
                     <div class="stat-value" id="dreCardResultado" style="font-size:20px;">R$ 0,00</div>
                     <div class="stat-change" id="dreCardMargemLiq">Margem: 0%</div>
                 </div>
@@ -2598,7 +2644,7 @@
 
             <div style="background:#e8f4fd;border:1px solid #bee5eb;color:#0c5460;border-radius:6px;padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.55;">
                 Os <b>11 grupos estruturais</b> abaixo formam a espinha dorsal do cálculo da DRE
-                (Receita Líquida, Lucro Bruto, EBITDA e Resultado Líquido). Eles podem ser
+                (Receita Líquida, Lucro Bruto, EBITDA e Geração de Caixa Após as Dívidas). Eles podem ser
                 <b>renomeados</b>, mas não excluídos — apagá-los quebraria as fórmulas.<br>
                 Ao criar um <b>grupo personalizado</b>, você escolhe em qual grupo estrutural ele
                 é somado. Assim ele aparece como opção nas categorias e nos filtros, e continua
@@ -3178,7 +3224,7 @@
                     <select id="categoriaGrupoDRE">
                         <option value="">Nenhum</option>
                         <option value="RECEITA_BRUTA">Receita Bruta</option>
-                        <option value="DEDUCOES">Deduções / Impostos s/ Receita</option>
+                        <option value="DEDUCOES">Impostos e Devoluções</option>
                         <option value="CPV">CPV / Custo dos Serviços</option>
                         <option value="DESP_COMERCIAL">Despesas Comerciais</option>
                         <option value="DESP_ADMIN">Despesas Administrativas</option>
@@ -3996,7 +4042,7 @@
     // apontam para um destes através da propriedade "somaEm".
     const _GRUPOS_DRE_ESTRUTURAIS = [
         { id: 'RECEITA_BRUTA',      label: 'Receita Bruta',        sinal:  1 },
-        { id: 'DEDUCOES',           label: 'Deduções/Impostos',    sinal: -1 },
+        { id: 'DEDUCOES',           label: 'Impostos e Devoluções', sinal: -1 },
         { id: 'CPV',                label: 'CPV/CSP',              sinal: -1 },
         { id: 'DESP_COMERCIAL',     label: 'Desp. Comerciais',     sinal: -1 },
         { id: 'DESP_ADMIN',         label: 'Desp. Administrativas',sinal: -1 },
@@ -5951,6 +5997,10 @@
         // ── Gauges DRE (baseados em data_competencia, filtro de ano/mes) ──
         criarGaugesDRE(contasReceber, contasPagar, anoF, mesF);
 
+        // ── DRE resumida + Análise de Categorias (fim do dashboard) ──
+        renderizarDREDashboard(contasReceber, contasPagar, anoF, mesF);
+        renderizarAnaliseCategoriasDashboard(contasPagar, anoF, mesF, busca);
+
         // ── PMP x PMR ──
         calcularPmpPmr(contasReceber, contasPagar);
 
@@ -5980,16 +6030,12 @@
         abrirModalLancamentosGen(titulo, _rowsDeContas(contas, kind), { parteLabel: parteLabel });
     }
 
-    // ── GAUGES DRE ────────────────────────────────────────────────────────────
-    function criarGaugesDRE(contasRec, contasPag, anoF, mesF) {
-        const gavelAviso = document.getElementById('dashGaugeAviso');
-        const container  = document.getElementById('dashGauges');
-        if (!container) return;
-
-        // Calcular valores DRE por competência com filtros
+    // ── Totais por grupo DRE (competência + filtros do dashboard) ─────────────
+    // Usado pelos gauges e também pela DRE resumida exibida no dashboard.
+    function calcularGruposDREDash(contasRec, contasPag, anoF, mesF) {
         const grupos = {};
         const agrupar = (contas, defaultGrupo) => {
-            contas.forEach(c => {
+            (contas || []).forEach(c => {
                 const comp = c.data_competencia || '';
                 if (!comp) return;
                 if (anoF && !comp.startsWith(anoF)) return;
@@ -6007,6 +6053,17 @@
         });
         agrupar(contasRec, 'RECEITA_BRUTA');
         agrupar(contasPag, 'DESP_ADMIN');
+        return grupos;
+    }
+
+    // ── GAUGES DRE ────────────────────────────────────────────────────────────
+    function criarGaugesDRE(contasRec, contasPag, anoF, mesF) {
+        const gavelAviso = document.getElementById('dashGaugeAviso');
+        const container  = document.getElementById('dashGauges');
+        if (!container) return;
+
+        // Calcular valores DRE por competência com filtros
+        const grupos = calcularGruposDREDash(contasRec, contasPag, anoF, mesF);
 
         const gv = k => grupos[k] || 0;
         const rb  = gv('RECEITA_BRUTA');
@@ -6018,12 +6075,12 @@
         const da  = gv('DESP_ADMIN');
         const rf  = gv('RECEITA_FINANCEIRA');
         const df  = gv('DESP_FINANCEIRA');
-        const ebt = lb - dc - da + rf - df;
+        const ebt = lb - dc - da;                 // EBITDA operacional (antes do resultado financeiro)
         const emp = gv('EMPRESTIMO');
         const inv = gv('INVESTIMENTO');
         const or  = gv('OUTRAS_RECEITAS');
         const od  = gv('OUTRAS_DESPESAS');
-        const res = ebt - emp - inv + or - od;
+        const res = ebt + rf - df - emp - inv + or - od;
 
         const pct = (v, base) => base > 0 ? (v / base * 100) : 0;
 
@@ -6135,6 +6192,187 @@
                     : '<div style="min-height:20px;"></div>'}
             </div>`;
         }).join('');
+    }
+
+    // ── DRE RESUMIDA NO DASHBOARD ─────────────────────────────────────────────
+    // Mesma estrutura da tela DRE (por competência), respeitando os filtros de
+    // ano/mês do dashboard. Inclui o subtotal "Resultado Antes do IR (LAJIR)".
+    function renderizarDREDashboard(contasRec, contasPag, anoF, mesF) {
+        const tbody = document.getElementById('dreDashCorpo');
+        if (!tbody) return;
+
+        const g   = calcularGruposDREDash(contasRec, contasPag, anoF, mesF);
+        const gv  = k => g[k] || 0;
+        const rb  = gv('RECEITA_BRUTA');
+        const ded = gv('DEDUCOES');
+        const rl  = rb - ded;
+        const cpv = gv('CPV');
+        const lb  = rl - cpv;
+        const dc  = gv('DESP_COMERCIAL');
+        const da  = gv('DESP_ADMIN');
+        const rf  = gv('RECEITA_FINANCEIRA');
+        const df  = gv('DESP_FINANCEIRA');
+        const ebt = lb - dc - da;
+        const lajir = ebt + rf - df;                    // Resultado Antes do IR
+        const emp = gv('EMPRESTIMO');
+        const inv = gv('INVESTIMENTO');
+        const orc = gv('OUTRAS_RECEITAS');
+        const od  = gv('OUTRAS_DESPESAS');
+        const res = ebt + rf - df - emp - inv + orc - od;
+
+        const desc = document.getElementById('dreDashDescricao');
+        if (desc) {
+            const mNomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+            const periodo = anoF
+                ? (mesF ? mNomes[parseInt(mesF,10)-1] + '/' + anoF : 'Acumulado de ' + anoF)
+                : 'Todos os períodos';
+            desc.textContent = 'Por competência · ' + periodo + ' · AV% calculado sobre a Receita Líquida.';
+        }
+
+        const fmtV    = v => v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+        const fmtSinal = v => v === 0 ? '-' : (v > 0 ? '+' : '\u2212') + 'R$ ' + fmtV(Math.abs(v));
+        const cor     = v => v >= 0 ? '#28a745' : '#dc3545';
+        const pctRL   = v => rl > 0 ? (Math.abs(v) / rl * 100).toFixed(1) + '%' : '-';
+
+        const linhaItem = (label, valor) => `<tr style="font-size:13px;">
+                <td style="padding:3px 8px 3px 16px;">${label}</td>
+                <td style="text-align:right;padding:3px 8px;color:${valor === 0 ? '#ccc' : cor(valor)};">${fmtSinal(valor)}</td>
+                <td style="text-align:right;padding:3px 8px;color:#777;">${valor !== 0 ? pctRL(valor) : '-'}</td>
+            </tr>`;
+
+        const linhaSub = (label, valor, destaque) => {
+            const estilo = destaque
+                ? 'font-weight:700;background:#fff;border-top:2px solid var(--cor-primaria);border-bottom:2px solid var(--cor-primaria);'
+                : 'font-weight:700;background:#f0f0f0;color:#333;';
+            return `<tr style="${estilo}">
+                <td style="padding:${destaque ? '7px 12px' : '5px 12px'};">${label}</td>
+                <td style="text-align:right;padding:${destaque ? '7px 8px' : '5px 8px'};color:${cor(valor)};">${fmtSinal(valor)}</td>
+                <td style="text-align:right;padding:${destaque ? '7px 8px' : '5px 8px'};color:#777;">${pctRL(valor)}</td>
+            </tr>`;
+        };
+
+        const linhaSecao = label =>
+            `<tr style="background:#f5f5f5;"><td colspan="3" style="font-weight:700;font-size:11.5px;color:#555;padding:4px 12px;text-transform:uppercase;letter-spacing:0.5px;">${label}</td></tr>`;
+
+        let html = '';
+        html += linhaSecao('Receitas');
+        html += linhaItem('1. Receita Bruta de Vendas/Serviços', rb);
+        html += linhaItem('&nbsp;&nbsp;(-) Impostos e Devoluções', -ded);
+        html += linhaSub('= Receita Líquida', rl, false);
+
+        html += linhaSecao('Custos');
+        html += linhaItem('&nbsp;&nbsp;(-) CPV / Custo dos Serviços', -cpv);
+        html += linhaSub('= Lucro Bruto', lb, false);
+
+        html += linhaSecao('Despesas Operacionais');
+        html += linhaItem('&nbsp;&nbsp;(-) Despesas Comerciais', -dc);
+        html += linhaItem('&nbsp;&nbsp;(-) Despesas Administrativas', -da);
+        html += linhaSub('= EBITDA (Resultado Operacional)', ebt, false);
+
+        html += linhaSecao('Resultado Financeiro');
+        html += linhaItem('&nbsp;&nbsp;(+) Receitas Financeiras', rf);
+        html += linhaItem('&nbsp;&nbsp;(-) Despesas Financeiras', -df);
+        html += linhaSub('= Resultado Antes do IR (LAJIR)', lajir, false);
+
+        html += linhaSecao('Outros');
+        html += linhaItem('&nbsp;&nbsp;(-) Amortiz. Empréstimos/Financ.', -emp);
+        html += linhaItem('&nbsp;&nbsp;(-) Investimentos', -inv);
+        html += linhaItem('&nbsp;&nbsp;(+) Outras Receitas', orc);
+        html += linhaItem('&nbsp;&nbsp;(-) Outras Despesas', -od);
+        html += linhaSub('= GERAÇÃO DE CAIXA APÓS AS DÍVIDAS', res, true);
+
+        tbody.innerHTML = html;
+    }
+
+    // ── ANÁLISE DE CATEGORIAS NO DASHBOARD ────────────────────────────────────
+    // Despesas agrupadas por categoria (competência), com os filtros do dashboard.
+    let _dashAnaliseCatContas = [];
+
+    function renderizarAnaliseCategoriasDashboard(contasPag, anoF, mesF, busca) {
+        const corpo  = document.getElementById('analiseCatDashCorpo');
+        const rodape = document.getElementById('analiseCatDashRodape');
+        if (!corpo) return;
+
+        const filtradas = (contasPag || []).filter(c => {
+            const comp = c.data_competencia || '';
+            if (!comp) return false;
+            if (anoF && !comp.startsWith(anoF)) return false;
+            if (mesF && !comp.includes('-'+mesF+'-')) return false;
+            if (busca) {
+                const forn = dadosCache.fornecedores.find(x => x.id === c.fornecedor_id);
+                const nome = (forn ? forn.nome : '').toLowerCase();
+                if (!nome.includes(busca)) return false;
+            }
+            return true;
+        });
+        _dashAnaliseCatContas = filtradas;
+
+        const desc = document.getElementById('analiseCatDashDescricao');
+        if (desc) {
+            const mNomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+            const periodo = anoF
+                ? (mesF ? mNomes[parseInt(mesF,10)-1] + '/' + anoF : 'Acumulado de ' + anoF)
+                : 'Todos os períodos';
+            desc.textContent = 'Contas a pagar por categoria (competência) · ' + periodo + ' · todos os status (pendentes + pagos).';
+        }
+
+        const porCat = {};
+        filtradas.forEach(c => {
+            const key = c.categoria_id || 0;
+            if (!porCat[key]) porCat[key] = { id: c.categoria_id, total: 0, count: 0 };
+            porCat[key].total += parseFloat(c.valor || 0);
+            porCat[key].count++;
+        });
+
+        const linhas = Object.values(porCat)
+            .filter(x => x.total !== 0)
+            .map(x => {
+                const cat = dadosCache.categorias.find(k => k.id === x.id);
+                const grupoLabel = (cat && cat.grupo_dre)
+                    ? (_GRUPOS_DRE_LABELS[cat.grupo_dre] || cat.grupo_dre)
+                    : '-';
+                return { id: x.id, nome: cat ? cat.nome : 'Sem categoria', grupoLabel, total: x.total, count: x.count };
+            })
+            .sort((a, b) => b.total - a.total);
+
+        const totalGeral = linhas.reduce((s, l) => s + l.total, 0);
+        const fmt = v => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const LIMITE = 12;
+        const visiveis = linhas.slice(0, LIMITE);
+
+        corpo.innerHTML = visiveis.length === 0
+            ? '<tr><td colspan="6" style="text-align:center;color:#999;padding:24px;">Nenhum lançamento encontrado para os filtros selecionados.</td></tr>'
+            : visiveis.map((l, i) => {
+                const perc = totalGeral > 0 ? (l.total / totalGeral * 100) : 0;
+                const nomeEsc = (l.nome || '').replace(/'/g, "\\'");
+                return `<tr style="cursor:pointer;background:${i % 2 ? '#fafafa' : ''};" onclick="abrirLancamentosCatDashboard(${l.id || 0},'${nomeEsc}')" title="Ver lançamentos">
+                    <td style="color:#aaa;font-size:12px;">${i+1}</td>
+                    <td style="font-weight:600;">${l.nome} <span style="color:#bbb;font-size:11px;">🔍</span></td>
+                    <td style="font-size:11px;color:#666;">${l.grupoLabel}</td>
+                    <td style="text-align:right;color:#dc3545;font-weight:600;">${fmt(l.total)}</td>
+                    <td style="text-align:right;color:#666;">${perc.toFixed(1)}%</td>
+                    <td><div style="background:#f0f0f0;border-radius:6px;height:8px;overflow:hidden;"><div style="width:${Math.min(perc,100).toFixed(1)}%;height:100%;background:var(--cor-primaria,#FF7A42);"></div></div></td>
+                </tr>`;
+            }).join('');
+
+        if (rodape) {
+            const restantes = linhas.length - visiveis.length;
+            rodape.innerHTML = linhas.length === 0 ? '' :
+                `<tr style="background:#fafafa;font-weight:700;border-top:2px solid #eee;">
+                    <td></td>
+                    <td>Total${restantes > 0 ? ' <span style="font-weight:400;font-size:11px;color:#999;">(inclui ' + restantes + ' categoria(s) não exibida(s))</span>' : ''}</td>
+                    <td></td>
+                    <td style="text-align:right;">${fmt(totalGeral)}</td>
+                    <td style="text-align:right;">100%</td>
+                    <td></td>
+                </tr>`;
+        }
+    }
+
+    // Clique numa categoria da Análise de Categorias do dashboard → lançamentos
+    function abrirLancamentosCatDashboard(catId, catNome) {
+        const contas = (_dashAnaliseCatContas || []).filter(c => (c.categoria_id || 0) === catId);
+        abrirModalLancamentosGen('Categoria: ' + (catNome || '-'), _rowsDeContas(contas, 'pagar'), { parteLabel: 'Despesas/Fornecedor' });
     }
 
     // GRÁFICOS
@@ -9653,7 +9891,7 @@
     // "Grupos DRE" e pode ser personalizado pelo usuário).
     const DRE_GRUPOS = [
         { id: 'RECEITA_BRUTA',      prefixo: '1. ',      label: '1. Receita Bruta de Vendas/Serviços', sinal: 1  },
-        { id: 'DEDUCOES',           prefixo: '  (-) ',   label: '  (-) Deduções / Impostos s/ Receita', sinal: -1 },
+        { id: 'DEDUCOES',           prefixo: '  (-) ',   label: '  (-) Impostos e Devoluções', sinal: -1 },
         { id: 'CPV',                prefixo: '  (-) ',   label: '  (-) CPV / Custo dos Serviços',       sinal: -1 },
         { id: 'DESP_COMERCIAL',     prefixo: '  (-) ',   label: '  (-) Despesas Comerciais',            sinal: -1 },
         { id: 'DESP_ADMIN',         prefixo: '  (-) ',   label: '  (-) Despesas Administrativas',       sinal: -1 },
@@ -9789,12 +10027,12 @@
         const despAdm   = porGrupo['DESP_ADMIN'].total;
         const recFin    = porGrupo['RECEITA_FINANCEIRA'].total;
         const despFin   = porGrupo['DESP_FINANCEIRA'].total;
-        const ebitda    = lucroBruto - despCom - despAdm + recFin - despFin;
+        const ebitda    = lucroBruto - despCom - despAdm;   // EBITDA operacional (antes do resultado financeiro)
         const emprest   = porGrupo['EMPRESTIMO'].total;
         const invest    = porGrupo['INVESTIMENTO'].total;
         const outRec    = porGrupo['OUTRAS_RECEITAS'].total;
         const outDesp   = porGrupo['OUTRAS_DESPESAS'].total;
-        const resultLiq = ebitda - emprest - invest + outRec - outDesp;
+        const resultLiq = ebitda + recFin - despFin - emprest - invest + outRec - outDesp;
 
         // Atualizar cards
         const setCard = (id, v, positivo) => {
@@ -9870,14 +10108,19 @@
 
         // "destaque" = linha de fecho (Resultado Líquido): fundo branco, apenas
         // realçada por borda e negrito — o valor mantém a cor verde/vermelha.
-        const linhaSubtotal = (label, valor, destaque) => {
+        // baseCustom (opcional): base alternativa para o cálculo do AV%
+        // (por padrão o AV% da DRE é calculado sobre a Receita Bruta).
+        const linhaSubtotal = (label, valor, destaque, baseCustom) => {
             const estiloLinha = destaque
                 ? 'font-weight:700;background:#fff;border-top:2px solid var(--cor-primaria);border-bottom:2px solid var(--cor-primaria);'
                 : 'font-weight:700;background:#f0f0f0;color:#333;';
+            const pctTxt = (baseCustom === undefined || baseCustom === null)
+                ? pct(Math.abs(valor))
+                : (baseCustom > 0 ? (Math.abs(valor) / baseCustom * 100).toFixed(1) + '%' : '-');
             return `<tr style="${estiloLinha}">
                 <td style="padding:${destaque ? '7px 12px' : '5px 12px'};">${label}</td>
                 <td style="text-align:right;padding:${destaque ? '7px 8px' : '5px 8px'};color:${cor(valor)};">${fmtSinal(valor)}</td>
-                <td style="text-align:right;padding:${destaque ? '7px 8px' : '5px 8px'};color:#777;">${pct(Math.abs(valor))}</td>
+                <td style="text-align:right;padding:${destaque ? '7px 8px' : '5px 8px'};color:#777;">${pctTxt}</td>
                 <td></td>
             </tr><tr><td colspan="4" style="height:3px;background:#f9f9f9;"></td></tr>`;
         };
@@ -9917,18 +10160,22 @@
         html += linhaSecao('DESPESAS OPERACIONAIS');
         html += linhaGrupo(DRE_GRUPOS[3].label, -porGrupo['DESP_COMERCIAL'].total, 'DESP_COMERCIAL');
         html += linhaGrupo(DRE_GRUPOS[4].label, -porGrupo['DESP_ADMIN'].total, 'DESP_ADMIN');
+        html += linhaSubtotal('= EBITDA (Resultado Operacional)', ebitda, false);
 
         html += linhaSecao('RESULTADO FINANCEIRO');
         html += linhaGrupo(DRE_GRUPOS[5].label, porGrupo['RECEITA_FINANCEIRA'].total, 'RECEITA_FINANCEIRA');
         html += linhaGrupo(DRE_GRUPOS[6].label, -porGrupo['DESP_FINANCEIRA'].total, 'DESP_FINANCEIRA');
-        html += linhaSubtotal('= EBITDA (Resultado Operacional)', ebitda, false);
+        // Resultado Antes do IR (LAJIR) = EBITDA + Receitas Financeiras - Despesas Financeiras
+        // O AV% desta linha é calculado sobre a Receita Líquida (não sobre a Receita Bruta).
+        const lajir = ebitda + porGrupo['RECEITA_FINANCEIRA'].total - porGrupo['DESP_FINANCEIRA'].total;
+        html += linhaSubtotal('= Resultado Antes do IR (LAJIR) <span style="font-weight:400;font-size:10.5px;color:#888;">— % s/ Receita Líquida</span>', lajir, false, recLiq);
 
         html += linhaSecao('OUTROS');
         html += linhaGrupo(DRE_GRUPOS[7].label, -porGrupo['EMPRESTIMO'].total, 'EMPRESTIMO');
         html += linhaGrupo(DRE_GRUPOS[8].label, -porGrupo['INVESTIMENTO'].total, 'INVESTIMENTO');
         html += linhaGrupo(DRE_GRUPOS[9].label, porGrupo['OUTRAS_RECEITAS'].total, 'OUTRAS_RECEITAS');
         html += linhaGrupo(DRE_GRUPOS[10].label, -porGrupo['OUTRAS_DESPESAS'].total, 'OUTRAS_DESPESAS');
-        html += linhaSubtotal('= RESULTADO LÍQUIDO DO EXERCÍCIO', resultLiq, true);
+        html += linhaSubtotal('= GERAÇÃO DE CAIXA APÓS AS DÍVIDAS', resultLiq, true);
 
         tbody.innerHTML = html;
     }
@@ -9965,10 +10212,22 @@
         if (!headerRow || !tbody) return;
         const mNomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
+        // Meses efetivamente marcados no menu "📅 Meses". A coluna "DRE Acumulada"
+        // soma SOMENTE esses meses — se o usuário deixar só Jul e Ago marcados,
+        // o acumulado traz apenas Jul + Ago.
+        const ocultosMensal  = _mesesOcultosDRE();
+        const mesesVisiveis  = [0,1,2,3,4,5,6,7,8,9,10,11].filter(m => !ocultosMensal.includes(m + 1));
+        const parcial        = mesesVisiveis.length > 0 && mesesVisiveis.length < 12;
+        const rotuloAcum     = mesesVisiveis.length === 0
+            ? 'DRE Acumulada<div style="font-size:10px;font-weight:400;opacity:0.85;">(nenhum mês)</div>'
+            : (parcial
+                ? 'DRE Acumulada<div style="font-size:10px;font-weight:400;opacity:0.85;">(' + mesesVisiveis.map(m => mNomes[m]).join(', ') + ')</div>'
+                : 'DRE Acumulada');
+
         // Cabeçalho com meses
         headerRow.innerHTML = '<th style="min-width:180px;text-align:left;">Descrição</th>' +
             mNomes.map(m => '<th style="text-align:right;min-width:90px;">' + m + '/' + String(ano).slice(2) + '</th>').join('') +
-            '<th style="text-align:right;min-width:120px;">DRE Acumulada</th>';
+            '<th style="text-align:right;min-width:120px;">' + rotuloAcum + '</th>';
 
         // Para cada mês, calcular valores por grupo
         const dados = {};
@@ -10010,13 +10269,14 @@
             const da = dados['DESP_ADMIN'][m];
             const rf = dados['RECEITA_FINANCEIRA'][m];
             const df = dados['DESP_FINANCEIRA'][m];
-            const ebt = lb - dc - da + rf - df;
+            const ebt = lb - dc - da;             // EBITDA operacional (antes do resultado financeiro)
             const emp = dados['EMPRESTIMO'][m];
             const inv = dados['INVESTIMENTO'][m];
             const or = dados['OUTRAS_RECEITAS'][m];
             const od = dados['OUTRAS_DESPESAS'][m];
-            const res = ebt - emp - inv + or - od;
-            return { rb, ded, rl, cpv, lb, dc, da, rf, df, ebt, emp, inv, or, od, res };
+            const lajir = ebt + rf - df;          // Resultado Antes do IR (LAJIR)
+            const res = ebt + rf - df - emp - inv + or - od;
+            return { rb, ded, rl, cpv, lb, dc, da, rf, df, ebt, lajir, emp, inv, or, od, res };
         };
 
         const fmtV = v => v !== 0 ? (v > 0 ? '+' : '\u2212') + 'R$&nbsp;' + Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '-';
@@ -10064,54 +10324,75 @@
 
         const linhas = [
             { label: 'Receita Bruta',             fn: m => calcMes(m).rb,   bg: '', grupoId: 'RECEITA_BRUTA' },
-            { label: '(-) Dedu\u00e7\u00f5es',   fn: m => -calcMes(m).ded, bg: '', grupoId: 'DEDUCOES' },
+            { label: '(-) Impostos e Devolu\u00e7\u00f5es', fn: m => -calcMes(m).ded, bg: '', grupoId: 'DEDUCOES', pctBase: 'RB' },
             { label: '= Receita L\u00edquida',    fn: m => calcMes(m).rl,   bg: '#f5f5f5', bold: true },
-            { label: '(-) CPV/CSP',               fn: m => -calcMes(m).cpv, bg: '', bold: false, expandir: cpvSubOrdenado, grupoId: 'CPV' },
-            { label: '= Lucro Bruto',             fn: m => calcMes(m).lb,   bg: '#f5f5f5', bold: true },
+            { label: '(-) CPV/CSP',               fn: m => -calcMes(m).cpv, bg: '', bold: false, expandir: cpvSubOrdenado, grupoId: 'CPV', pctBase: 'RL' },
+            { label: '= Lucro Bruto',             fn: m => calcMes(m).lb,   bg: '#f5f5f5', bold: true, pctBase: 'RL' },
             { label: '(-) Desp. Comerciais',      fn: m => -calcMes(m).dc,  bg: '', grupoId: 'DESP_COMERCIAL' },
             { label: '(-) Desp. Administrativas', fn: m => -calcMes(m).da,  bg: '', expandir: daSubOrdenado, grupoId: 'DESP_ADMIN' },
+            { label: '= EBITDA',                  fn: m => calcMes(m).ebt,  bg: '#e8f4fd', bold: true, pctBase: 'RL' },
             { label: '(+) Rec. Financeiras',      fn: m => calcMes(m).rf,   bg: '', grupoId: 'RECEITA_FINANCEIRA' },
             { label: '(-) Desp. Financeiras',     fn: m => -calcMes(m).df,  bg: '', grupoId: 'DESP_FINANCEIRA' },
-            { label: '= EBITDA',                  fn: m => calcMes(m).ebt,  bg: '#e8f4fd', bold: true },
+            { label: '= Resultado Antes do IR (LAJIR)', fn: m => calcMes(m).lajir, bg: '#f0f0f0', bold: true, pctBase: 'RL' },
             { label: '(-) Empr\u00e9stimos',      fn: m => -calcMes(m).emp, bg: '', grupoId: 'EMPRESTIMO' },
             { label: '(-) Investimentos',         fn: m => -calcMes(m).inv, bg: '', grupoId: 'INVESTIMENTO' },
             { label: '(+) Outras Receitas',       fn: m => calcMes(m).or,   bg: '', grupoId: 'OUTRAS_RECEITAS' },
             { label: '(-) Outras Despesas',       fn: m => -calcMes(m).od,  bg: '', grupoId: 'OUTRAS_DESPESAS' },
-            { label: '= Resultado L\u00edquido',  fn: m => calcMes(m).res,  bg: '', bold: true, destaque: true },
+            { label: '= Gera\u00e7\u00e3o de Caixa Ap\u00f3s as D\u00edvidas', fn: m => calcMes(m).res, bg: '', bold: true, destaque: true, pctBase: 'RL' },
         ];
+
+        // Bases para o cálculo de % (Receita Líquida ou Receita Bruta), por mês e total
+        const baseMes = (pb, m) => pb === 'RB' ? calcMes(m).rb : calcMes(m).rl;
+        // % em relação à base do próprio mês/total, exibido em fonte menor logo abaixo do valor
+        const pctCel = (v, base) => (base > 0)
+            ? '<div style="font-size:10px;color:#888;font-weight:400;">(' + (Math.abs(v) / base * 100).toFixed(2).replace('.', ',') + '%)</div>'
+            : '';
 
         tbody.innerHTML = '';
         linhas.forEach(linha => {
             const vals = Array.from({length: 12}, (_, m) => linha.fn(m));
-            const total = vals.reduce((s, v) => s + v, 0);
-            // Linha de fecho (Resultado Líquido): fundo branco, destacada por bordas
+            // Acumulado = soma apenas dos meses marcados no menu "📅 Meses"
+            const total = mesesVisiveis.reduce((s, m) => s + vals[m], 0);
+            // Bases de % por mês/total (só para linhas com pctBase definido)
+            const basesMes  = linha.pctBase ? Array.from({length: 12}, (_, m) => baseMes(linha.pctBase, m)) : null;
+            const baseTotal = linha.pctBase ? mesesVisiveis.reduce((s, m) => s + basesMes[m], 0) : 0;
+            // Linha de fecho (Geração de Caixa Após as Dívidas): fundo branco, destacada por bordas
             const rowBg = linha.destaque
                 ? 'background:#fff;border-top:2px solid var(--cor-primaria);border-bottom:2px solid var(--cor-primaria);'
                 : (linha.bg ? 'background:' + linha.bg + ';' : '');
             const labelFc = '';
             const bold  = linha.bold ? 'font-weight:700;' : '';
-            const clicavel = linha.grupoId ? ' cursor:pointer;' : '';
-            const onclickAttr = linha.grupoId ? ' onclick="abrirLancamentosDRE(\'' + linha.grupoId + '\')" title="Ver lançamentos"' : '';
+            const clicavel = linha.grupoId ? 'cursor:pointer;' : '';
+            // Clique agora é por célula: mes = 1..12 abre só aquele mês;
+            // mes = 0 (rótulo e coluna acumulada) abre os meses marcados.
+            const clickCel = m => linha.grupoId
+                ? ' onclick="abrirLancamentosDRE(\'' + linha.grupoId + '\',' + m + ')" title="Ver lançamentos"'
+                : '';
             const setaLupa = linha.grupoId ? ' <span style="color:#bbb;font-size:11px;">🔍</span>' : '';
-            tbody.innerHTML += '<tr style="' + rowBg + clicavel + '"' + onclickAttr + '>' +
-                '<td style="padding:3px 8px;' + labelFc + bold + '">' + linha.label + setaLupa + '</td>' +
-                vals.map(v => '<td style="text-align:right;padding:3px 8px;' + cor(v) + '">' + fmtV(v) + '</td>').join('') +
-                '<td style="text-align:right;padding:3px 8px;font-weight:700;' + cor(total) + '">' + fmtV(total) + '</td>' +
+            tbody.innerHTML += '<tr style="' + rowBg + '">' +
+                '<td style="padding:3px 8px;' + clicavel + labelFc + bold + '"' + clickCel(0) + '>' + linha.label + setaLupa + '</td>' +
+                vals.map((v, m) => '<td style="text-align:right;padding:3px 8px;' + clicavel + cor(v) + '"' + clickCel(m + 1) + '>' + fmtV(v) + (linha.pctBase ? pctCel(v, basesMes[m]) : '') + '</td>').join('') +
+                '<td style="text-align:right;padding:3px 8px;font-weight:700;' + clicavel + cor(total) + '"' + clickCel(0) + '>' + fmtV(total) + (linha.pctBase ? pctCel(total, baseTotal) : '') + '</td>' +
                 '</tr>';
 
             // Subcategorias expandidas
             if (linha.expandir && linha.expandir.length > 0) {
                 linha.expandir.forEach(([nomeSub, mesesSub]) => {
-                    const totalSub = mesesSub.reduce((s,v)=>s+v,0);
+                    // Acumulado da subcategoria também considera só os meses marcados
+                    const totalSub = mesesVisiveis.length > 0
+                        ? mesesVisiveis.reduce((s, m) => s + mesesSub[m], 0)
+                        : mesesSub.reduce((s, v) => s + v, 0);
                     if (totalSub === 0) return;
-                    const subClick = linha.grupoId
-                        ? ' style="background:#fafafa;cursor:pointer;" onclick="abrirLancamentosDRECategoria(\'' + linha.grupoId + '\',\'' + (nomeSub.replace(/'/g,"\\'")) + '\')" title="Ver lançamentos"'
-                        : ' style="background:#fafafa;"';
-                    tbody.innerHTML += '<tr' + subClick + '>' +
-                        '<td style="padding:2px 8px 2px 22px;font-size:11px;color:#888;">' +
+                    const nomeEsc = nomeSub.replace(/'/g, "\\'");
+                    const clickSub = m => linha.grupoId
+                        ? ' onclick="abrirLancamentosDRECategoria(\'' + linha.grupoId + '\',\'' + nomeEsc + '\',' + m + ')" title="Ver lançamentos"'
+                        : '';
+                    const curSub = linha.grupoId ? 'cursor:pointer;' : '';
+                    tbody.innerHTML += '<tr style="background:#fafafa;">' +
+                        '<td style="padding:2px 8px 2px 22px;font-size:11px;color:#888;' + curSub + '"' + clickSub(0) + '>' +
                         '<span style="color:#bbb;margin-right:4px;">\u21b3</span>' + nomeSub + '</td>' +
-                        mesesSub.map(v => '<td style="text-align:right;padding:2px 8px;font-size:11px;color:#dc3545;">' + (v > 0 ? fmtV(-v) : '-') + '</td>').join('') +
-                        '<td style="text-align:right;padding:2px 8px;font-size:11px;font-weight:600;color:#dc3545;">' + fmtV(-totalSub) + '</td>' +
+                        mesesSub.map((v, m) => '<td style="text-align:right;padding:2px 8px;font-size:11px;color:#dc3545;' + curSub + '"' + clickSub(m + 1) + '>' + (v > 0 ? fmtV(-v) : '-') + '</td>').join('') +
+                        '<td style="text-align:right;padding:2px 8px;font-size:11px;font-weight:600;color:#dc3545;' + curSub + '"' + clickSub(0) + '>' + fmtV(-totalSub) + '</td>' +
                         '</tr>';
                 });
             }
@@ -10125,32 +10406,54 @@
         return (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || fallback) : fallback;
     }
 
-    // Clique numa linha da DRE Mensal → abre os lançamentos daquele grupo no ano exibido
-    function abrirLancamentosDRE(grupoId) {
+    // Meses considerados no drill-down: o mês clicado (1..12) ou, quando o
+    // clique é no rótulo/coluna acumulada (mes = 0), os meses marcados no menu.
+    function _mesesDrillDRE(mes) {
+        if (mes) return [parseInt(mes, 10)];
+        const ocultos = _mesesOcultosDRE();
+        const vis = [1,2,3,4,5,6,7,8,9,10,11,12].filter(m => !ocultos.includes(m));
+        return vis.length > 0 ? vis : [1,2,3,4,5,6,7,8,9,10,11,12];
+    }
+
+    function _rotuloPeriodoDRE(mes) {
         const ano = window._dreAnoSelMensal || String(new Date().getFullYear());
-        const rec = (window._dreContasRecMensal || []).filter(c => c.data_competencia && c.data_competencia.startsWith(ano) && _grupoDeConta(c, 'receber') === grupoId);
-        const pag = (window._dreContasPagMensal || []).filter(c => c.data_competencia && c.data_competencia.startsWith(ano) && _grupoDeConta(c, 'pagar') === grupoId);
+        if (mes) return _MESES_DRE_NOMES[parseInt(mes, 10) - 1] + '/' + ano;
+        const vis = _mesesDrillDRE(0);
+        return vis.length === 12
+            ? ano
+            : ano + ' (' + vis.map(m => _MESES_DRE_NOMES[m - 1].substring(0, 3)).join(', ') + ')';
+    }
+
+    // Clique numa célula da DRE Mensal → abre os lançamentos daquele grupo no período clicado
+    function abrirLancamentosDRE(grupoId, mes) {
+        const ano = window._dreAnoSelMensal || String(new Date().getFullYear());
+        const meses = _mesesDrillDRE(mes);
+        const noPeriodo = comp => !!comp && comp.startsWith(ano) && meses.includes(parseInt(comp.substring(5, 7), 10));
+        const rec = (window._dreContasRecMensal || []).filter(c => noPeriodo(c.data_competencia) && _grupoDeConta(c, 'receber') === grupoId);
+        const pag = (window._dreContasPagMensal || []).filter(c => noPeriodo(c.data_competencia) && _grupoDeConta(c, 'pagar') === grupoId);
         let rows = _rowsDeContas(rec, 'receber').concat(_rowsDeContas(pag, 'pagar'));
         // Lançamentos DRE diretos
-        (window._dreLancsMensal || []).filter(l => l.competencia && l.competencia.startsWith(ano) && grupoEstruturalDRE(l.grupo) === grupoId).forEach(l => {
+        (window._dreLancsMensal || []).filter(l => noPeriodo(l.competencia) && grupoEstruturalDRE(l.grupo) === grupoId).forEach(l => {
             rows.push({ _ord: l.competencia, data: (l.competencia||'').substring(0,7), descricao: l.descricao || '-', categoria: l.categoria || '-', parte: '-', empresa: '-', nf: '-', valor: parseFloat(l.valor||0), status: 'DRE', statusClass: 'pago' });
         });
         const label = (_GRUPOS_DRE_LABELS[grupoId] || grupoId);
-        abrirModalLancamentosGen('DRE — ' + label + ' · ' + ano, rows, { parteLabel: 'Cliente / Despesas/Fornecedor' });
+        abrirModalLancamentosGen('DRE — ' + label + ' · ' + _rotuloPeriodoDRE(mes), rows, { parteLabel: 'Cliente / Despesas/Fornecedor' });
     }
 
-    // Clique numa subcategoria da DRE Mensal → abre os lançamentos daquela categoria
-    function abrirLancamentosDRECategoria(grupoId, nomeCat) {
+    // Clique numa subcategoria da DRE Mensal → lançamentos da categoria no período clicado
+    function abrirLancamentosDRECategoria(grupoId, nomeCat, mes) {
         const ano = window._dreAnoSelMensal || String(new Date().getFullYear());
+        const meses = _mesesDrillDRE(mes);
         const pag = (window._dreContasPagMensal || []).filter(c => {
-            if (!(c.data_competencia && c.data_competencia.startsWith(ano))) return false;
+            const comp = c.data_competencia;
+            if (!(comp && comp.startsWith(ano) && meses.includes(parseInt(comp.substring(5, 7), 10)))) return false;
             if (_grupoDeConta(c, 'pagar') !== grupoId) return false;
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
             const nome = cat ? cat.nome : 'Sem Categoria';
             // subcategoria pode ser "Categoria / Fornecedor" — casa pelo início
             return nome === nomeCat || nomeCat.indexOf(nome) === 0;
         });
-        abrirModalLancamentosGen('DRE — ' + nomeCat + ' · ' + ano, _rowsDeContas(pag, 'pagar'), { parteLabel: 'Despesas/Fornecedor' });
+        abrirModalLancamentosGen('DRE — ' + nomeCat + ' · ' + _rotuloPeriodoDRE(mes), _rowsDeContas(pag, 'pagar'), { parteLabel: 'Despesas/Fornecedor' });
     }
 
     // ── OCULTAR MESES INDIVIDUAIS NA DRE MENSAL ──────────────────────────────
@@ -10197,18 +10500,31 @@
         }
     }
 
+    // Redesenha a DRE Mensal com os dados já carregados, para que a coluna
+    // "DRE Acumulada" volte a somar apenas os meses marcados.
+    function recalcularDREMensal() {
+        if (!window._dreAnoSelMensal) { aplicarEstadoOcultarMesesDRE(); return; }
+        gerarTabelaMensalDRE(
+            window._dreLancsMensal    || [],
+            window._dreContasRecMensal || [],
+            window._dreContasPagMensal || [],
+            window._dreAnoSelMensal
+        );
+        aplicarEstadoOcultarMesesDRE();
+    }
+
     function toggleMesDRE(mes, visivel) {
         let ocultos = _mesesOcultosDRE();
         if (visivel) ocultos = ocultos.filter(m => m !== mes);
         else if (!ocultos.includes(mes)) ocultos.push(mes);
         localStorage.setItem(_chaveOcultarMesesDRE(), JSON.stringify(ocultos));
-        aplicarEstadoOcultarMesesDRE();
+        recalcularDREMensal();
     }
 
     function marcarTodosMesesDRE(mostrar) {
         const ocultos = mostrar ? [] : [1,2,3,4,5,6,7,8,9,10,11,12];
         localStorage.setItem(_chaveOcultarMesesDRE(), JSON.stringify(ocultos));
-        aplicarEstadoOcultarMesesDRE();
+        recalcularDREMensal();
         montarMenuMesesDRE();
     }
 
@@ -10397,37 +10713,51 @@
             const da = dados['DESP_ADMIN'][m];
             const rf = dados['RECEITA_FINANCEIRA'][m];
             const df = dados['DESP_FINANCEIRA'][m];
-            const ebt = lb - dc - da + rf - df;
+            const ebt = lb - dc - da;             // EBITDA operacional (antes do resultado financeiro)
             const emp = dados['EMPRESTIMO'][m];
             const inv = dados['INVESTIMENTO'][m];
             const or = dados['OUTRAS_RECEITAS'][m];
             const od = dados['OUTRAS_DESPESAS'][m];
-            const res = ebt - emp - inv + or - od;
-            return { rb, ded, rl, cpv, lb, dc, da, rf, df, ebt, emp, inv, or, od, res };
+            const lajir = ebt + rf - df;          // Resultado Antes do IR (LAJIR)
+            const res = ebt + rf - df - emp - inv + or - od;
+            return { rb, ded, rl, cpv, lb, dc, da, rf, df, ebt, lajir, emp, inv, or, od, res };
         };
 
         const linhasExcel = [
-            { label: 'Receita Bruta',             fn: m => calcMes(m).rb },
-            { label: '(-) Deduções',               fn: m => -calcMes(m).ded },
-            { label: '= Receita Líquida',          fn: m => calcMes(m).rl },
-            { label: '(-) CPV/CSP',                fn: m => -calcMes(m).cpv },
-            { label: '= Lucro Bruto',              fn: m => calcMes(m).lb },
-            { label: '(-) Desp. Comerciais',       fn: m => -calcMes(m).dc },
-            { label: '(-) Desp. Administrativas',  fn: m => -calcMes(m).da },
-            { label: '(+) Rec. Financeiras',       fn: m => calcMes(m).rf },
-            { label: '(-) Desp. Financeiras',      fn: m => -calcMes(m).df },
-            { label: '= EBITDA',                   fn: m => calcMes(m).ebt },
-            { label: '(-) Empréstimos',            fn: m => -calcMes(m).emp },
-            { label: '(-) Investimentos',          fn: m => -calcMes(m).inv },
-            { label: '(+) Outras Receitas',        fn: m => calcMes(m).or },
-            { label: '(-) Outras Despesas',        fn: m => -calcMes(m).od },
-            { label: '= Resultado Líquido',        fn: m => calcMes(m).res },
+            { label: 'Receita Bruta',                  fn: m => calcMes(m).rb },
+            { label: '(-) Impostos e Devoluções',      fn: m => -calcMes(m).ded },
+            { label: '= Receita Líquida',              fn: m => calcMes(m).rl },
+            { label: '(-) CPV/CSP',                    fn: m => -calcMes(m).cpv },
+            { label: '= Lucro Bruto',                  fn: m => calcMes(m).lb },
+            { label: '(-) Desp. Comerciais',           fn: m => -calcMes(m).dc },
+            { label: '(-) Desp. Administrativas',      fn: m => -calcMes(m).da },
+            { label: '= EBITDA',                       fn: m => calcMes(m).ebt },
+            { label: '(+) Rec. Financeiras',           fn: m => calcMes(m).rf },
+            { label: '(-) Desp. Financeiras',          fn: m => -calcMes(m).df },
+            { label: '= Resultado Antes do IR (LAJIR)', fn: m => calcMes(m).lajir },
+            { label: '(-) Empréstimos',                fn: m => -calcMes(m).emp },
+            { label: '(-) Investimentos',              fn: m => -calcMes(m).inv },
+            { label: '(+) Outras Receitas',            fn: m => calcMes(m).or },
+            { label: '(-) Outras Despesas',            fn: m => -calcMes(m).od },
+            { label: '= Geração de Caixa Após as Dívidas', fn: m => calcMes(m).res },
         ];
 
-        const rows = [['Descrição'].concat(mNomes.map(m => m + '/' + String(ano).slice(2))).concat(['DRE Acumulada'])];
+        const rows = [['Descrição'].concat(mNomes.map(m => m + '/' + String(ano).slice(2))).concat([
+            (function () {
+                const ocs = _mesesOcultosDRE();
+                const vis = [0,1,2,3,4,5,6,7,8,9,10,11].filter(m => !ocs.includes(m + 1));
+                return vis.length > 0 && vis.length < 12
+                    ? 'DRE Acumulada (' + vis.map(m => mNomes[m]).join(', ') + ')'
+                    : 'DRE Acumulada';
+            })()
+        ])];
+        // Acumulado = soma apenas dos meses marcados no menu "📅 Meses"
+        const ocultosXls = _mesesOcultosDRE();
+        const visXls = [0,1,2,3,4,5,6,7,8,9,10,11].filter(m => !ocultosXls.includes(m + 1));
+        const mesesSomaXls = visXls.length > 0 ? visXls : [0,1,2,3,4,5,6,7,8,9,10,11];
         linhasExcel.forEach(linha => {
             const vals = Array.from({length: 12}, (_, m) => linha.fn(m));
-            const total = vals.reduce((s, v) => s + v, 0);
+            const total = mesesSomaXls.reduce((s, m) => s + vals[m], 0);
             rows.push([linha.label].concat(vals.map(v => Math.round(v * 100) / 100)).concat([Math.round(total * 100) / 100]));
         });
 
@@ -10486,7 +10816,7 @@
                 labels,
                 datasets: [
                     { label: 'Receita Bruta', data: receitasData, backgroundColor: 'rgba(40,167,69,0.6)', borderColor: '#28a745', borderWidth: 1, borderRadius: 4 },
-                    { label: 'Resultado Líquido', data: resultadosData, type: 'line', borderColor: '#FF7A42', backgroundColor: 'rgba(255,122,66,0.08)',
+                    { label: 'Geração de Caixa Após as Dívidas', data: resultadosData, type: 'line', borderColor: '#FF7A42', backgroundColor: 'rgba(255,122,66,0.08)',
                       borderWidth: 2, pointBackgroundColor: '#FF7A42', pointRadius: 4, tension: 0.3, fill: false }
                 ]
             },
@@ -11654,7 +11984,7 @@
                     <select id="lancDREGrupo" required onchange="filtrarCatsDRE()">
                         <option value="">Selecione...</option>
                         <option value="RECEITA_BRUTA">Receita Bruta (+)</option>
-                        <option value="DEDUCOES">Deduções / Impostos s/ Receita (-)</option>
+                        <option value="DEDUCOES">Impostos e Devoluções (-)</option>
                         <option value="CPV">CPV / CSP (-)</option>
                         <option value="DESP_COMERCIAL">Despesas Comerciais (-)</option>
                         <option value="DESP_ADMIN">Despesas Administrativas (-)</option>
