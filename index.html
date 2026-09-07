@@ -4114,19 +4114,34 @@
     // Mapa id → nome exibido, usado em telas e relatórios
     let _GRUPOS_DRE_LABELS = {};
 
+    // Rótulo exibido de um grupo, já com o prefixo de sinal.
+    // Se o usuário renomeou o grupo começando com (-) / (+) / -, o prefixo
+    // não é repetido — evita rótulos como "(-) (-) Amortização de Empréstimos".
+    function _labelGrupoDRE(id, prefixo) {
+        const nome = (_GRUPOS_DRE_LABELS && _GRUPOS_DRE_LABELS[id]) || id;
+        const jaTemSinal = /^\s*\(?\s*[-+\u2212=]/.test(nome);
+        return (jaTemSinal ? '' : (prefixo || '')) + nome;
+    }
+
     function _reconstruirGruposDRE() {
         _GRUPOS_DRE_LABELS = {};
         gruposDREEfetivos().forEach(g => { _GRUPOS_DRE_LABELS[g.id] = g.label; });
 
         // Mantém os rótulos da tabela estruturada da DRE em sincronia
-        if (typeof DRE_GRUPOS !== 'undefined') {
-            DRE_GRUPOS.forEach(dg => {
-                const g = gruposDREEfetivos().find(x => x.id === dg.id);
-                if (g) dg.label = dg.prefixo + g.label;
-            });
-        }
+        try {
+            if (typeof DRE_GRUPOS !== 'undefined' && Array.isArray(DRE_GRUPOS)) {
+                DRE_GRUPOS.forEach(dg => {
+                    if (_GRUPOS_DRE_LABELS[dg.id]) dg.label = _labelGrupoDRE(dg.id, dg.prefixo);
+                });
+            }
+        } catch (e) { /* DRE_GRUPOS ainda não inicializado nesta fase */ }
 
         _preencherSelectsGrupoDRE();
+
+        // Se a DRE já estiver montada em tela, redesenha com os novos nomes
+        try {
+            if (window._dreAnoSelMensal && typeof recalcularDREMensal === 'function') recalcularDREMensal();
+        } catch (e) { /* DRE ainda não carregada */ }
     }
 
     // Repovoa todos os <select> que oferecem a lista de grupos DRE
@@ -6254,31 +6269,32 @@
         const linhaSecao = label =>
             `<tr style="background:#f5f5f5;"><td colspan="3" style="font-weight:700;font-size:11.5px;color:#555;padding:4px 12px;text-transform:uppercase;letter-spacing:0.5px;">${label}</td></tr>`;
 
+        const ind = t => '&nbsp;&nbsp;' + t;
         let html = '';
         html += linhaSecao('Receitas');
-        html += linhaItem('1. Receita Bruta de Vendas/Serviços', rb);
-        html += linhaItem('&nbsp;&nbsp;(-) Impostos e Devoluções', -ded);
+        html += linhaItem('1. ' + _labelGrupoDRE('RECEITA_BRUTA', ''), rb);
+        html += linhaItem(ind(_labelGrupoDRE('DEDUCOES', '(-) ')), -ded);
         html += linhaSub('= Receita Líquida', rl, false);
 
         html += linhaSecao('Custos');
-        html += linhaItem('&nbsp;&nbsp;(-) CPV / Custo dos Serviços', -cpv);
+        html += linhaItem(ind(_labelGrupoDRE('CPV', '(-) ')), -cpv);
         html += linhaSub('= Lucro Bruto', lb, false);
 
         html += linhaSecao('Despesas Operacionais');
-        html += linhaItem('&nbsp;&nbsp;(-) Despesas Comerciais', -dc);
-        html += linhaItem('&nbsp;&nbsp;(-) Despesas Administrativas', -da);
+        html += linhaItem(ind(_labelGrupoDRE('DESP_COMERCIAL', '(-) ')), -dc);
+        html += linhaItem(ind(_labelGrupoDRE('DESP_ADMIN', '(-) ')), -da);
         html += linhaSub('= EBITDA (Resultado Operacional)', ebt, false);
 
         html += linhaSecao('Resultado Financeiro');
-        html += linhaItem('&nbsp;&nbsp;(+) Receitas Financeiras', rf);
-        html += linhaItem('&nbsp;&nbsp;(-) Despesas Financeiras', -df);
+        html += linhaItem(ind(_labelGrupoDRE('RECEITA_FINANCEIRA', '(+) ')), rf);
+        html += linhaItem(ind(_labelGrupoDRE('DESP_FINANCEIRA', '(-) ')), -df);
         html += linhaSub('= Resultado Antes do IR (LAJIR)', lajir, false);
 
         html += linhaSecao('Outros');
-        html += linhaItem('&nbsp;&nbsp;(-) Amortiz. Empréstimos/Financ.', -emp);
-        html += linhaItem('&nbsp;&nbsp;(-) Investimentos', -inv);
-        html += linhaItem('&nbsp;&nbsp;(+) Outras Receitas', orc);
-        html += linhaItem('&nbsp;&nbsp;(-) Outras Despesas', -od);
+        html += linhaItem(ind(_labelGrupoDRE('EMPRESTIMO', '(-) ')), -emp);
+        html += linhaItem(ind(_labelGrupoDRE('INVESTIMENTO', '(-) ')), -inv);
+        html += linhaItem(ind(_labelGrupoDRE('OUTRAS_RECEITAS', '(+) ')), orc);
+        html += linhaItem(ind(_labelGrupoDRE('OUTRAS_DESPESAS', '(-) ')), -od);
         html += linhaSub('= GERAÇÃO DE CAIXA APÓS AS DÍVIDAS', res, true);
 
         tbody.innerHTML = html;
@@ -10323,21 +10339,21 @@
         );
 
         const linhas = [
-            { label: 'Receita Bruta',             fn: m => calcMes(m).rb,   bg: '', grupoId: 'RECEITA_BRUTA' },
-            { label: '(-) Impostos e Devolu\u00e7\u00f5es', fn: m => -calcMes(m).ded, bg: '', grupoId: 'DEDUCOES', pctBase: 'RB' },
+            { label: _labelGrupoDRE('RECEITA_BRUTA', ''),        fn: m => calcMes(m).rb,   bg: '', grupoId: 'RECEITA_BRUTA' },
+            { label: _labelGrupoDRE('DEDUCOES', '(-) '),         fn: m => -calcMes(m).ded, bg: '', grupoId: 'DEDUCOES', pctBase: 'RB' },
             { label: '= Receita L\u00edquida',    fn: m => calcMes(m).rl,   bg: '#f5f5f5', bold: true },
-            { label: '(-) CPV/CSP',               fn: m => -calcMes(m).cpv, bg: '', bold: false, expandir: cpvSubOrdenado, grupoId: 'CPV', pctBase: 'RL' },
+            { label: _labelGrupoDRE('CPV', '(-) '),              fn: m => -calcMes(m).cpv, bg: '', bold: false, expandir: cpvSubOrdenado, grupoId: 'CPV', pctBase: 'RL' },
             { label: '= Lucro Bruto',             fn: m => calcMes(m).lb,   bg: '#f5f5f5', bold: true, pctBase: 'RL' },
-            { label: '(-) Desp. Comerciais',      fn: m => -calcMes(m).dc,  bg: '', grupoId: 'DESP_COMERCIAL' },
-            { label: '(-) Desp. Administrativas', fn: m => -calcMes(m).da,  bg: '', expandir: daSubOrdenado, grupoId: 'DESP_ADMIN' },
+            { label: _labelGrupoDRE('DESP_COMERCIAL', '(-) '),   fn: m => -calcMes(m).dc,  bg: '', grupoId: 'DESP_COMERCIAL' },
+            { label: _labelGrupoDRE('DESP_ADMIN', '(-) '),       fn: m => -calcMes(m).da,  bg: '', expandir: daSubOrdenado, grupoId: 'DESP_ADMIN' },
             { label: '= EBITDA',                  fn: m => calcMes(m).ebt,  bg: '#e8f4fd', bold: true, pctBase: 'RL' },
-            { label: '(+) Rec. Financeiras',      fn: m => calcMes(m).rf,   bg: '', grupoId: 'RECEITA_FINANCEIRA' },
-            { label: '(-) Desp. Financeiras',     fn: m => -calcMes(m).df,  bg: '', grupoId: 'DESP_FINANCEIRA' },
+            { label: _labelGrupoDRE('RECEITA_FINANCEIRA', '(+) '), fn: m => calcMes(m).rf, bg: '', grupoId: 'RECEITA_FINANCEIRA' },
+            { label: _labelGrupoDRE('DESP_FINANCEIRA', '(-) '),  fn: m => -calcMes(m).df,  bg: '', grupoId: 'DESP_FINANCEIRA' },
             { label: '= Resultado Antes do IR (LAJIR)', fn: m => calcMes(m).lajir, bg: '#f0f0f0', bold: true, pctBase: 'RL' },
-            { label: '(-) Empr\u00e9stimos',      fn: m => -calcMes(m).emp, bg: '', grupoId: 'EMPRESTIMO' },
-            { label: '(-) Investimentos',         fn: m => -calcMes(m).inv, bg: '', grupoId: 'INVESTIMENTO' },
-            { label: '(+) Outras Receitas',       fn: m => calcMes(m).or,   bg: '', grupoId: 'OUTRAS_RECEITAS' },
-            { label: '(-) Outras Despesas',       fn: m => -calcMes(m).od,  bg: '', grupoId: 'OUTRAS_DESPESAS' },
+            { label: _labelGrupoDRE('EMPRESTIMO', '(-) '),       fn: m => -calcMes(m).emp, bg: '', grupoId: 'EMPRESTIMO' },
+            { label: _labelGrupoDRE('INVESTIMENTO', '(-) '),     fn: m => -calcMes(m).inv, bg: '', grupoId: 'INVESTIMENTO' },
+            { label: _labelGrupoDRE('OUTRAS_RECEITAS', '(+) '),  fn: m => calcMes(m).or,   bg: '', grupoId: 'OUTRAS_RECEITAS' },
+            { label: _labelGrupoDRE('OUTRAS_DESPESAS', '(-) '),  fn: m => -calcMes(m).od,  bg: '', grupoId: 'OUTRAS_DESPESAS' },
             { label: '= Gera\u00e7\u00e3o de Caixa Ap\u00f3s as D\u00edvidas', fn: m => calcMes(m).res, bg: '', bold: true, destaque: true, pctBase: 'RL' },
         ];
 
@@ -10724,21 +10740,21 @@
         };
 
         const linhasExcel = [
-            { label: 'Receita Bruta',                  fn: m => calcMes(m).rb },
-            { label: '(-) Impostos e Devoluções',      fn: m => -calcMes(m).ded },
+            { label: _labelGrupoDRE('RECEITA_BRUTA', ''),         fn: m => calcMes(m).rb },
+            { label: _labelGrupoDRE('DEDUCOES', '(-) '),          fn: m => -calcMes(m).ded },
             { label: '= Receita Líquida',              fn: m => calcMes(m).rl },
-            { label: '(-) CPV/CSP',                    fn: m => -calcMes(m).cpv },
+            { label: _labelGrupoDRE('CPV', '(-) '),               fn: m => -calcMes(m).cpv },
             { label: '= Lucro Bruto',                  fn: m => calcMes(m).lb },
-            { label: '(-) Desp. Comerciais',           fn: m => -calcMes(m).dc },
-            { label: '(-) Desp. Administrativas',      fn: m => -calcMes(m).da },
+            { label: _labelGrupoDRE('DESP_COMERCIAL', '(-) '),    fn: m => -calcMes(m).dc },
+            { label: _labelGrupoDRE('DESP_ADMIN', '(-) '),        fn: m => -calcMes(m).da },
             { label: '= EBITDA',                       fn: m => calcMes(m).ebt },
-            { label: '(+) Rec. Financeiras',           fn: m => calcMes(m).rf },
-            { label: '(-) Desp. Financeiras',          fn: m => -calcMes(m).df },
+            { label: _labelGrupoDRE('RECEITA_FINANCEIRA', '(+) '), fn: m => calcMes(m).rf },
+            { label: _labelGrupoDRE('DESP_FINANCEIRA', '(-) '),   fn: m => -calcMes(m).df },
             { label: '= Resultado Antes do IR (LAJIR)', fn: m => calcMes(m).lajir },
-            { label: '(-) Empréstimos',                fn: m => -calcMes(m).emp },
-            { label: '(-) Investimentos',              fn: m => -calcMes(m).inv },
-            { label: '(+) Outras Receitas',            fn: m => calcMes(m).or },
-            { label: '(-) Outras Despesas',            fn: m => -calcMes(m).od },
+            { label: _labelGrupoDRE('EMPRESTIMO', '(-) '),        fn: m => -calcMes(m).emp },
+            { label: _labelGrupoDRE('INVESTIMENTO', '(-) '),      fn: m => -calcMes(m).inv },
+            { label: _labelGrupoDRE('OUTRAS_RECEITAS', '(+) '),   fn: m => calcMes(m).or },
+            { label: _labelGrupoDRE('OUTRAS_DESPESAS', '(-) '),   fn: m => -calcMes(m).od },
             { label: '= Geração de Caixa Após as Dívidas', fn: m => calcMes(m).res },
         ];
 
