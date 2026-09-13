@@ -5966,6 +5966,10 @@
         const mesF  = (document.getElementById('dashFiltroMes')  || {}).value || '';
         const busca = ((document.getElementById('dashFiltroBusca') || {}).value || '').toLowerCase().trim();
 
+        // Guarda o período ativo para o drill-down dos indicadores
+        window._dashAnoF = anoF;
+        window._dashMesF = mesF;
+
         // ── Cards de topo: sempre mostram totais globais (sem filtro de busca) ──
         const recPend = contasReceber.filter(c => c.status === 'pendente');
         const pagPend = contasPagar.filter(c => c.status === 'pendente');
@@ -6177,10 +6181,10 @@
 
         const mg = metasGauges || METAS_PADRAO;
         const metricas = [
-            { label: 'Receita Bruta',  valor: rb,             meta: null,          unidade: 'R$', positivo: true,  cor: '#17a2b8' },
-            { label: 'CPV %',          valor: pct(cpv,rl),    meta: mg.cpv,        unidade: '%',  positivo: false, cor: '#e67e22' },
+            { label: 'Receita Bruta',  valor: rb,             meta: null,          unidade: 'R$', positivo: true,  cor: '#17a2b8', grupo: 'RECEITA_BRUTA' },
+            { label: 'CPV %',          valor: pct(cpv,rl),    meta: mg.cpv,        unidade: '%',  positivo: false, cor: '#e67e22', grupo: 'CPV' },
             { label: 'Lucro Bruto %',  valor: pct(lb,rl),     meta: mg.lucroBruto, unidade: '%',  positivo: true,  cor: '#27ae60' },
-            { label: 'Desp. Adm %',    valor: pct(da,rl),     meta: mg.despAdm,    unidade: '%',  positivo: false, cor: '#8e44ad' },
+            { label: 'Desp. Adm %',    valor: pct(da,rl),     meta: mg.despAdm,    unidade: '%',  positivo: false, cor: '#8e44ad', grupo: 'DESP_ADMIN' },
             { label: 'EBITDA %',       valor: pct(ebt,rl),    meta: mg.ebitda,     unidade: '%',  positivo: true,  cor: '#2980b9' },
             { label: 'Lucro Líq. %',   valor: pct(res,rl),    meta: mg.lucroLiq,   unidade: '%',  positivo: true,  cor: '#FF7A42' },
         ];
@@ -6196,9 +6200,12 @@
                 // Explica por que os percentuais aparecem vazios, em vez de deixar o
                 // usuário achar que o sistema "não trouxe nada".
                 gavelAviso.style.display = '';
-                gavelAviso.textContent = '📌 Período filtrado: ' + periodoTxt + '. '
+                gavelAviso.innerHTML = '📌 Período filtrado: <b>' + periodoTxt + '</b>. '
                     + (rb > 0
-                        ? 'A Receita Líquida está zerada (as deduções anulam a receita), então não há base para calcular os percentuais.'
+                        ? 'Receita Bruta <b>' + fmtBRL(rb) + '</b> − Impostos/Devoluções <b>' + fmtBRL(ded)
+                          + '</b> = Receita Líquida <b>' + fmtValSig(rl) + '</b>. Como a base é zero ou negativa, '
+                          + 'não há percentual a calcular. Clique em <b>Receita Bruta</b> nos indicadores para ver os lançamentos '
+                          + 'e confira se alguma categoria de despesa está classificada no grupo “Impostos e Devoluções”.'
                         : 'Não há receita lançada com data de competência neste período, então não há base para calcular os percentuais. Verifique o filtro de mês/ano ou a data de competência dos lançamentos.');
             } else {
                 gavelAviso.style.display = 'none';
@@ -6273,11 +6280,12 @@
                     box-shadow:0 2px 12px rgba(0,0,0,0.08);
                     border-top:4px solid ${cor};
                     transition:transform 0.15s,box-shadow 0.15s;
-                    cursor:default;
+                    cursor:${m.grupo ? 'pointer' : 'default'};
                     overflow:hidden;
-                " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.13)'"
+                " ${m.grupo ? `onclick="abrirLancamentosDashGrupo('${m.grupo}')" title="Ver os lançamentos que formam este número"` : ''}
+                   onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.13)'"
                    onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'">
-                <div style="font-size:10.5px;font-weight:700;color:#555;margin-bottom:2px;text-transform:uppercase;letter-spacing:0.4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.label}</div>
+                <div style="font-size:10.5px;font-weight:700;color:#555;margin-bottom:2px;text-transform:uppercase;letter-spacing:0.4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.label}${m.grupo ? ' <span style="color:#bbb;">🔍</span>' : ''}</div>
                 <svg viewBox="0 0 ${VW} ${VH}" style="display:block;margin:0 auto;overflow:visible;width:100%;max-width:170px;">
                     <!-- Trilha de fundo -->
                     <path d="${trackD}" fill="none" stroke="#f0f0f0" stroke-width="${SW}" stroke-linecap="round"/>
@@ -6298,6 +6306,46 @@
                     : '<div style="min-height:20px;"></div>'}
             </div>`;
         }).join('');
+    }
+
+    // Clique num indicador do dashboard → mostra os lançamentos que formam o número.
+    // Usa os mesmos critérios do cálculo: data de COMPETÊNCIA, período filtrado no topo
+    // e TODOS os status (pendentes também entram, porque a DRE é por competência).
+    function abrirLancamentosDashGrupo(grupoId) {
+        const anoF = window._dashAnoF || '';
+        const mesF = window._dashMesF || '';
+        const rec  = _dashContasRec || [];
+        const pag  = _dashContasPag || [];
+        const mNomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                        'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+        const noPeriodo = (data) => {
+            const comp = String(data || '');
+            if (comp.length < 7) return false;
+            if (anoF && !comp.startsWith(anoF)) return false;
+            if (mesF && comp.substring(5, 7) !== String(mesF).padStart(2, '0')) return false;
+            return true;
+        };
+
+        const recLista = rec.filter(c => noPeriodo(c.data_competencia) && _grupoDeConta(c, 'receber') === grupoId);
+        const pagLista = pag.filter(c => noPeriodo(c.data_competencia) && _grupoDeConta(c, 'pagar')   === grupoId);
+
+        let rows = _rowsDeContas(recLista, 'receber').concat(_rowsDeContas(pagLista, 'pagar'));
+
+        // Lançamentos manuais da DRE do mesmo grupo
+        (dadosCache.dreLancs || []).filter(l => noPeriodo(l.competencia) && (grupoEstruturalDRE(l.grupo) || l.grupo) === grupoId).forEach(l => {
+            rows.push({
+                _ord: l.competencia, data: (l.competencia || '').substring(0, 7),
+                descricao: l.descricao || '-', categoria: l.categoria || '-',
+                parte: l.parte || '-', empresa: '-', nf: '-',
+                valor: parseFloat(l.valor || 0), status: 'DRE', statusClass: 'pago'
+            });
+        });
+
+        const periodo = (mesF ? mNomes[parseInt(mesF, 10) - 1] + '/' : '') + (anoF || 'todos os anos');
+        const label = (_GRUPOS_DRE_LABELS[grupoId] || grupoId);
+        abrirModalLancamentosGen('Indicadores DRE — ' + label + ' · ' + periodo, rows,
+            { parteLabel: 'Cliente / Fornecedor' });
     }
 
     // ── DRE RESUMIDA NO DASHBOARD ─────────────────────────────────────────────
