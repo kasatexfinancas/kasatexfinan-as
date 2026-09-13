@@ -15,7 +15,41 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+    <!-- ATENÇÃO: na versão 0.18.5 do SheetJS o arquivo "xlsx.min.js" NÃO existe no cdnjs
+         (só xlsx.full.min.js / xlsx.core.min.js / xlsx.mini.min.js). O src antigo retornava 404,
+         window.XLSX ficava indefinido e TODA exportação para Excel (DRE, Contas a Pagar, DFC) falhava. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Fallback: se o CDN principal falhar, tenta outros espelhos antes de desistir.
+        (function () {
+            var espelhos = [
+                'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+                'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
+                'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js'
+            ];
+            function tentar(i) {
+                if (window.XLSX || i >= espelhos.length) return;
+                var s = document.createElement('script');
+                s.src = espelhos[i];
+                s.onload  = function () { /* carregou */ };
+                s.onerror = function () { tentar(i + 1); };
+                document.head.appendChild(s);
+            }
+            if (!window.XLSX) tentar(0);
+            // Garante que o XLSX esteja disponível antes de exportar (aguarda o fallback carregar).
+            window.garantirXLSX = function () {
+                return new Promise(function (resolve, reject) {
+                    if (window.XLSX) return resolve(window.XLSX);
+                    tentar(0);
+                    var tentativas = 0;
+                    var timer = setInterval(function () {
+                        if (window.XLSX) { clearInterval(timer); resolve(window.XLSX); }
+                        else if (++tentativas > 60) { clearInterval(timer); reject(new Error('XLSX')); }
+                    }, 100);
+                });
+            };
+        })();
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script>
         if (window.pdfjsLib) {
@@ -2396,21 +2430,21 @@
                             <tr style="font-weight: 600; background-color: #f0f0f0;">
                                 <td colspan="3">ENTRADAS DE CAIXA</td>
                             </tr>
-                            <tr>
-                                <td>Contas a Receber</td>
+                            <tr onclick="abrirLancamentosDFC('ent','',0)" title="Ver lançamentos" style="cursor:pointer;">
+                                <td>Contas a Receber <span style="color:#bbb;font-size:11px;">🔍</span></td>
                                 <td id="dfcEntradaReceber">R$ 0,00</td>
                                 <td id="dfcPctReceber">0%</td>
                             </tr>
                             <tr style="font-weight: 600; background-color: #f0f0f0;">
                                 <td colspan="3">SAÍDAS DE CAIXA</td>
                             </tr>
-                            <tr>
-                                <td>Contas a Pagar</td>
+                            <tr onclick="abrirLancamentosDFC('sai','',0)" title="Ver lançamentos" style="cursor:pointer;">
+                                <td>Contas a Pagar <span style="color:#bbb;font-size:11px;">🔍</span></td>
                                 <td id="dfcSaidaPagar">R$ 0,00</td>
                                 <td id="dfcPctPagar">0%</td>
                             </tr>
-                            <tr style="font-weight: 600; background-color: var(--cor-primaria); color: white;">
-                                <td>FLUXO LÍQUIDO</td>
+                            <tr onclick="abrirLancamentosDFC('liq','',0)" title="Ver lançamentos" style="font-weight: 600; background-color: var(--cor-primaria); color: white; cursor:pointer;">
+                                <td>FLUXO LÍQUIDO 🔍</td>
                                 <td id="dfcFluxoLiquido">R$ 0,00</td>
                                 <td id="dfcPctFluxo">0%</td>
                             </tr>
@@ -2554,6 +2588,13 @@
                             <option value="07">Julho</option><option value="08">Agosto</option>
                             <option value="09">Setembro</option><option value="10">Outubro</option>
                             <option value="11">Novembro</option><option value="12">Dezembro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Empréstimos por</label>
+                        <select id="modoEmprestimoDRE" onchange="carregarDRE()" title="Escolhe qual data é usada para posicionar as parcelas de Empréstimos/Financiamentos nos meses da DRE">
+                            <option value="competencia">Competência</option>
+                            <option value="vencimento">Vencimento</option>
                         </select>
                     </div>
                     <div class="form-group" style="display:flex;gap:8px;align-items:flex-end;padding-bottom:2px;">
@@ -3596,7 +3637,7 @@
     const carregarEmpresasDebounced = debounce(() => carregarEmpresas(), 350);
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroGrupoDREPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "filtroAnoAnaliseCat", "filtroMesAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroGrupoDREPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "modoEmprestimoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "filtroAnoAnaliseCat", "filtroMesAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -3630,22 +3671,23 @@
         });
     }
 
-    // Quando o usuário ainda NÃO tem preferência salva num filtro de Ano/Mês,
-    // aplica o padrão = ano e mês atuais (ex.: agosto/2026). Se ele já pesquisou
-    // algo (inclusive "Todos" = valor vazio salvo), a escolha dele é respeitada.
-    function _aplicarPadraoAnoMes() {
+    // Ao abrir o sistema, TODOS os filtros de Ano e Mês (em todas as telas) já vêm
+    // preenchidos com o ano e o mês atuais. Durante a sessão o usuário pode trocar
+    // à vontade — a troca continua sendo salva e respeitada enquanto ele navega
+    // entre as telas; o padrão da data atual é reaplicado no próximo acesso.
+    // Análise de Categorias é a única exceção no Mês: ela mantém a visão de 12 meses.
+    function _aplicarPadraoAnoMes(forcar) {
         const anoAtual = String(new Date().getFullYear());
         const mesAtual = String(new Date().getMonth() + 1).padStart(2, '0');
         _FILTER_IDS.forEach(id => {
             const el = document.getElementById(id);
             if (!el || el.tagName !== 'SELECT') return;
             const saved = localStorage.getItem(_filtroKey(id));
-            if (saved !== null) return; // já existe preferência do usuário
+            if (!forcar && saved !== null) return; // já existe preferência do usuário
             const temOpt = val => Array.from(el.options).some(o => o.value === val);
             if (/Ano/.test(id) && temOpt(anoAtual)) {
                 el.value = anoAtual;
             } else if (/Mes/.test(id) && !/AnaliseCat/.test(id) && temOpt(mesAtual)) {
-                // Análise de Categorias mantém a visão de 12 meses (não força o mês)
                 el.value = mesAtual;
             }
         });
@@ -4002,7 +4044,8 @@
         atualizarLegendaMetas();
         restaurarFiltros();
         _bindFiltrosSave();
-        _aplicarPadraoAnoMes();
+        _aplicarPadraoAnoMes(true);   // ao abrir o sistema: sempre mês/ano atuais
+        salvarFiltros();              // mantém a escolha durante a navegação da sessão
         aplicarColunasVisiveisPagar();
         _reconstruirGruposDRE();
         await carregarCategorias();
@@ -7249,6 +7292,9 @@
         });
     }
 
+    // opts.liquido = true → a célula de origem é um SALDO (entradas − saídas).
+    // Nesse caso as saídas chegam com valor negativo, o total do modal é o líquido
+    // (bate exatamente com o número clicado) e o resumo abre entradas, saídas e saldo.
     function abrirModalLancamentosGen(titulo, rows, opts) {
         opts = opts || {};
         const tit = document.getElementById('tituloLancamentosGen');
@@ -7258,10 +7304,23 @@
         rows = (rows || []).slice().sort(function(a,b){ return a._ord < b._ord ? 1 : (a._ord > b._ord ? -1 : 0); });
         const total = rows.reduce(function(s,r){ return s + r.valor; }, 0);
         const resumo = document.getElementById('resumoLancamentosGen');
-        if (resumo) resumo.innerHTML = '<b>' + rows.length + '</b> lançamento(s) — Total: <b>' + fmtValFull(total) + '</b>';
+        if (resumo) {
+            if (opts.liquido) {
+                const entradas = rows.filter(function(r){ return r.valor >= 0; }).reduce(function(s,r){ return s + r.valor; }, 0);
+                const saidas   = rows.filter(function(r){ return r.valor <  0; }).reduce(function(s,r){ return s + Math.abs(r.valor); }, 0);
+                const corSaldo = total >= 0 ? '#28a745' : '#dc3545';
+                resumo.innerHTML = '<b>' + rows.length + '</b> lançamento(s) — '
+                    + 'Entradas: <b style="color:#28a745;">' + fmtValFull(entradas) + '</b> · '
+                    + 'Saídas: <b style="color:#dc3545;">' + fmtValFull(saidas) + '</b> · '
+                    + 'Saldo: <b style="color:' + corSaldo + ';">' + fmtValFull(total) + '</b>';
+            } else {
+                resumo.innerHTML = '<b>' + rows.length + '</b> lançamento(s) — Total: <b>' + fmtValFull(total) + '</b>';
+            }
+        }
         const tbody = document.querySelector('#tabelaLancamentosGen tbody');
         if (tbody) {
             tbody.innerHTML = rows.length ? rows.map(function(r){
+                const corVal = r.valor < 0 ? 'color:#dc3545;' : (opts.liquido ? 'color:#28a745;' : '');
                 return '<tr>' +
                     '<td style="white-space:nowrap;">' + r.data + '</td>' +
                     '<td>' + r.descricao + '</td>' +
@@ -7269,12 +7328,19 @@
                     '<td>' + r.parte + '</td>' +
                     '<td>' + r.empresa + '</td>' +
                     '<td style="font-weight:600;">' + r.nf + '</td>' +
-                    '<td style="text-align:right;white-space:nowrap;font-weight:600;">' + fmtValFull(r.valor) + '</td>' +
+                    '<td style="text-align:right;white-space:nowrap;font-weight:600;' + corVal + '">' + fmtValFull(r.valor) + '</td>' +
                     '<td><span class="status-badge status-' + r.statusClass + '">' + r.status + '</span></td>' +
                 '</tr>';
             }).join('') : '<tr><td colspan="8" style="text-align:center;color:#999;padding:20px;">Nenhum lançamento encontrado.</td></tr>';
         }
         document.getElementById('modalLancamentosGen').classList.add('active');
+    }
+
+    // Inverte o sinal das linhas de saída, para que o total do modal seja o líquido.
+    function _rowsComoSaida(rows) {
+        return (rows || []).map(function(r){
+            return Object.assign({}, r, { valor: -Math.abs(r.valor) });
+        });
     }
 
     function criarGraficoCatMensalLinha(dados, catId, anoSel, abrirSubcat) {
@@ -9321,20 +9387,27 @@
                 + '</tr>';
         }
 
-        function addCatRow(nome, data, cor, bgEven, bgOdd, idx) {
+        function addCatRow(nome, data, cor, bgEven, bgOdd, idx, tipoDrill) {
             var bg = idx%2===0 ? bgEven : bgOdd;
+            var nomeEsc = String(nome).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            var clk = function (mes) {
+                return tipoDrill
+                    ? ' onclick="abrirLancamentosDFC(\'' + tipoDrill + '\',\'' + nomeEsc + '\',' + mes + ')" title="Ver lançamentos"'
+                    : '';
+            };
+            var curs = tipoDrill ? 'cursor:pointer;' : '';
             var cells = visao === 'mensal'
-                ? data.meses.map(function(v){
-                    return '<td style="text-align:right;padding:5px 8px;color:' + (v>0?cor:'#ccc') + ';font-weight:' + (v>0?'600':'400') + ';">'
+                ? data.meses.map(function(v, i){
+                    return '<td style="text-align:right;padding:5px 8px;' + curs + 'color:' + (v>0?cor:'#ccc') + ';font-weight:' + (v>0?'600':'400') + ';"' + clk(i+1) + '>'
                         + (v>0 ? fmtValFull(v) : '—') + '</td>';
                   }).join('')
-                : '<td style="text-align:right;padding:5px 8px;color:' + (data.total>0?cor:'#ccc') + ';font-weight:600;">'
+                : '<td style="text-align:right;padding:5px 8px;' + curs + 'color:' + (data.total>0?cor:'#ccc') + ';font-weight:600;"' + clk(0) + '>'
                     + (data.total>0 ? fmtValFull(data.total) : '—') + '</td>';
             tbody.innerHTML += '<tr style="background:' + bg + ';">'
-                + '<td style="padding:6px 10px 6px 22px;font-size:12px;font-weight:500;color:#333;position:sticky;left:0;background:' + bg + ';">'
-                + nome + '</td>'
+                + '<td style="padding:6px 10px 6px 22px;font-size:12px;font-weight:500;color:#333;position:sticky;left:0;' + curs + 'background:' + bg + ';"' + clk(0) + '>'
+                + nome + (tipoDrill ? ' <span style="color:#bbb;font-size:11px;">🔍</span>' : '') + '</td>'
                 + cells
-                + '<td style="text-align:right;padding:5px 10px;font-weight:700;color:' + cor + ';">'
+                + '<td style="text-align:right;padding:5px 10px;' + curs + 'font-weight:700;color:' + cor + ';"' + clk(0) + '>'
                 + fmtValFull(data.total) + '</td>'
                 + '</tr>';
         }
@@ -9367,7 +9440,7 @@
         addSectionHeader('(+) ENTRADAS DE CAIXA', '#28a745', '#f0fff4');
         var entKeys = Object.keys(entradasCat).sort(function(a,b){ return entradasCat[b].total - entradasCat[a].total; });
         entKeys.forEach(function(nome, idx) {
-            addCatRow(nome, entradasCat[nome], '#28a745', 'white', '#f8fff8', idx);
+            addCatRow(nome, entradasCat[nome], '#28a745', 'white', '#f8fff8', idx, 'catEnt');
         });
         addSubtotal('(=) TOTAL ENTRADAS', totalEntradas, '#28a745', '#e8f8ee', 'ent');
 
@@ -9375,24 +9448,28 @@
         addSectionHeader('(-) SAIDAS DE CAIXA', '#dc3545', '#fff5f5');
         var saiKeys = Object.keys(saidasCat).sort(function(a,b){ return saidasCat[b].total - saidasCat[a].total; });
         saiKeys.forEach(function(pref, idx) {
-            addCatRow(pref, saidasCat[pref], '#dc3545', 'white', '#fff8f8', idx);
+            addCatRow(pref, saidasCat[pref], '#dc3545', 'white', '#fff8f8', idx, 'catSai');
             // Subcategorias abertas abaixo do prefixo
             var subs = saidasCat[pref].subs || {};
             var subKeys = Object.keys(subs).sort(function(a,b){ return subs[b].total - subs[a].total; });
             subKeys.forEach(function(subNome) {
                 var d = subs[subNome];
+                var subEsc = String(subNome).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                var clkSub = function (mes) {
+                    return ' onclick="abrirLancamentosDFC(\'catSai\',\'' + subEsc + '\',' + mes + ')" title="Ver lançamentos"';
+                };
                 var cells = visao === 'mensal'
-                    ? d.meses.map(function(v){
-                        return '<td style="text-align:right;padding:4px 8px;font-size:11px;color:' + (v>0?'#dc3545':'#ccc') + ';">'
+                    ? d.meses.map(function(v, i){
+                        return '<td style="text-align:right;padding:4px 8px;cursor:pointer;font-size:11px;color:' + (v>0?'#dc3545':'#ccc') + ';"' + clkSub(i+1) + '>'
                             + (v>0 ? fmtValFull(v) : '—') + '</td>';
                       }).join('')
-                    : '<td style="text-align:right;padding:4px 8px;font-size:11px;color:' + (d.total>0?'#dc3545':'#ccc') + ';">'
+                    : '<td style="text-align:right;padding:4px 8px;cursor:pointer;font-size:11px;color:' + (d.total>0?'#dc3545':'#ccc') + ';"' + clkSub(0) + '>'
                         + (d.total>0 ? fmtValFull(d.total) : '—') + '</td>';
                 tbody.innerHTML += '<tr style="background:#fffbfb;">'
-                    + '<td style="padding:4px 10px 4px 30px;font-size:11px;color:#999;position:sticky;left:0;background:#fffbfb;">'
+                    + '<td style="padding:4px 10px 4px 30px;font-size:11px;color:#999;position:sticky;left:0;cursor:pointer;background:#fffbfb;"' + clkSub(0) + '>'
                     + '<span style="color:#ddd;margin-right:5px;">↳</span>' + subNome + '</td>'
                     + cells
-                    + '<td style="text-align:right;padding:4px 10px;font-size:11px;font-weight:600;color:#dc3545;">'
+                    + '<td style="text-align:right;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:600;color:#dc3545;"' + clkSub(0) + '>'
                     + fmtValFull(d.total) + '</td>'
                     + '</tr>';
             });
@@ -9495,8 +9572,11 @@
         doc.save('DFC_Categorias_' + (anoSel || 'todos') + '.pdf');
     }
 
-    function exportarDFCCatXLSX() {
-        if (!window.XLSX) { alert('Biblioteca XLSX nao carregada.'); return; }
+    async function exportarDFCCatXLSX() {
+        try {
+            if (!window.XLSX && typeof garantirXLSX === 'function') await garantirXLSX();
+        } catch (e) { /* segue e cai no aviso abaixo */ }
+        if (!window.XLSX) { alert('Biblioteca de Excel (XLSX) não carregada. Recarregue a página e tente novamente.'); return; }
         var recebidos = window._dfcRecebidos || [];
         var pagos     = window._dfcPagos     || [];
         var anoSel    = window._dfcAnoSel    || 'todos';
@@ -9571,11 +9651,14 @@
             const liqCor = liq >= 0 ? '#28a745' : '#dc3545';
             const acuCor = acumulado >= 0 ? '#28a745' : '#dc3545';
             const hasData = ent > 0 || sai > 0;
+            const mesNum = idx + 1;
+            // Clique em qualquer valor abre a lista de lançamentos daquele mês
+            const clk = t => ' onclick="abrirLancamentosDFC(\'' + t + '\',\'\',' + mesNum + ')" title="Ver lançamentos" style="cursor:pointer;';
             tbody.innerHTML += `<tr style="${hasData ? '' : 'color:#ccc;'}">
-                <td style="font-weight:${hasData?'600':'400'};">${nome}</td>
-                <td style="color:${hasData?'#28a745':'#ccc'};">${ent > 0 ? fmtBRL(ent) : '-'}</td>
-                <td style="color:${hasData?'#dc3545':'#ccc'};">${sai > 0 ? fmtBRL(sai) : '-'}</td>
-                <td style="color:${hasData?liqCor:'#ccc'};font-weight:${hasData?'600':'400'};">${hasData ? fmtValSig(liq) : '-'}</td>
+                <td${clk('liq')}font-weight:${hasData?'600':'400'};">${nome} <span style="color:#bbb;font-size:11px;">🔍</span></td>
+                <td${clk('ent')}color:${hasData?'#28a745':'#ccc'};">${ent > 0 ? fmtBRL(ent) : '-'}</td>
+                <td${clk('sai')}color:${hasData?'#dc3545':'#ccc'};">${sai > 0 ? fmtBRL(sai) : '-'}</td>
+                <td${clk('liq')}color:${hasData?liqCor:'#ccc'};font-weight:${hasData?'600':'400'};">${hasData ? fmtValSig(liq) : '-'}</td>
                 <td style="color:${acuCor};font-weight:600;">${fmtValSig(acumulado)}</td>
             </tr>`;
         });
@@ -9584,6 +9667,62 @@
         document.getElementById('dfcMensalTotalSai').textContent = fmtBRL(totSai);
         document.getElementById('dfcMensalTotalLiq').textContent = fmtValSig(totLiq);
         document.getElementById('dfcMensalTotalLiq').style.color = totLiq >= 0 ? '#28a745' : '#dc3545';
+    }
+
+    // ── DRILL-DOWN DA DFC ────────────────────────────────────────────────────
+    // Clique em qualquer valor da DFC abre a lista de lançamentos que o compõem.
+    // A DFC trabalha com fluxo de caixa REAL: entradas pela data_recebimento e
+    // saídas pela data_pagamento (somente status recebido/pago).
+    //   tipo: 'ent' | 'sai' | 'liq' | 'catEnt' | 'catSai'
+    //   mes : 1..12 para um mês específico, 0 para todo o período filtrado
+    function abrirLancamentosDFC(tipo, nomeCat, mes) {
+        const ano = window._dfcAnoSel || '';
+        const recebidos = window._dfcRecebidos || [];
+        const pagos     = window._dfcPagos     || [];
+        const mNomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                        'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+        const m = parseInt(mes, 10) || 0;
+
+        const noPeriodo = (data) => {
+            if (!data) return false;
+            if (ano && !data.startsWith(ano)) return false;
+            return m === 0 || parseInt(data.substring(5, 7), 10) === m;
+        };
+        const nomeCategoria = (c, padrao) => {
+            const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
+            return cat ? cat.nome : padrao;
+        };
+
+        const recPeriodo = recebidos.filter(c => noPeriodo(c.data_recebimento));
+        const pagPeriodo = pagos.filter(c => noPeriodo(c.data_pagamento));
+
+        let rows = [], titulo = '', liquido = false;
+        const periodo = m === 0 ? (ano || 'Todos os anos') : (mNomes[m - 1] + (ano ? '/' + ano : ''));
+
+        if (tipo === 'ent') {
+            rows = _rowsDeContas(recPeriodo, 'receber');
+            titulo = 'DFC — Entradas de Caixa';
+        } else if (tipo === 'sai') {
+            rows = _rowsDeContas(pagPeriodo, 'pagar');
+            titulo = 'DFC — Saídas de Caixa';
+        } else if (tipo === 'catEnt') {
+            rows = _rowsDeContas(recPeriodo.filter(c => nomeCategoria(c, 'Receitas de Clientes') === nomeCat), 'receber');
+            titulo = 'DFC — Entradas: ' + nomeCat;
+        } else if (tipo === 'catSai') {
+            // Aceita tanto a categoria completa quanto o prefixo agrupador da tabela
+            rows = _rowsDeContas(pagPeriodo.filter(c => {
+                const nome = nomeCategoria(c, 'Sem Categoria');
+                return nome === nomeCat || getCatPrefixo(nome) === nomeCat;
+            }), 'pagar');
+            titulo = 'DFC — Saídas: ' + nomeCat;
+        } else { // liq
+            rows = _rowsDeContas(recPeriodo, 'receber')
+                   .concat(_rowsComoSaida(_rowsDeContas(pagPeriodo, 'pagar')));
+            titulo = 'DFC — Fluxo Líquido';
+            liquido = true;
+        }
+
+        abrirModalLancamentosGen(titulo + ' · ' + periodo, rows, { parteLabel: 'Cliente / Fornecedor', liquido: liquido });
     }
 
     function criarGraficoDFC(contasReceber, contasPagar, anoSel) {
@@ -9754,6 +9893,11 @@
         document.getElementById('fcpCardPendPag').textContent       = fmtBRL(totPendPag);
         document.getElementById('fcpCardPendPagCount').textContent  = pagAno.length + ' conta' + (pagAno.length !== 1 ? 's' : '') + ' (pendentes ' + anoSel + ')';
 
+        // Guarda os dados usados na tabela para o drill-down (clique nos valores)
+        window._fcpRecAno = recAno;
+        window._fcpPagAno = pagAno;
+        window._fcpAnoSel = anoSel;
+
         // Título
         document.getElementById('fcpTituloTabela').textContent = '📅 Fluxo de Caixa Projetado — Jan a Dez ' + anoSel;
 
@@ -9806,15 +9950,24 @@
         tbody.innerHTML = '';
 
         // ── Função auxiliar para uma linha ──
+        // opts.drill = { tipo: 'rec'|'pag'|'ent'|'sai'|'saldo', cat: 'nome da categoria' }
+        // Quando informado, cada célula vira clicável e abre a lista de lançamentos
+        // daquele mês (ou do ano inteiro, ao clicar no rótulo ou na coluna Total).
         function linhaTabela(label, vals, opts = {}) {
-            const { bg = '', fc = '', bold = false, indent = false } = opts;
+            const { bg = '', fc = '', bold = false, indent = false, drill = null } = opts;
             const total = vals.reduce((s,v) => s + v, 0);
             const rowStyle = (bg ? 'background:' + bg + ';' : '') + (fc ? 'color:' + fc + ';' : '') + (bold ? 'font-weight:700;' : '');
             const lbl = (indent ? '&nbsp;&nbsp;&nbsp;↳ ' : '') + label;
+            const catEsc = drill && drill.cat ? String(drill.cat).replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
+            const clickCel = m => drill
+                ? ' onclick="abrirLancamentosFCP(\'' + drill.tipo + '\',\'' + catEsc + '\',' + m + ')" title="Ver lançamentos"'
+                : '';
+            const curs = drill ? 'cursor:pointer;' : '';
+            const lupa = drill ? ' <span style="color:#bbb;font-size:11px;">🔍</span>' : '';
             return '<tr style="' + rowStyle + '">' +
-                '<td style="padding:5px 8px;' + (bold ? 'font-weight:700;' : '') + (indent ? 'color:#555;' : '') + '">' + lbl + '</td>' +
-                vals.map(v => '<td style="text-align:right;padding:5px 8px;' + (fc ? '' : cor(v)) + '">' + fmtV(v) + '</td>').join('') +
-                '<td style="text-align:right;padding:5px 8px;font-weight:700;' + (fc ? '' : cor(total)) + '">' + fmtV(total) + '</td>' +
+                '<td style="padding:5px 8px;' + curs + (bold ? 'font-weight:700;' : '') + (indent ? 'color:#555;' : '') + '"' + clickCel(0) + '>' + lbl + lupa + '</td>' +
+                vals.map((v, m) => '<td style="text-align:right;padding:5px 8px;' + curs + (fc ? '' : cor(v)) + '"' + clickCel(m + 1) + '>' + fmtV(v) + '</td>').join('') +
+                '<td style="text-align:right;padding:5px 8px;font-weight:700;' + curs + (fc ? '' : cor(total)) + '"' + clickCel(0) + '>' + fmtV(total) + '</td>' +
                 '</tr>';
         }
 
@@ -9828,10 +9981,10 @@
             tbody.innerHTML += '<tr><td colspan="' + (13+1) + '" style="padding:6px 10px;color:#aaa;font-size:12px;">Nenhum recebimento no período</td></tr>';
         } else {
             Object.entries(catRec).sort((a,b) => b[1].reduce((s,v)=>s+v,0) - a[1].reduce((s,v)=>s+v,0)).forEach(([cat, arr]) => {
-                tbody.innerHTML += linhaTabela(cat, arr, { indent: true });
+                tbody.innerHTML += linhaTabela(cat, arr, { indent: true, drill: { tipo: 'rec', cat: cat } });
             });
         }
-        tbody.innerHTML += linhaTabela('= Total Entradas', totEntMes, { bg: '#d4edda', fc: '#155724', bold: true });
+        tbody.innerHTML += linhaTabela('= Total Entradas', totEntMes, { bg: '#d4edda', fc: '#155724', bold: true, drill: { tipo: 'ent' } });
 
         // ── Seção SAÍDAS ──
         tbody.innerHTML += linhaSeparador('SAÍDAS DE CAIXA');
@@ -9840,14 +9993,14 @@
         } else {
             Object.entries(catPag).sort((a,b) => b[1].reduce((s,v)=>s+v,0) - a[1].reduce((s,v)=>s+v,0)).forEach(([cat, arr]) => {
                 const negArr = arr.map(v => -v);
-                tbody.innerHTML += linhaTabela(cat, negArr, { indent: true });
+                tbody.innerHTML += linhaTabela(cat, negArr, { indent: true, drill: { tipo: 'pag', cat: cat } });
             });
         }
-        tbody.innerHTML += linhaTabela('= Total Saídas', totSaiMes.map(v => -v), { bg: '#f8d7da', fc: '#721c24', bold: true });
+        tbody.innerHTML += linhaTabela('= Total Saídas', totSaiMes.map(v => -v), { bg: '#f8d7da', fc: '#721c24', bold: true, drill: { tipo: 'sai' } });
 
         // ── Saldo mensal e acumulado ──
         tbody.innerHTML += linhaSeparador('SALDO');
-        tbody.innerHTML += linhaTabela('Saldo Mensal (Entradas - Saídas)', saldoMes, { bg: '#f5f5f5', bold: true });
+        tbody.innerHTML += linhaTabela('Saldo Mensal (Entradas - Saídas)', saldoMes, { bg: '#f5f5f5', bold: true, drill: { tipo: 'saldo' } });
         tbody.innerHTML += linhaTabela('Saldo Acumulado', acumArr, { bg: 'var(--cor-primaria)', fc: 'white', bold: true });
 
         // Mostrar card
@@ -9881,6 +10034,61 @@
                 }
             });
         }
+    }
+
+    // ── DRILL-DOWN DO FLUXO DE CAIXA PROJETADO ───────────────────────────────
+    // Clique em qualquer valor da tabela abre a lista de lançamentos que compõem
+    // aquele número, no mesmo modal usado pela DRE.
+    //   tipo: 'rec' (categoria de entrada) | 'pag' (categoria de saída)
+    //         'ent' (total de entradas)    | 'sai' (total de saídas)
+    //         'saldo' (entradas + saídas do período)
+    //   mes : 1..12 para um mês específico, 0 para o ano inteiro
+    function abrirLancamentosFCP(tipo, nomeCat, mes) {
+        const ano = window._fcpAnoSel || String(new Date().getFullYear());
+        const rec = window._fcpRecAno || [];
+        const pag = window._fcpPagAno || [];
+        const mNomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                        'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+        const m = parseInt(mes, 10) || 0;
+
+        // O FCP posiciona os lançamentos pendentes pela data de vencimento.
+        const noPeriodo = c => {
+            const d = c.data_vencimento || '';
+            if (!d.startsWith(ano)) return false;
+            return m === 0 || parseInt(d.substring(5, 7), 10) === m;
+        };
+        const nomeCategoria = (c, padrao) => {
+            const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
+            return cat ? cat.nome : padrao;
+        };
+
+        let rows = [];
+        let titulo = '';
+        let liquido = false;
+        const periodo = (m === 0 ? ano : mNomes[m - 1] + '/' + ano);
+
+        if (tipo === 'rec') {
+            const lista = rec.filter(c => noPeriodo(c) && nomeCategoria(c, 'Receita') === nomeCat);
+            rows = _rowsDeContas(lista, 'receber');
+            titulo = 'Fluxo Projetado — Entradas: ' + nomeCat;
+        } else if (tipo === 'pag') {
+            const lista = pag.filter(c => noPeriodo(c) && nomeCategoria(c, 'Pagamento') === nomeCat);
+            rows = _rowsDeContas(lista, 'pagar');
+            titulo = 'Fluxo Projetado — Saídas: ' + nomeCat;
+        } else if (tipo === 'ent') {
+            rows = _rowsDeContas(rec.filter(noPeriodo), 'receber');
+            titulo = 'Fluxo Projetado — Total de Entradas';
+        } else if (tipo === 'sai') {
+            rows = _rowsDeContas(pag.filter(noPeriodo), 'pagar');
+            titulo = 'Fluxo Projetado — Total de Saídas';
+        } else { // saldo
+            rows = _rowsDeContas(rec.filter(noPeriodo), 'receber')
+                   .concat(_rowsComoSaida(_rowsDeContas(pag.filter(noPeriodo), 'pagar')));
+            titulo = 'Fluxo Projetado — Saldo do período';
+            liquido = true;
+        }
+
+        abrirModalLancamentosGen(titulo + ' · ' + periodo, rows, { parteLabel: 'Cliente / Fornecedor', liquido: liquido });
     }
 
     function gerarPDFFCP() {
@@ -9918,6 +10126,30 @@
         { id: 'OUTRAS_RECEITAS',    prefixo: '  (+) ',   label: '  (+) Outras Receitas',                sinal:  1 },
         { id: 'OUTRAS_DESPESAS',    prefixo: '  (-) ',   label: '  (-) Outras Despesas',                sinal: -1 },
     ];
+
+    // ── EMPRÉSTIMOS: COMPETÊNCIA x VENCIMENTO ────────────────────────────────
+    // Na DRE, as parcelas de Empréstimos/Financiamentos podem ser vistas de duas formas:
+    //  • Competência (padrão): usa data_competencia, igual ao restante da DRE;
+    //  • Vencimento: usa data_vencimento, para enxergar o desembolso no mês em que a
+    //    parcela realmente vence (visão de caixa das dívidas).
+    // A escolha vale para o grupo estrutural EMPRESTIMO — os demais grupos continuam
+    // sempre por competência.
+    function modoEmprestimoDRE() {
+        const el = document.getElementById('modoEmprestimoDRE');
+        return (el && el.value === 'vencimento') ? 'vencimento' : 'competencia';
+    }
+
+    function rotuloModoEmprestimoDRE() {
+        return modoEmprestimoDRE() === 'vencimento' ? 'vencimento' : 'competência';
+    }
+
+    // Data (YYYY-MM-DD) que deve ser usada para posicionar a conta no mês da DRE.
+    function _dataRefDRE(conta, grupoEstrutural) {
+        if (grupoEstrutural === 'EMPRESTIMO' && modoEmprestimoDRE() === 'vencimento') {
+            return conta.data_vencimento || conta.data_competencia || '';
+        }
+        return conta.data_competencia || '';
+    }
 
     async function carregarDRE() {
         // Buscar lançamentos DRE diretos + contas recebidas/pagas por competência
@@ -9965,11 +10197,17 @@
             contasRec,
             'data_competencia'
         );
-        // Contas pagas/pendentes por competência
-        const pagComp = filtrarComp(
-            contasPag,
-            'data_competencia'
-        );
+        // Contas pagas/pendentes: por competência — exceto o grupo Empréstimos, que segue
+        // o modo escolhido no filtro "Empréstimos por" (competência ou vencimento).
+        const pagComp = contasPag.filter(c => {
+            const g = _grupoDeConta(c, 'pagar');
+            const ref = _dataRefDRE(c, g);
+            if (!ref) return false;
+            const d = ref.substring(0, 7); // YYYY-MM
+            if (anoSel && !d.startsWith(anoSel)) return false;
+            if (mesSel && !d.endsWith('-' + mesSel)) return false;
+            return true;
+        });
 
         // Aviso pendentes
         const pendentes = contasRec.filter(c => c.status === 'pendente').length
@@ -10025,7 +10263,7 @@
             const grupo = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || 'DESP_ADMIN') : 'DESP_ADMIN';
             if (!porGrupo[grupo]) return;
             porGrupo[grupo].total += parseFloat(c.valor || 0);
-            const comp = c.data_competencia || c.data_pagamento || '';
+            const comp = _dataRefDRE(c, grupo) || c.data_pagamento || '';
             porGrupo[grupo].itens.push({
                 descricao: c.descricao, valor: c.valor, competencia: comp.substring(0,7),
                 parte: (dadosCache.fornecedores.find(x => x.id === c.fornecedor_id) || {}).nome || '-',
@@ -10265,11 +10503,15 @@
             dados[g][m] += parseFloat(c.valor || 0);
         });
 
-        // Contas pagas — por competência (inclui pendentes no regime de competência)
-        contasPag.filter(c => c.data_competencia && c.data_competencia.startsWith(ano)).forEach(c => {
-            const m = parseInt(c.data_competencia.substring(5,7)) - 1;
+        // Contas pagas — por competência (inclui pendentes no regime de competência).
+        // Exceção: o grupo Empréstimos segue o modo escolhido em "Empréstimos por"
+        // (competência ou vencimento).
+        contasPag.forEach(c => {
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
             const g = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || 'DESP_ADMIN') : 'DESP_ADMIN';
+            const ref = _dataRefDRE(c, g);
+            if (!ref || !ref.startsWith(ano)) return;
+            const m = parseInt(ref.substring(5,7)) - 1;
             if (m < 0 || m > 11 || !dados[g]) return;
             dados[g][m] += parseFloat(c.valor || 0);
         });
@@ -10350,7 +10592,7 @@
             { label: _labelGrupoDRE('RECEITA_FINANCEIRA', '(+) '), fn: m => calcMes(m).rf, bg: '', grupoId: 'RECEITA_FINANCEIRA' },
             { label: _labelGrupoDRE('DESP_FINANCEIRA', '(-) '),  fn: m => -calcMes(m).df,  bg: '', grupoId: 'DESP_FINANCEIRA' },
             { label: '= Resultado Antes do IR (LAJIR)', fn: m => calcMes(m).lajir, bg: '#f0f0f0', bold: true, pctBase: 'RL' },
-            { label: _labelGrupoDRE('EMPRESTIMO', '(-) '),       fn: m => -calcMes(m).emp, bg: '', grupoId: 'EMPRESTIMO' },
+            { label: _labelGrupoDRE('EMPRESTIMO', '(-) ') + '<span style="font-weight:400;font-size:10px;color:#888;"> (por ' + rotuloModoEmprestimoDRE() + ')</span>', fn: m => -calcMes(m).emp, bg: '', grupoId: 'EMPRESTIMO' },
             { label: _labelGrupoDRE('INVESTIMENTO', '(-) '),     fn: m => -calcMes(m).inv, bg: '', grupoId: 'INVESTIMENTO' },
             { label: _labelGrupoDRE('OUTRAS_RECEITAS', '(+) '),  fn: m => calcMes(m).or,   bg: '', grupoId: 'OUTRAS_RECEITAS' },
             { label: _labelGrupoDRE('OUTRAS_DESPESAS', '(-) '),  fn: m => -calcMes(m).od,  bg: '', grupoId: 'OUTRAS_DESPESAS' },
@@ -10446,7 +10688,8 @@
         const meses = _mesesDrillDRE(mes);
         const noPeriodo = comp => !!comp && comp.startsWith(ano) && meses.includes(parseInt(comp.substring(5, 7), 10));
         const rec = (window._dreContasRecMensal || []).filter(c => noPeriodo(c.data_competencia) && _grupoDeConta(c, 'receber') === grupoId);
-        const pag = (window._dreContasPagMensal || []).filter(c => noPeriodo(c.data_competencia) && _grupoDeConta(c, 'pagar') === grupoId);
+        // Empréstimos podem estar posicionados por vencimento — usa a mesma data da tabela.
+        const pag = (window._dreContasPagMensal || []).filter(c => _grupoDeConta(c, 'pagar') === grupoId && noPeriodo(_dataRefDRE(c, grupoId)));
         let rows = _rowsDeContas(rec, 'receber').concat(_rowsDeContas(pag, 'pagar'));
         // Lançamentos DRE diretos
         (window._dreLancsMensal || []).filter(l => noPeriodo(l.competencia) && grupoEstruturalDRE(l.grupo) === grupoId).forEach(l => {
@@ -10461,9 +10704,9 @@
         const ano = window._dreAnoSelMensal || String(new Date().getFullYear());
         const meses = _mesesDrillDRE(mes);
         const pag = (window._dreContasPagMensal || []).filter(c => {
-            const comp = c.data_competencia;
-            if (!(comp && comp.startsWith(ano) && meses.includes(parseInt(comp.substring(5, 7), 10)))) return false;
             if (_grupoDeConta(c, 'pagar') !== grupoId) return false;
+            const comp = _dataRefDRE(c, grupoId);
+            if (!(comp && comp.startsWith(ano) && meses.includes(parseInt(comp.substring(5, 7), 10)))) return false;
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
             const nome = cat ? cat.nome : 'Sem Categoria';
             // subcategoria pode ser "Categoria / Fornecedor" — casa pelo início
@@ -10642,7 +10885,14 @@
     // Exporta a DRE Mensal (Jan-Dez + DRE Acumulada) para uma planilha Excel (.xlsx)
     // Exporta a tabela de Contas a Pagar para Excel (.xlsx), exatamente como está
     // na tela: mesmos filtros, mesma ordenação e mesmas colunas visíveis.
-    function exportarExcelContasPagar() {
+    async function exportarExcelContasPagar() {
+        try {
+            if (!window.XLSX && typeof garantirXLSX === 'function') await garantirXLSX();
+        } catch (e) { /* segue e cai no aviso abaixo */ }
+        if (!window.XLSX) {
+            alert('Biblioteca de Excel (XLSX) não carregada. Recarregue a página e tente novamente.');
+            return;
+        }
         const tabela = document.getElementById('tabelaPendentesPagar');
         const linhas = tabela ? Array.from(tabela.querySelectorAll('tbody tr')) : [];
         if (!linhas.length) { alert('Não há dados para exportar.'); return; }
@@ -10689,7 +10939,28 @@
         XLSX.writeFile(wb, 'Contas_a_Pagar' + sufixo + '.xlsx');
     }
 
-    function exportarExcelDREMensal() {
+    // Wrapper: espera o SheetJS ficar disponível e mostra o erro real caso algo quebre,
+    // em vez de simplesmente "não acontecer nada" ao clicar em 📊 Excel.
+    async function exportarExcelDREMensal() {
+        try {
+            if (!window.XLSX && typeof garantirXLSX === 'function') await garantirXLSX();
+        } catch (e) {
+            alert('Não foi possível carregar a biblioteca de Excel (SheetJS). Verifique sua conexão com a internet e tente novamente.');
+            return;
+        }
+        if (!window.XLSX) {
+            alert('Biblioteca de Excel (XLSX) não carregada. Recarregue a página e tente novamente.');
+            return;
+        }
+        try {
+            _exportarExcelDREMensal();
+        } catch (e) {
+            console.error('Erro ao exportar a DRE Mensal para Excel:', e);
+            alert('Erro ao gerar o Excel da DRE Mensal: ' + (e && e.message ? e.message : e));
+        }
+    }
+
+    function _exportarExcelDREMensal() {
         const dreLancs   = window._dreLancsMensal || [];
         const contasRec  = window._dreContasRecMensal || [];
         const contasPag  = window._dreContasPagMensal || [];
@@ -10711,10 +10982,12 @@
             if (m < 0 || m > 11 || !dados[g]) return;
             dados[g][m] += parseFloat(c.valor || 0);
         });
-        contasPag.filter(c => c.data_competencia && c.data_competencia.startsWith(ano)).forEach(c => {
-            const m = parseInt(c.data_competencia.substring(5,7)) - 1;
+        contasPag.forEach(c => {
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
             const g = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || 'DESP_ADMIN') : 'DESP_ADMIN';
+            const ref = _dataRefDRE(c, g);
+            if (!ref || !ref.startsWith(ano)) return;
+            const m = parseInt(ref.substring(5,7)) - 1;
             if (m < 0 || m > 11 || !dados[g]) return;
             dados[g][m] += parseFloat(c.valor || 0);
         });
@@ -10751,7 +11024,7 @@
             { label: _labelGrupoDRE('RECEITA_FINANCEIRA', '(+) '), fn: m => calcMes(m).rf },
             { label: _labelGrupoDRE('DESP_FINANCEIRA', '(-) '),   fn: m => -calcMes(m).df },
             { label: '= Resultado Antes do IR (LAJIR)', fn: m => calcMes(m).lajir },
-            { label: _labelGrupoDRE('EMPRESTIMO', '(-) '),        fn: m => -calcMes(m).emp },
+            { label: _labelGrupoDRE('EMPRESTIMO', '(-) ') + ' (por ' + rotuloModoEmprestimoDRE() + ')', fn: m => -calcMes(m).emp },
             { label: _labelGrupoDRE('INVESTIMENTO', '(-) '),      fn: m => -calcMes(m).inv },
             { label: _labelGrupoDRE('OUTRAS_RECEITAS', '(+) '),   fn: m => calcMes(m).or },
             { label: _labelGrupoDRE('OUTRAS_DESPESAS', '(-) '),   fn: m => -calcMes(m).od },
@@ -10806,7 +11079,10 @@
 
                 let costs = (dreLancs || []).filter(l => l.grupo !== 'RECEITA_BRUTA' && l.grupo !== 'RECEITA_FINANCEIRA' && l.grupo !== 'OUTRAS_RECEITAS' && l.competencia && l.competencia.startsWith(pref))
                                              .reduce((s,l) => s + parseFloat(l.valor||0), 0);
-                costs += contasPag.filter(c => c.data_competencia && c.data_competencia.startsWith(pref))
+                costs += contasPag.filter(c => {
+                                        const ref = _dataRefDRE(c, _grupoDeConta(c, 'pagar'));
+                                        return ref && ref.startsWith(pref);
+                                   })
                                    .reduce((s,c) => s + parseFloat(c.valor||0), 0);
 
                 receitasData.push(rb);
