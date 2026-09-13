@@ -2597,6 +2597,13 @@
                             <option value="vencimento">Vencimento</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>PDF</label>
+                        <select id="orientPDFDRE" title="Orientação usada nos PDFs desta tela (DRE por Competência e DRE Mensal)">
+                            <option value="portrait">Retrato</option>
+                            <option value="landscape">Paisagem</option>
+                        </select>
+                    </div>
                     <div class="form-group" style="display:flex;gap:8px;align-items:flex-end;padding-bottom:2px;">
                         <button class="btn btn-primary btn-small" onclick="abrirModalLancDRE()">+ Lançar</button>
                         <button class="btn btn-secondary btn-small" onclick="exportarDRE()">📥 Exportar</button>
@@ -3637,7 +3644,7 @@
     const carregarEmpresasDebounced = debounce(() => carregarEmpresas(), 350);
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroGrupoDREPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "modoEmprestimoDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "filtroAnoAnaliseCat", "filtroMesAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroGrupoDREPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "modoEmprestimoDRE", "orientPDFDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "filtroAnoAnaliseCat", "filtroMesAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -5944,6 +5951,11 @@
         const contasReceber = await fetchSupabase('contas_a_receber', 'GET');
         const contasPagar   = await fetchSupabase('contas_a_pagar',   'GET');
         if (!contasReceber || !contasPagar) return;
+        // Os lançamentos manuais da DRE eram consultados pelos indicadores, mas nunca
+        // chegavam a ser carregados — por isso não apareciam nos gauges nem na DRE
+        // resumida do dashboard.
+        const lancsDRE = await fetchSupabase('lancamentos_dre', 'GET');
+        dadosCache.dreLancs = lancsDRE || [];
         _dashContasRec = contasReceber;
         _dashContasPag = contasPagar;
         renderizarDashboard(contasReceber, contasPagar);
@@ -5977,11 +5989,22 @@
             return lista.filter(c => {
                 if (c.status !== statusAlvo) return false;
                 const d = c.data_vencimento || '';
+                if (d.length < 7) return false;
                 if (anoF && !d.startsWith(anoF)) return false;
-                if (mesF && !d.includes('-'+mesF+'-')) return false;
+                if (mesF && d.substring(5, 7) !== String(mesF).padStart(2, '0')) return false;
                 return true;
             });
         }
+
+        // Texto do período ativo, usado nas mensagens de "nada encontrado"
+        const _mDash = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                        'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+        const filtroTxt = (anoF || mesF)
+            ? ' para ' + (mesF ? _mDash[parseInt(mesF,10)-1] + '/' : '') + (anoF || '')
+            : '';
+        const dicaFiltro = (anoF || mesF)
+            ? '<div style="font-size:11px;color:#bbb;margin-top:4px;">Os filtros de mês/ano do topo estão ativos. Use “Limpar filtros” para ver todo o período.</div>'
+            : '';
 
         const recFiltrado = aplicarFiltrosConta(contasReceber, 'data_vencimento', 'pendente');
         const pagFiltrado = aplicarFiltrosConta(contasPagar,   'data_vencimento', 'pendente');
@@ -6003,7 +6026,7 @@
         const tbDev = document.getElementById('corpoDevedores');
         if (tbDev) {
             if (devedoresOrdenados.length === 0) {
-                tbDev.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:16px;">Nenhum devedor encontrado</td></tr>';
+                tbDev.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:16px;">Nenhum devedor encontrado' + filtroTxt + '.' + dicaFiltro + '</td></tr>';
             } else {
                 tbDev.innerHTML = devedoresOrdenados.map(([nome, d], i) => {
                     const fmtR = v => 'R$&nbsp;' + v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -6036,7 +6059,7 @@
         const tbForn = document.getElementById('corpoFornecedoresDash');
         if (tbForn) {
             if (fornOrdenados.length === 0) {
-                tbForn.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:16px;">Nenhum fornecedor encontrado</td></tr>';
+                tbForn.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:16px;">Nenhum fornecedor encontrado' + filtroTxt + '.' + dicaFiltro + '</td></tr>';
             } else {
                 tbForn.innerHTML = fornOrdenados.map(([nome, d], i) => {
                     const fmtR = v => 'R$&nbsp;' + v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -6092,22 +6115,27 @@
     // Usado pelos gauges e também pela DRE resumida exibida no dashboard.
     function calcularGruposDREDash(contasRec, contasPag, anoF, mesF) {
         const grupos = {};
+        // Compara sempre pelo trecho YYYY-MM: usar includes('-09') pegava também o
+        // dia do mês (ex.: 2026-03-09) e inflava o período errado.
+        const noPeriodo = (data) => {
+            const comp = String(data || '');
+            if (comp.length < 7) return false;
+            if (anoF && !comp.startsWith(anoF)) return false;
+            if (mesF && comp.substring(5, 7) !== String(mesF).padStart(2, '0')) return false;
+            return true;
+        };
         const agrupar = (contas, defaultGrupo) => {
             (contas || []).forEach(c => {
-                const comp = c.data_competencia || '';
-                if (!comp) return;
-                if (anoF && !comp.startsWith(anoF)) return;
-                if (mesF && !comp.includes('-'+mesF+'-')) return;
+                if (!noPeriodo(c.data_competencia)) return;
                 const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
                 const g   = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || defaultGrupo) : defaultGrupo;
                 grupos[g] = (grupos[g] || 0) + parseFloat(c.valor || 0);
             });
         };
         (dadosCache.dreLancs || []).forEach(l => {
-            const comp = l.competencia || '';
-            if (anoF && !comp.startsWith(anoF)) return;
-            if (mesF && !comp.includes('-'+mesF.padStart(2,'0'))) return;
-            grupos[l.grupo] = (grupos[l.grupo] || 0) + parseFloat(l.valor || 0);
+            if (!noPeriodo(l.competencia)) return;
+            const g = grupoEstruturalDRE(l.grupo) || l.grupo;
+            grupos[g] = (grupos[g] || 0) + parseFloat(l.valor || 0);
         });
         agrupar(contasRec, 'RECEITA_BRUTA');
         agrupar(contasPag, 'DESP_ADMIN');
@@ -6140,7 +6168,12 @@
         const od  = gv('OUTRAS_DESPESAS');
         const res = ebt + rf - df - emp - inv + or - od;
 
-        const pct = (v, base) => base > 0 ? (v / base * 100) : 0;
+        // Os indicadores em % usam a Receita Líquida como base. Se ela for zero ou
+        // negativa no período filtrado, NÃO existe percentual — antes o sistema
+        // mostrava "0,0%" e marcava "Fora da meta", o que dava a impressão errada
+        // de resultado ruim quando na verdade faltava base de cálculo.
+        const semBase = !(rl > 0);
+        const pct = (v, base) => base > 0 ? (v / base * 100) : null;
 
         const mg = metasGauges || METAS_PADRAO;
         const metricas = [
@@ -6152,11 +6185,24 @@
             { label: 'Lucro Líq. %',   valor: pct(res,rl),    meta: mg.lucroLiq,   unidade: '%',  positivo: true,  cor: '#FF7A42' },
         ];
 
-        if (!anoF && !mesF && gavelAviso) {
-            gavelAviso.style.display = '';
-            gavelAviso.textContent = '📌 Nenhum filtro selecionado — indicadores consideram todos os lançamentos com data de competência.';
-        } else if (gavelAviso) {
-            gavelAviso.style.display = 'none';
+        const mNomesDash = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                            'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+        const periodoTxt = (mesF ? mNomesDash[parseInt(mesF,10)-1] + '/' : '') + (anoF || 'todos os anos');
+        if (gavelAviso) {
+            if (!anoF && !mesF) {
+                gavelAviso.style.display = '';
+                gavelAviso.textContent = '📌 Nenhum filtro selecionado — indicadores consideram todos os lançamentos com data de competência.';
+            } else if (semBase) {
+                // Explica por que os percentuais aparecem vazios, em vez de deixar o
+                // usuário achar que o sistema "não trouxe nada".
+                gavelAviso.style.display = '';
+                gavelAviso.textContent = '📌 Período filtrado: ' + periodoTxt + '. '
+                    + (rb > 0
+                        ? 'A Receita Líquida está zerada (as deduções anulam a receita), então não há base para calcular os percentuais.'
+                        : 'Não há receita lançada com data de competência neste período, então não há base para calcular os percentuais. Verifique o filtro de mês/ano ou a data de competência dos lançamentos.');
+            } else {
+                gavelAviso.style.display = 'none';
+            }
         }
 
         // ── SVG Gauge: semicírculo de 180°, centro na base ─────────────────
@@ -6190,14 +6236,16 @@
         const trackD = arcPath(0, 180, R);
 
         container.innerHTML = metricas.map(m => {
-            const val      = isNaN(m.valor) || !isFinite(m.valor) ? 0 : m.valor;
-            const isOK     = m.meta === null ? true : (m.positivo ? val >= m.meta : val <= m.meta);
-            const cor      = m.meta === null ? m.cor : (isOK ? '#28a745' : '#dc3545');
+            // valor ausente (sem base de cálculo) é diferente de valor zero
+            const indefinido = m.unidade === '%' && (m.valor === null || isNaN(m.valor) || !isFinite(m.valor));
+            const val      = indefinido ? 0 : (isNaN(m.valor) || !isFinite(m.valor) ? 0 : m.valor);
+            const isOK     = (m.meta === null || indefinido) ? true : (m.positivo ? val >= m.meta : val <= m.meta);
+            const cor      = indefinido ? '#bbb' : (m.meta === null ? m.cor : (isOK ? '#28a745' : '#dc3545'));
 
             // progress 0→1 mapeado para 0°→180° no gauge
             let progress = 0;
             if (m.unidade === '%') {
-                progress = Math.min(Math.max(val / 100, 0), 1);
+                progress = indefinido ? 0 : Math.min(Math.max(val / 100, 0), 1);
             } else {
                 // Receita Bruta: visual de 0 até 100% do valor atual (sempre cheio como referência)
                 progress = rb > 0 ? 1 : 0; // mostra cheio pois é valor absoluto, não %
@@ -6209,11 +6257,11 @@
             // Exibição do valor
             const exibVal = m.unidade === 'R$'
                 ? 'R$ ' + Math.abs(val).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0})
-                : val.toFixed(1) + '%';
+                : (indefinido ? '—' : val.toFixed(1) + '%');
 
             const metaStr    = m.meta !== null ? `Meta: ${m.positivo?'≥':'≤'}${m.meta}%` : '';
-            const statusStr  = m.meta !== null ? (isOK ? '✅ OK' : '⚠️ Fora da meta') : '';
-            const statusCor  = isOK ? '#28a745' : '#dc3545';
+            const statusStr  = indefinido ? 'sem base de cálculo' : (m.meta !== null ? (isOK ? '✅ OK' : '⚠️ Fora da meta') : '');
+            const statusCor  = indefinido ? '#999' : (isOK ? '#28a745' : '#dc3545');
 
             return `<div style="
                     background:white;
@@ -10813,8 +10861,7 @@
             return;
         }
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-
+        const doc = new jsPDF({ orientation: _orientPDFDRE(), unit: 'mm', format: 'a4' });
         const ano = (document.getElementById('filtroAnoDRE') || {}).value || '';
         const empresaSel = document.getElementById('filtroEmpresaDRE');
         const empresaTxt = (empresaSel && empresaSel.value && empresaSel.selectedOptions[0])
@@ -10960,100 +11007,92 @@
         }
     }
 
+    // Lê um número a partir do texto da célula da DRE Mensal ("+R$ 1.234,56", "\u2212R$ 10,00", "-")
+    function _numeroCelulaDRE(txt) {
+        const linha = String(txt || '').split('\n')[0]
+            .replace(/\u00a0/g, ' ')
+            .trim();
+        if (!linha || linha === '-' || linha === '\u2014') return '';
+        const negativo = /^[-\u2212]/.test(linha);
+        const limpo = linha.replace(/[^\d,]/g, '').replace(/,/g, '.');
+        const n = parseFloat(limpo);
+        if (isNaN(n)) return '';
+        return negativo ? -n : n;
+    }
+
+    // Lê o percentual mostrado em fonte menor logo abaixo do valor ("(12,34%)")
+    function _percentualCelulaDRE(txt) {
+        const m = String(txt || '').match(/\(([\d.,]+)%\)/);
+        if (!m) return '';
+        const n = parseFloat(m[1].replace(/\./g, '').replace(',', '.'));
+        return isNaN(n) ? '' : n;
+    }
+
+    // Exporta a DRE Mensal EXATAMENTE como está na tela: mesmas linhas (incluindo as
+    // subcategorias de CPV e Despesas Administrativas), mesmas colunas (respeitando os
+    // meses desmarcados no menu "📅 Meses") e o mesmo acumulado. Os valores saem como
+    // número, para permitir somas e filtros no Excel; os percentuais exibidos abaixo de
+    // cada valor vão numa segunda aba com o mesmo layout.
     function _exportarExcelDREMensal() {
-        const dreLancs   = window._dreLancsMensal || [];
-        const contasRec  = window._dreContasRecMensal || [];
-        const contasPag  = window._dreContasPagMensal || [];
-        const ano        = window._dreAnoSelMensal;
-        if (!ano) { alert('Selecione um ano na DRE para exportar a DRE Mensal em Excel.'); return; }
+        const tabela = document.getElementById('tabelaDREMensal');
+        const ano    = window._dreAnoSelMensal || (document.getElementById('filtroAnoDRE') || {}).value || '';
+        if (!tabela || !tabela.querySelector('tbody tr')) {
+            alert('Selecione um ano na DRE para exportar a DRE Mensal em Excel.');
+            return;
+        }
 
-        const mNomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-        const dados = {};
-        DRE_GRUPOS.forEach(g => { dados[g.id] = Array(12).fill(0); });
-        (dreLancs || []).filter(l => l.competencia && l.competencia.startsWith(ano)).forEach(l => {
-            const m = parseInt(l.competencia.substring(5,7)) - 1;
-            if (m < 0 || m > 11 || !dados[l.grupo]) return;
-            dados[l.grupo][m] += parseFloat(l.valor || 0);
-        });
-        contasRec.filter(c => c.data_competencia && c.data_competencia.startsWith(ano)).forEach(c => {
-            const m = parseInt(c.data_competencia.substring(5,7)) - 1;
-            const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            const g = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || 'RECEITA_BRUTA') : 'RECEITA_BRUTA';
-            if (m < 0 || m > 11 || !dados[g]) return;
-            dados[g][m] += parseFloat(c.valor || 0);
-        });
-        contasPag.forEach(c => {
-            const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            const g = (cat && cat.grupo_dre) ? (grupoEstruturalDRE(cat.grupo_dre) || 'DESP_ADMIN') : 'DESP_ADMIN';
-            const ref = _dataRefDRE(c, g);
-            if (!ref || !ref.startsWith(ano)) return;
-            const m = parseInt(ref.substring(5,7)) - 1;
-            if (m < 0 || m > 11 || !dados[g]) return;
-            dados[g][m] += parseFloat(c.valor || 0);
-        });
+        // Colunas ocultas: índice 0 = Descrição, 1..12 = meses, 13 = acumulada
+        const ocultos = _mesesOcultosDRE();
+        const visivel = i => !ocultos.includes(i);
 
-        const calcMes = (m) => {
-            const rb = dados['RECEITA_BRUTA'][m];
-            const ded = dados['DEDUCOES'][m];
-            const rl = rb - ded;
-            const cpv = dados['CPV'][m];
-            const lb = rl - cpv;
-            const dc = dados['DESP_COMERCIAL'][m];
-            const da = dados['DESP_ADMIN'][m];
-            const rf = dados['RECEITA_FINANCEIRA'][m];
-            const df = dados['DESP_FINANCEIRA'][m];
-            const ebt = lb - dc - da;             // EBITDA operacional (antes do resultado financeiro)
-            const emp = dados['EMPRESTIMO'][m];
-            const inv = dados['INVESTIMENTO'][m];
-            const or = dados['OUTRAS_RECEITAS'][m];
-            const od = dados['OUTRAS_DESPESAS'][m];
-            const lajir = ebt + rf - df;          // Resultado Antes do IR (LAJIR)
-            const res = ebt + rf - df - emp - inv + or - od;
-            return { rb, ded, rl, cpv, lb, dc, da, rf, df, ebt, lajir, emp, inv, or, od, res };
-        };
+        // Cabeçalho, direto do que está renderizado
+        const ths = Array.from(tabela.querySelectorAll('thead th'));
+        const cabecalho = ths
+            .filter((_, i) => visivel(i))
+            .map(th => th.innerText.replace(/\s+/g, ' ').trim());
 
-        const linhasExcel = [
-            { label: _labelGrupoDRE('RECEITA_BRUTA', ''),         fn: m => calcMes(m).rb },
-            { label: _labelGrupoDRE('DEDUCOES', '(-) '),          fn: m => -calcMes(m).ded },
-            { label: '= Receita Líquida',              fn: m => calcMes(m).rl },
-            { label: _labelGrupoDRE('CPV', '(-) '),               fn: m => -calcMes(m).cpv },
-            { label: '= Lucro Bruto',                  fn: m => calcMes(m).lb },
-            { label: _labelGrupoDRE('DESP_COMERCIAL', '(-) '),    fn: m => -calcMes(m).dc },
-            { label: _labelGrupoDRE('DESP_ADMIN', '(-) '),        fn: m => -calcMes(m).da },
-            { label: '= EBITDA',                       fn: m => calcMes(m).ebt },
-            { label: _labelGrupoDRE('RECEITA_FINANCEIRA', '(+) '), fn: m => calcMes(m).rf },
-            { label: _labelGrupoDRE('DESP_FINANCEIRA', '(-) '),   fn: m => -calcMes(m).df },
-            { label: '= Resultado Antes do IR (LAJIR)', fn: m => calcMes(m).lajir },
-            { label: _labelGrupoDRE('EMPRESTIMO', '(-) ') + ' (por ' + rotuloModoEmprestimoDRE() + ')', fn: m => -calcMes(m).emp },
-            { label: _labelGrupoDRE('INVESTIMENTO', '(-) '),      fn: m => -calcMes(m).inv },
-            { label: _labelGrupoDRE('OUTRAS_RECEITAS', '(+) '),   fn: m => calcMes(m).or },
-            { label: _labelGrupoDRE('OUTRAS_DESPESAS', '(-) '),   fn: m => -calcMes(m).od },
-            { label: '= Geração de Caixa Após as Dívidas', fn: m => calcMes(m).res },
-        ];
+        const linhasValor   = [cabecalho];
+        const linhasPercent = [cabecalho];
 
-        const rows = [['Descrição'].concat(mNomes.map(m => m + '/' + String(ano).slice(2))).concat([
-            (function () {
-                const ocs = _mesesOcultosDRE();
-                const vis = [0,1,2,3,4,5,6,7,8,9,10,11].filter(m => !ocs.includes(m + 1));
-                return vis.length > 0 && vis.length < 12
-                    ? 'DRE Acumulada (' + vis.map(m => mNomes[m]).join(', ') + ')'
-                    : 'DRE Acumulada';
-            })()
-        ])];
-        // Acumulado = soma apenas dos meses marcados no menu "📅 Meses"
-        const ocultosXls = _mesesOcultosDRE();
-        const visXls = [0,1,2,3,4,5,6,7,8,9,10,11].filter(m => !ocultosXls.includes(m + 1));
-        const mesesSomaXls = visXls.length > 0 ? visXls : [0,1,2,3,4,5,6,7,8,9,10,11];
-        linhasExcel.forEach(linha => {
-            const vals = Array.from({length: 12}, (_, m) => linha.fn(m));
-            const total = mesesSomaXls.reduce((s, m) => s + vals[m], 0);
-            rows.push([linha.label].concat(vals.map(v => Math.round(v * 100) / 100)).concat([Math.round(total * 100) / 100]));
+        Array.from(tabela.querySelectorAll('tbody tr')).forEach(tr => {
+            const tds = Array.from(tr.querySelectorAll('td'));
+            if (!tds.length) return;
+            const visiveis = tds.filter((_, i) => visivel(i));
+
+            const linhaV = [];
+            const linhaP = [];
+            visiveis.forEach((td, pos) => {
+                const txt = td.innerText || '';
+                if (pos === 0) {
+                    // Rótulo: remove a lupa e mantém a indentação "↳" das subcategorias
+                    const label = txt.replace(/🔍/g, '').replace(/\s+/g, ' ').trim();
+                    linhaV.push(label);
+                    linhaP.push(label);
+                } else {
+                    linhaV.push(_numeroCelulaDRE(txt));
+                    linhaP.push(_percentualCelulaDRE(txt));
+                }
+            });
+            linhasValor.push(linhaV);
+            linhasPercent.push(linhaP);
         });
 
-        const ws = XLSX.utils.aoa_to_sheet(rows);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'DRE Mensal');
-        XLSX.writeFile(wb, 'DRE_Mensal_' + ano + '.xlsx');
+
+        const wsValor = XLSX.utils.aoa_to_sheet(linhasValor);
+        wsValor['!cols'] = cabecalho.map((_, i) => ({ wch: i === 0 ? 42 : 16 }));
+        XLSX.utils.book_append_sheet(wb, wsValor, 'DRE Mensal');
+
+        // A aba de percentuais só entra se houver algum percentual na tela
+        const temPercentual = linhasPercent.slice(1)
+            .some(l => l.slice(1).some(v => v !== '' && v !== null && v !== undefined));
+        if (temPercentual) {
+            const wsPct = XLSX.utils.aoa_to_sheet(linhasPercent);
+            wsPct['!cols'] = cabecalho.map((_, i) => ({ wch: i === 0 ? 42 : 16 }));
+            XLSX.utils.book_append_sheet(wb, wsPct, 'DRE Mensal (%)');
+        }
+
+        XLSX.writeFile(wb, 'DRE_Mensal_' + (ano || 'todos') + '.xlsx');
     }
 
     function criarGraficoDRE(dreLancs, contasRec, contasPag, anoSel) {
@@ -11978,9 +12017,16 @@
     // ================================================================
     // PDF — DRE
     // ================================================================
+    // Orientação escolhida no seletor "PDF" da tela DRE (vale para os dois relatórios)
+    function _orientPDFDRE() {
+        const el = document.getElementById('orientPDFDRE');
+        return (el && el.value === 'landscape') ? 'landscape' : 'portrait';
+    }
+
     function gerarPDFDRE() {
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const orientacao = _orientPDFDRE();
+        const doc = new jsPDF({ orientation: orientacao, unit: 'mm', format: 'a4' });
         const pageW = doc.internal.pageSize.getWidth();
         const pageH = doc.internal.pageSize.getHeight();
 
@@ -12004,11 +12050,13 @@
         doc.setFont(undefined, 'bold');
         doc.text(normalizarTexto(titulo), pageW / 2, 24, { align: 'center' });
 
-        // Colunas
+        // Colunas proporcionais à largura útil da página, para que o relatório
+        // fique bem distribuído tanto em retrato quanto em paisagem.
         const margem = 12;
-        const colDesc = 95;
-        const colValor = 45;
-        const colAV = 30;
+        const larguraUtil = pageW - margem * 2;
+        const colDesc  = larguraUtil * 0.56;
+        const colValor = larguraUtil * 0.26;
+        const colAV    = larguraUtil * 0.18;
         const altLinha = 7;
         let y = 32;
 
@@ -12070,9 +12118,10 @@
             doc.setFontSize(isBold ? 8.5 : 8);
             doc.setFont(undefined, isBold ? 'bold' : 'normal');
 
-            // Descrição
+            // Descrição — o limite de caracteres acompanha a largura da coluna
             let descTxt = normalizarTexto(tds[0].innerText.trim());
-            if (descTxt.length > 45) descTxt = descTxt.substring(0, 44) + '...';
+            const maxChars = Math.max(20, Math.floor(colDesc / 2.1));
+            if (descTxt.length > maxChars) descTxt = descTxt.substring(0, maxChars - 1) + '...';
             doc.text(descTxt, margem + 2, y + 4.8);
 
             // Valor
