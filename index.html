@@ -5836,15 +5836,27 @@
         }
     }
 
+    // Procura a conta em todos os caches em uso (pendentes, baixadas, dashboard e DRE),
+    // para que a edição funcione também quando a lista veio de um indicador.
+    function _acharContaParaEditar(id, tipo) {
+        const fontes = tipo === 'receber'
+            ? [dadosCache.contasRecebidas, dadosCache.contasReceber, _dashContasRec, window._dreContasRecMensal, window._fcpRecAno, window._dfcRecebidos]
+            : [dadosCache.contasPagas, dadosCache.contasPagar, _dashContasPag, window._dreContasPagMensal, window._fcpPagAno, window._dfcPagos];
+        for (const lista of fontes) {
+            const achou = (lista || []).find(c => c.id === id);
+            if (achou) return achou;
+        }
+        return null;
+    }
+
     function editarLancamento(id, tipo) {
         atualizarSelectClientes();
         atualizarSelectFornecedores();
         atualizarSelectCategorias();
         atualizarSelectEmpresas();
         if (tipo === 'receber') {
-            const conta = dadosCache.contasRecebidas.find(c => c.id === id)
-                       || dadosCache.contasReceber.find(c => c.id === id);
-            if (!conta) return;
+            const conta = _acharContaParaEditar(id, 'receber');
+            if (!conta) { alert('Não foi possível localizar este lançamento. Recarregue a página e tente novamente.'); return; }
             document.getElementById('editLancId').value = id;
             document.getElementById('editLancTipo').value = 'contas_a_receber';
             document.getElementById('editLancTituloModal').textContent = 'Editar Lançamento a Receber';
@@ -5861,9 +5873,8 @@
             document.getElementById('editLancObs').value        = conta.observacoes || '';
             document.getElementById('modalEditarLancamento').classList.add('active');
         } else {
-            const conta = dadosCache.contasPagas.find(c => c.id === id)
-                       || dadosCache.contasPagar.find(c => c.id === id);
-            if (!conta) return;
+            const conta = _acharContaParaEditar(id, 'pagar');
+            if (!conta) { alert('Não foi possível localizar este lançamento. Recarregue a página e tente novamente.'); return; }
             document.getElementById('editLancId').value = id;
             document.getElementById('editLancTipo').value = 'contas_a_pagar';
             document.getElementById('editLancTituloModal').textContent = 'Editar Lançamento a Pagar';
@@ -5911,11 +5922,18 @@
         if (r !== null) {
             closeModal('modalEditarLancamento');
             showAlert('Lançamento atualizado!', tipo === 'contas_a_receber' ? 'alertLancarReceber' : 'alertLancarPagar', 'success');
-            await carregarContasReceber();
-            await carregarContasPagar();
-            await carregarContasRecebidas();
-            await carregarContasPagas();
-            await atualizarDashboard();
+            // Se a edição veio da lista de lançamentos (clique num indicador/célula),
+            // reabre a mesma lista já com o valor corrigido.
+            const modalGen = document.getElementById('modalLancamentosGen');
+            if (modalGen && modalGen.classList.contains('active')) {
+                await _recarregarAposEdicaoGen();
+            } else {
+                await carregarContasReceber();
+                await carregarContasPagar();
+                await carregarContasRecebidas();
+                await carregarContasPagas();
+                await atualizarDashboard();
+            }
         }
     }
 
@@ -6345,7 +6363,7 @@
         const periodo = (mesF ? mNomes[parseInt(mesF, 10) - 1] + '/' : '') + (anoF || 'todos os anos');
         const label = (_GRUPOS_DRE_LABELS[grupoId] || grupoId);
         abrirModalLancamentosGen('Indicadores DRE — ' + label + ' · ' + periodo, rows,
-            { parteLabel: 'Cliente / Fornecedor' });
+            { parteLabel: 'Cliente / Fornecedor', onChange: () => abrirLancamentosDashGrupo(grupoId) });
     }
 
     // ── DRE RESUMIDA NO DASHBOARD ─────────────────────────────────────────────
@@ -7375,6 +7393,8 @@
             const dataRef = c.data_vencimento || c.data_competencia || c.data_pagamento || c.data_recebimento || '';
             return {
                 _ord: dataRef,
+                id: c.id,
+                tipo: kind,
                 data: dataRef ? new Date(dataRef + 'T12:00:00').toLocaleDateString('pt-BR') : '-',
                 descricao: c.descricao || '-',
                 categoria: cat ? cat.nome : '-',
@@ -7398,6 +7418,7 @@
         const thParte = document.getElementById('thParteLancGen');
         if (thParte) thParte.textContent = opts.parteLabel || 'Parte';
         rows = (rows || []).slice().sort(function(a,b){ return a._ord < b._ord ? 1 : (a._ord > b._ord ? -1 : 0); });
+        _lancGenOnChange = (typeof opts.onChange === 'function') ? opts.onChange : null;
         const total = rows.reduce(function(s,r){ return s + r.valor; }, 0);
         const resumo = document.getElementById('resumoLancamentosGen');
         if (resumo) {
@@ -7417,6 +7438,11 @@
         if (tbody) {
             tbody.innerHTML = rows.length ? rows.map(function(r){
                 const corVal = r.valor < 0 ? 'color:#dc3545;' : (opts.liquido ? 'color:#28a745;' : '');
+                // Editar/Excluir direto da lista, sem precisar navegar até Contas a Pagar/Receber
+                const acoes = (r.id && r.tipo)
+                    ? '<button class="btn btn-secondary btn-small" title="Editar categoria, datas, valor..." onclick="editarLancamentoGen(' + r.id + ',\'' + r.tipo + '\')">✏️</button> '
+                      + '<button class="btn btn-danger btn-small" title="Excluir lançamento" onclick="excluirLancamentoGen(' + r.id + ',\'' + r.tipo + '\')">🗑️</button>'
+                    : '<span style="color:#bbb;font-size:11px;">—</span>';
                 return '<tr>' +
                     '<td style="white-space:nowrap;">' + r.data + '</td>' +
                     '<td>' + r.descricao + '</td>' +
@@ -7426,10 +7452,52 @@
                     '<td style="font-weight:600;">' + r.nf + '</td>' +
                     '<td style="text-align:right;white-space:nowrap;font-weight:600;' + corVal + '">' + fmtValFull(r.valor) + '</td>' +
                     '<td><span class="status-badge status-' + r.statusClass + '">' + r.status + '</span></td>' +
+                    '<td style="text-align:center;white-space:nowrap;">' + acoes + '</td>' +
                 '</tr>';
-            }).join('') : '<tr><td colspan="8" style="text-align:center;color:#999;padding:20px;">Nenhum lançamento encontrado.</td></tr>';
+            }).join('') : '<tr><td colspan="9" style="text-align:center;color:#999;padding:20px;">Nenhum lançamento encontrado.</td></tr>';
         }
         document.getElementById('modalLancamentosGen').classList.add('active');
+    }
+
+    // ── EDIÇÃO/EXCLUSÃO A PARTIR DO MODAL DE LANÇAMENTOS ─────────────────────
+    // Guarda como reabrir a mesma lista depois de alterar algo, para que o usuário
+    // continue exatamente de onde parou.
+    let _lancGenOnChange = null;
+
+    function editarLancamentoGen(id, tipo) {
+        editarLancamento(id, tipo === 'pagar' ? 'pagar' : 'receber');
+    }
+
+    async function excluirLancamentoGen(id, tipo) {
+        if (!confirm('Excluir este lançamento? Essa ação não pode ser desfeita.')) return;
+        const tabela = tipo === 'pagar' ? 'contas_a_pagar' : 'contas_a_receber';
+        const r = await fetchSupabase(tabela, 'DELETE', null, 'id=eq.' + id);
+        if (r === null) return;
+        await _recarregarAposEdicaoGen();
+    }
+
+    // Recarrega os dados das telas afetadas e reabre a mesma lista já atualizada
+    async function _recarregarAposEdicaoGen() {
+        await Promise.all([
+            carregarContasReceber(), carregarContasPagar(),
+            carregarContasRecebidas(), carregarContasPagas()
+        ]);
+        // Recarrega a tela que está aberta, para que os caches dela (DRE, DFC,
+        // Fluxo Projetado) reflitam a alteração antes de reabrirmos a lista.
+        const ativa = document.querySelector('.page.active');
+        const pageId = ativa ? ativa.id : '';
+        try {
+            if (pageId === 'dre') await carregarDRE();
+            else if (pageId === 'dfc') await carregarDFC();
+            else if (pageId === 'fcp') await carregarFCP();
+            else if (pageId === 'analise-categorias') await carregarAnaliseCategorias();
+        } catch (e) { /* segue mesmo se a tela falhar em recarregar */ }
+        await atualizarDashboard();
+        if (typeof _lancGenOnChange === 'function') {
+            try { await _lancGenOnChange(); } catch (e) { closeModal('modalLancamentosGen'); }
+        } else {
+            closeModal('modalLancamentosGen');
+        }
     }
 
     // Inverte o sinal das linhas de saída, para que o total do modal seja o líquido.
@@ -9818,7 +9886,7 @@
             liquido = true;
         }
 
-        abrirModalLancamentosGen(titulo + ' · ' + periodo, rows, { parteLabel: 'Cliente / Fornecedor', liquido: liquido });
+        abrirModalLancamentosGen(titulo + ' · ' + periodo, rows, { parteLabel: 'Cliente / Fornecedor', liquido: liquido, onChange: () => abrirLancamentosDFC(tipo, nomeCat, mes) });
     }
 
     function criarGraficoDFC(contasReceber, contasPagar, anoSel) {
@@ -10184,7 +10252,7 @@
             liquido = true;
         }
 
-        abrirModalLancamentosGen(titulo + ' · ' + periodo, rows, { parteLabel: 'Cliente / Fornecedor', liquido: liquido });
+        abrirModalLancamentosGen(titulo + ' · ' + periodo, rows, { parteLabel: 'Cliente / Fornecedor', liquido: liquido, onChange: () => abrirLancamentosFCP(tipo, nomeCat, mes) });
     }
 
     function gerarPDFFCP() {
@@ -10792,7 +10860,7 @@
             rows.push({ _ord: l.competencia, data: (l.competencia||'').substring(0,7), descricao: l.descricao || '-', categoria: l.categoria || '-', parte: '-', empresa: '-', nf: '-', valor: parseFloat(l.valor||0), status: 'DRE', statusClass: 'pago' });
         });
         const label = (_GRUPOS_DRE_LABELS[grupoId] || grupoId);
-        abrirModalLancamentosGen('DRE — ' + label + ' · ' + _rotuloPeriodoDRE(mes), rows, { parteLabel: 'Cliente / Despesas/Fornecedor' });
+        abrirModalLancamentosGen('DRE — ' + label + ' · ' + _rotuloPeriodoDRE(mes), rows, { parteLabel: 'Cliente / Despesas/Fornecedor', onChange: () => abrirLancamentosDRE(grupoId, mes) });
     }
 
     // Clique numa subcategoria da DRE Mensal → lançamentos da categoria no período clicado
@@ -10808,7 +10876,7 @@
             // subcategoria pode ser "Categoria / Fornecedor" — casa pelo início
             return nome === nomeCat || nomeCat.indexOf(nome) === 0;
         });
-        abrirModalLancamentosGen('DRE — ' + nomeCat + ' · ' + _rotuloPeriodoDRE(mes), _rowsDeContas(pag, 'pagar'), { parteLabel: 'Despesas/Fornecedor' });
+        abrirModalLancamentosGen('DRE — ' + nomeCat + ' · ' + _rotuloPeriodoDRE(mes), _rowsDeContas(pag, 'pagar'), { parteLabel: 'Despesas/Fornecedor', onChange: () => abrirLancamentosDRECategoria(grupoId, nomeCat, mes) });
     }
 
     // ── OCULTAR MESES INDIVIDUAIS NA DRE MENSAL ──────────────────────────────
@@ -12471,6 +12539,7 @@
                     <th>NF</th>
                     <th style="text-align:right;">Valor</th>
                     <th>Status</th>
+                    <th style="text-align:center;white-space:nowrap;">Ações</th>
                 </tr></thead>
                 <tbody></tbody>
             </table>
