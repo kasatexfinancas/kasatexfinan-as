@@ -501,6 +501,43 @@
             z-index: 200;
         }
         .colunas-dropdown.aberto { display: block; }
+        /* DFC: blocos que ficam ocultos na tela (os dados continuam sendo calculados) */
+        #dfc .dfc-oculto { display: none !important; }
+        /* DRE Mensal: seta de abrir/fechar categorias */
+        .dre-seta { display: inline-block; width: 16px; text-align: center; color: #888; cursor: pointer; font-size: 11px; margin-right: 2px; border-radius: 3px; user-select: none; }
+        .dre-seta:hover { background: #ffe3d4; color: var(--cor-primaria); }
+        .dre-seta-vazia { cursor: default; }
+        .dre-seta-vazia:hover { background: none; }
+        .dre-niveis { display: inline-flex; gap: 4px; }
+        .dre-niveis .btn { font-size: 11px; background: #f1f1f1; color: #444; border: 1px solid #ddd; }
+        /* ── Fluxo de Caixa Diário ───────────────────────────────── */
+        .fcd-badge { font-size: 11px; font-weight: 600; color: #555; background: #eef1f4; border: 1px solid #dde2e7; border-radius: 6px; padding: 2px 8px; }
+        .fcd-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 14px; }
+        .fcd-card { background: #fff; border: 1px solid #ececec; border-radius: 10px; padding: 18px 12px 14px; text-align: center; }
+        .fcd-card-valor { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; font-variant-numeric: tabular-nums; }
+        .fcd-card-rotulo { font-size: 11px; color: #999; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
+        .fcd-analise { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; background: #fff; border: 1px solid #ececec; border-radius: 10px; padding: 10px 16px; margin-bottom: 14px; font-size: 13px; }
+        .fcd-analise .fcd-tag { font-size: 11px; font-weight: 700; color: #777; background: #f3f3f3; border-radius: 5px; padding: 3px 8px; }
+        .fcd-grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
+        .fcd-bloco { background: #fff; border: 1px solid #ececec; border-radius: 10px; overflow: hidden; }
+        .fcd-tab { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+        .fcd-tab th { background: #fafafa; color: #777; font-size: 10.5px; font-weight: 700; text-transform: uppercase; padding: 8px 6px; text-align: right; border-bottom: 1px solid #eee; position: static; }
+        .fcd-tab th:first-child { text-align: left; width: 34px; padding-left: 10px; }
+        .fcd-tab th.fcd-h-rec { color: #1e7e34; } .fcd-tab th.fcd-h-desp { color: #c82333; }
+        .fcd-tab td { padding: 5px 6px; border-bottom: 1px solid #f3f3f3; text-align: right; white-space: nowrap; }
+        .fcd-tab td:first-child { text-align: left; font-weight: 700; color: #555; padding-left: 10px; }
+        .fcd-tab tr.fcd-dia { cursor: pointer; }
+        .fcd-tab tr.fcd-dia:hover td { background: #fff7f2; }
+        .fcd-tab tr.fcd-fds td:first-child { color: #aaa; }
+        .fcd-tab tr.fcd-hoje td { background: #fff4ec; border-top: 2px solid var(--cor-primaria); border-bottom: 2px solid var(--cor-primaria); }
+        .fcd-tab tr.fcd-vazio td { height: 29px; }
+        .fcd-rec { color: #1e7e34; } .fcd-desp { color: #c82333; } .fcd-zero { color: #ccc; }
+        .fcd-pill { display: block; border-radius: 4px; padding: 3px 8px; font-weight: 700; text-align: right; }
+        .fcd-pill.pos { background: #1e9e45; color: #fff; }
+        .fcd-pill.neg { background: #dc3545; color: #fff; }
+        .fcd-pill.nulo { color: #ccc; font-weight: 400; }
+        .fcd-tab tr.fcd-total td { background: #f7f7f7; font-weight: 800; border-top: 2px solid #ddd; border-bottom: none; }
+        @media (max-width: 1200px) { .fcd-grade { grid-template-columns: 1fr; } .fcd-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         .colunas-dropdown-title {
             font-size: 12px;
             font-weight: 700;
@@ -575,18 +612,6 @@
 
         /* Ocultar colunas de meses na DRE Mensal (mantém Descrição e DRE Acumulada) */
         /* Ocultar colunas de meses individuais na DRE Mensal (col 1 = Descrição, cols 2-13 = Jan..Dez) */
-        #tabelaDREMensal.hide-mes-1 th:nth-child(2),  #tabelaDREMensal.hide-mes-1 td:nth-child(2)  { display: none; }
-        #tabelaDREMensal.hide-mes-2 th:nth-child(3),  #tabelaDREMensal.hide-mes-2 td:nth-child(3)  { display: none; }
-        #tabelaDREMensal.hide-mes-3 th:nth-child(4),  #tabelaDREMensal.hide-mes-3 td:nth-child(4)  { display: none; }
-        #tabelaDREMensal.hide-mes-4 th:nth-child(5),  #tabelaDREMensal.hide-mes-4 td:nth-child(5)  { display: none; }
-        #tabelaDREMensal.hide-mes-5 th:nth-child(6),  #tabelaDREMensal.hide-mes-5 td:nth-child(6)  { display: none; }
-        #tabelaDREMensal.hide-mes-6 th:nth-child(7),  #tabelaDREMensal.hide-mes-6 td:nth-child(7)  { display: none; }
-        #tabelaDREMensal.hide-mes-7 th:nth-child(8),  #tabelaDREMensal.hide-mes-7 td:nth-child(8)  { display: none; }
-        #tabelaDREMensal.hide-mes-8 th:nth-child(9),  #tabelaDREMensal.hide-mes-8 td:nth-child(9)  { display: none; }
-        #tabelaDREMensal.hide-mes-9 th:nth-child(10), #tabelaDREMensal.hide-mes-9 td:nth-child(10) { display: none; }
-        #tabelaDREMensal.hide-mes-10 th:nth-child(11),#tabelaDREMensal.hide-mes-10 td:nth-child(11){ display: none; }
-        #tabelaDREMensal.hide-mes-11 th:nth-child(12),#tabelaDREMensal.hide-mes-11 td:nth-child(12){ display: none; }
-        #tabelaDREMensal.hide-mes-12 th:nth-child(13),#tabelaDREMensal.hide-mes-12 td:nth-child(13){ display: none; }
 
         /* Gauge cards no dashboard */
         #dashGauges > div:hover {
@@ -972,7 +997,396 @@
         .ss-item-vazio { color: #999; cursor: default; font-style: italic; }
         .ss-item-vazio:hover { background: transparent; }
         .ss-item-todos { border-bottom: 1px solid var(--cor-borda); font-style: italic; color: #666; }
+
+        /* ================================================================
+           TEMA CLARO / ESCURO
+           O tema vale para o sistema inteiro, inclusive o menu lateral.
+           Claro é o padrão; o escuro é ativado por html[data-tema="escuro"].
+           ================================================================ */
+        /* Menu lateral — tema claro */
+        .sidebar { background-color: #ffffff; color: #2f3237; border-right: 1px solid #e7e7e7; box-shadow: none; }
+        .logo-sidebar { border-bottom-color: #eeeeee; }
+        .menu-section { border-top-color: #eeeeee; }
+        .menu-section-title { color: #9a9ea5; }
+        .menu-item:hover { background-color: rgba(255, 122, 66, 0.08); }
+        .menu-item.active { background-color: rgba(255, 122, 66, 0.14); color: #c4521e; }
+        .logout-btn { background-color: rgba(220, 53, 69, 0.07); color: #c82333; border-color: rgba(220, 53, 69, 0.25); }
+
+        /* Seletor de tema no menu */
+        .tema-toggle { display: flex; margin: 14px 15px 0; padding: 3px; border-radius: 8px; background: #f1f2f4; border: 1px solid #e3e5e8; }
+        .tema-toggle button { flex: 1; border: none; background: transparent; color: #666b73; font: inherit; font-size: 12px; font-weight: 600; padding: 6px 4px; border-radius: 6px; cursor: pointer; }
+        .tema-toggle button:hover { color: #2f3237; }
+        .tema-toggle button.ativo { background: #ffffff; color: var(--cor-primaria); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+        .tema-toggle button:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 1px; }
+
+        /* ---------------- Tema escuro ---------------- */
+        html[data-tema="escuro"] {
+            color-scheme: dark;
+            --cor-fundo: #15171b;
+            --cor-texto: #e2e4e8;
+            --cor-borda: #353a42;
+            --cor-secundaria: #e2e4e8;
+        }
+        html[data-tema="escuro"] body { background-color: #15171b; color: #e2e4e8; }
+        html[data-tema="escuro"] .sidebar { background-color: #1b1e23; color: #d9dce1; border-right-color: #2a2e35; }
+        html[data-tema="escuro"] .logo-sidebar { border-bottom-color: #2a2e35; }
+        html[data-tema="escuro"] .menu-section { border-top-color: #2a2e35; }
+        html[data-tema="escuro"] .menu-section-title { color: #7d838c; }
+        html[data-tema="escuro"] .menu-item:hover { background-color: rgba(255, 122, 66, 0.12); }
+        html[data-tema="escuro"] .menu-item.active { background-color: rgba(255, 122, 66, 0.2); color: #ff9a6c; }
+        html[data-tema="escuro"] .logout-btn { background-color: rgba(220, 53, 69, 0.15); color: #ff6b7a; border-color: rgba(220, 53, 69, 0.35); }
+        html[data-tema="escuro"] .tema-toggle { background: #121418; border-color: #2a2e35; }
+        html[data-tema="escuro"] .tema-toggle button { color: #8d939c; }
+        html[data-tema="escuro"] .tema-toggle button:hover { color: #e2e4e8; }
+        html[data-tema="escuro"] .tema-toggle button.ativo { background: #2a2f37; color: #ff9a6c; box-shadow: none; }
+
+        html[data-tema="escuro"] .login-container { background: linear-gradient(135deg, #b8522a 0%, #15171b 100%); }
+        html[data-tema="escuro"] .login-box,
+        html[data-tema="escuro"] .card,
+        html[data-tema="escuro"] .stat-card,
+        html[data-tema="escuro"] .filter-container,
+        html[data-tema="escuro"] .table-container,
+        html[data-tema="escuro"] .modal-content,
+        html[data-tema="escuro"] .colunas-dropdown,
+        html[data-tema="escuro"] .ss-dropdown,
+        html[data-tema="escuro"] .fcd-card,
+        html[data-tema="escuro"] .fcd-analise,
+        html[data-tema="escuro"] .fcd-bloco {
+            background: #1f2228 !important;
+            color: #e2e4e8;
+            border-color: #2e333a;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+        html[data-tema="escuro"] .modal { background-color: rgba(0,0,0,0.65); }
+        html[data-tema="escuro"] .page-header { background: #15171b; }
+        html[data-tema="escuro"] .user-info p,
+        html[data-tema="escuro"] .login-logo p,
+        html[data-tema="escuro"] .stat-label,
+        html[data-tema="escuro"] .stat-change { color: #9aa0a8; }
+
+        html[data-tema="escuro"] input,
+        html[data-tema="escuro"] select,
+        html[data-tema="escuro"] textarea,
+        html[data-tema="escuro"] .ss-input {
+            background-color: #16191d !important;
+            color: #e2e4e8 !important;
+            border-color: #3a4048 !important;
+        }
+        html[data-tema="escuro"] input::placeholder,
+        html[data-tema="escuro"] textarea::placeholder { color: #6f757e; }
+        html[data-tema="escuro"] option { background: #1f2228; color: #e2e4e8; }
+
+        html[data-tema="escuro"] td { border-bottom-color: #2e333a; }
+        html[data-tema="escuro"] tbody tr:hover { background-color: rgba(255, 122, 66, 0.07); }
+        html[data-tema="escuro"] .ss-item:hover { background: #2a2f37; }
+        html[data-tema="escuro"] .ss-item-ativo { background: rgba(255,122,66,0.18); }
+        html[data-tema="escuro"] .colunas-dropdown-title { border-bottom-color: #353a42; }
+        html[data-tema="escuro"] .colunas-dropdown label { color: #d9dce1; }
+
+        html[data-tema="escuro"] .btn-secondary { background-color: #3a3f47; }
+        html[data-tema="escuro"] .btn-secondary:hover { background-color: #4a5059; }
+        html[data-tema="escuro"] .dre-niveis .btn { background: #2a2f37; color: #d9dce1; border-color: #3a4048; }
+        html[data-tema="escuro"] .dre-seta { color: #9aa0a8; }
+        html[data-tema="escuro"] .dre-seta:hover { background: rgba(255,122,66,0.2); }
+
+        html[data-tema="escuro"] .fcd-badge { background: #2a2f37; border-color: #3a4048; color: #c9cdd3; }
+        html[data-tema="escuro"] .fcd-analise .fcd-tag { background: #2a2f37; color: #a4abb4; }
+        html[data-tema="escuro"] .fcd-tab th { background: #262a31; color: #9aa0a8; border-bottom-color: #353a42; }
+        html[data-tema="escuro"] .fcd-tab th.fcd-h-rec { color: #6fd08c; }
+        html[data-tema="escuro"] .fcd-tab th.fcd-h-desp { color: #ff8a95; }
+        html[data-tema="escuro"] .fcd-tab td { border-bottom-color: #2a2e35; }
+        html[data-tema="escuro"] .fcd-tab td:first-child { color: #c9cdd3; }
+        html[data-tema="escuro"] .fcd-tab tr.fcd-dia:hover td { background: rgba(255,122,66,0.08); }
+        html[data-tema="escuro"] .fcd-tab tr.fcd-hoje td { background: rgba(255,122,66,0.14); }
+        html[data-tema="escuro"] .fcd-tab tr.fcd-total td { background: #262a31; border-top-color: #3a4048; }
+        html[data-tema="escuro"] .fcd-rec { color: #6fd08c; }
+        html[data-tema="escuro"] .fcd-desp { color: #ff8a95; }
+        html[data-tema="escuro"] .fcd-zero, html[data-tema="escuro"] .fcd-pill.nulo { color: #555b64; }
+        html[data-tema="escuro"] #fcdCardReceita { color: #6fd08c !important; }
+        html[data-tema="escuro"] #fcdCardDespesa { color: #ff8a95 !important; }
+        html[data-tema="escuro"] #fcdCardDias { color: #e2e4e8 !important; }
+
+        html[data-tema="escuro"] .alert-success { background: rgba(40,167,69,0.16); color: #6fd08c; }
+        html[data-tema="escuro"] .alert-error { background: rgba(220,53,69,0.16); color: #ff8a95; }
+        html[data-tema="escuro"] .alert-info { background: rgba(23,162,184,0.16); color: #7fd3e6; }
+        html[data-tema="escuro"] .error-message { background-color: rgba(220,53,69,0.16); }
+        html[data-tema="escuro"] ::-webkit-scrollbar { width: 10px; height: 10px; }
+        html[data-tema="escuro"] ::-webkit-scrollbar-track { background: #15171b; }
+        html[data-tema="escuro"] ::-webkit-scrollbar-thumb { background: #3a4048; border-radius: 6px; }
+html[data-tema="escuro"] [style*="background:white"],
+html[data-tema="escuro"] [style*="background: white"],
+html[data-tema="escuro"] [style*="background-color:white"],
+html[data-tema="escuro"] [style*="background-color: white"],
+html[data-tema="escuro"] [style*="background:#fff"],
+html[data-tema="escuro"] [style*="background: #fff"],
+html[data-tema="escuro"] [style*="background-color:#fff"],
+html[data-tema="escuro"] [style*="background-color: #fff"],
+html[data-tema="escuro"] [style*="background:#ffffff"],
+html[data-tema="escuro"] [style*="background: #ffffff"],
+html[data-tema="escuro"] [style*="background-color:#ffffff"],
+html[data-tema="escuro"] [style*="background-color: #ffffff"],
+html[data-tema="escuro"] [style*="background:#fafafa"],
+html[data-tema="escuro"] [style*="background: #fafafa"],
+html[data-tema="escuro"] [style*="background-color:#fafafa"],
+html[data-tema="escuro"] [style*="background-color: #fafafa"],
+html[data-tema="escuro"] [style*="background:#f9f9f9"],
+html[data-tema="escuro"] [style*="background: #f9f9f9"],
+html[data-tema="escuro"] [style*="background-color:#f9f9f9"],
+html[data-tema="escuro"] [style*="background-color: #f9f9f9"],
+html[data-tema="escuro"] [style*="background:#f8f9fa"],
+html[data-tema="escuro"] [style*="background: #f8f9fa"],
+html[data-tema="escuro"] [style*="background-color:#f8f9fa"],
+html[data-tema="escuro"] [style*="background-color: #f8f9fa"],
+html[data-tema="escuro"] [style*="background:#f7f7f7"],
+html[data-tema="escuro"] [style*="background: #f7f7f7"],
+html[data-tema="escuro"] [style*="background-color:#f7f7f7"],
+html[data-tema="escuro"] [style*="background-color: #f7f7f7"],
+html[data-tema="escuro"] [style*="background:#f7f7f9"],
+html[data-tema="escuro"] [style*="background: #f7f7f9"],
+html[data-tema="escuro"] [style*="background-color:#f7f7f9"],
+html[data-tema="escuro"] [style*="background-color: #f7f7f9"],
+html[data-tema="escuro"] [style*="background:#f6f6f6"],
+html[data-tema="escuro"] [style*="background: #f6f6f6"],
+html[data-tema="escuro"] [style*="background-color:#f6f6f6"],
+html[data-tema="escuro"] [style*="background-color: #f6f6f6"],
+html[data-tema="escuro"] [style*="background:#f5f5f5"],
+html[data-tema="escuro"] [style*="background: #f5f5f5"],
+html[data-tema="escuro"] [style*="background-color:#f5f5f5"],
+html[data-tema="escuro"] [style*="background-color: #f5f5f5"],
+html[data-tema="escuro"] [style*="background:#f4f4f4"],
+html[data-tema="escuro"] [style*="background: #f4f4f4"],
+html[data-tema="escuro"] [style*="background-color:#f4f4f4"],
+html[data-tema="escuro"] [style*="background-color: #f4f4f4"],
+html[data-tema="escuro"] [style*="background:#f3f3f3"],
+html[data-tema="escuro"] [style*="background: #f3f3f3"],
+html[data-tema="escuro"] [style*="background-color:#f3f3f3"],
+html[data-tema="escuro"] [style*="background-color: #f3f3f3"],
+html[data-tema="escuro"] [style*="background:#f1f1f1"],
+html[data-tema="escuro"] [style*="background: #f1f1f1"],
+html[data-tema="escuro"] [style*="background-color:#f1f1f1"],
+html[data-tema="escuro"] [style*="background-color: #f1f1f1"],
+html[data-tema="escuro"] [style*="background:#f0f0f0"],
+html[data-tema="escuro"] [style*="background: #f0f0f0"],
+html[data-tema="escuro"] [style*="background-color:#f0f0f0"],
+html[data-tema="escuro"] [style*="background-color: #f0f0f0"],
+html[data-tema="escuro"] [style*="background:#eef1f4"],
+html[data-tema="escuro"] [style*="background: #eef1f4"],
+html[data-tema="escuro"] [style*="background-color:#eef1f4"],
+html[data-tema="escuro"] [style*="background-color: #eef1f4"],
+html[data-tema="escuro"] [style*="background:#e9ecef"],
+html[data-tema="escuro"] [style*="background: #e9ecef"],
+html[data-tema="escuro"] [style*="background-color:#e9ecef"],
+html[data-tema="escuro"] [style*="background-color: #e9ecef"],
+html[data-tema="escuro"] [style*="background:#eee"],
+html[data-tema="escuro"] [style*="background: #eee"],
+html[data-tema="escuro"] [style*="background-color:#eee"],
+html[data-tema="escuro"] [style*="background-color: #eee"],
+html[data-tema="escuro"] [style*="background:#fcfcfc"],
+html[data-tema="escuro"] [style*="background: #fcfcfc"],
+html[data-tema="escuro"] [style*="background-color:#fcfcfc"],
+html[data-tema="escuro"] [style*="background-color: #fcfcfc"],
+html[data-tema="escuro"] [style*="background:#fdfdfd"],
+html[data-tema="escuro"] [style*="background: #fdfdfd"],
+html[data-tema="escuro"] [style*="background-color:#fdfdfd"],
+html[data-tema="escuro"] [style*="background-color: #fdfdfd"],
+html[data-tema="escuro"] [style*="background:#fbfbfb"],
+html[data-tema="escuro"] [style*="background: #fbfbfb"],
+html[data-tema="escuro"] [style*="background-color:#fbfbfb"],
+html[data-tema="escuro"] [style*="background-color: #fbfbfb"],
+html[data-tema="escuro"] [style*="background:rgb(255, 255, 255)"],
+html[data-tema="escuro"] [style*="background: rgb(255, 255, 255)"],
+html[data-tema="escuro"] [style*="background-color:rgb(255, 255, 255)"],
+html[data-tema="escuro"] [style*="background-color: rgb(255, 255, 255)"],
+html[data-tema="escuro"] [style*="background:rgb(250, 250, 250)"],
+html[data-tema="escuro"] [style*="background: rgb(250, 250, 250)"],
+html[data-tema="escuro"] [style*="background-color:rgb(250, 250, 250)"],
+html[data-tema="escuro"] [style*="background-color: rgb(250, 250, 250)"],
+html[data-tema="escuro"] [style*="background:rgb(245, 245, 245)"],
+html[data-tema="escuro"] [style*="background: rgb(245, 245, 245)"],
+html[data-tema="escuro"] [style*="background-color:rgb(245, 245, 245)"],
+html[data-tema="escuro"] [style*="background-color: rgb(245, 245, 245)"],
+html[data-tema="escuro"] [style*="background:rgb(240, 240, 240)"],
+html[data-tema="escuro"] [style*="background: rgb(240, 240, 240)"],
+html[data-tema="escuro"] [style*="background-color:rgb(240, 240, 240)"],
+html[data-tema="escuro"] [style*="background-color: rgb(240, 240, 240)"],
+html[data-tema="escuro"] [style*="background:rgb(248, 249, 250)"],
+html[data-tema="escuro"] [style*="background: rgb(248, 249, 250)"],
+html[data-tema="escuro"] [style*="background-color:rgb(248, 249, 250)"],
+html[data-tema="escuro"] [style*="background-color: rgb(248, 249, 250)"] { background: #23272e !important; }
+html[data-tema="escuro"] [style*="background:#d4edda"],
+html[data-tema="escuro"] [style*="background: #d4edda"],
+html[data-tema="escuro"] [style*="background-color:#d4edda"],
+html[data-tema="escuro"] [style*="background-color: #d4edda"],
+html[data-tema="escuro"] [style*="background:#f0fff4"],
+html[data-tema="escuro"] [style*="background: #f0fff4"],
+html[data-tema="escuro"] [style*="background-color:#f0fff4"],
+html[data-tema="escuro"] [style*="background-color: #f0fff4"],
+html[data-tema="escuro"] [style*="background:#e8f8ee"],
+html[data-tema="escuro"] [style*="background: #e8f8ee"],
+html[data-tema="escuro"] [style*="background-color:#e8f8ee"],
+html[data-tema="escuro"] [style*="background-color: #e8f8ee"],
+html[data-tema="escuro"] [style*="background:#f8fff8"],
+html[data-tema="escuro"] [style*="background: #f8fff8"],
+html[data-tema="escuro"] [style*="background-color:#f8fff8"],
+html[data-tema="escuro"] [style*="background-color: #f8fff8"],
+html[data-tema="escuro"] [style*="background:#e8f5e9"],
+html[data-tema="escuro"] [style*="background: #e8f5e9"],
+html[data-tema="escuro"] [style*="background-color:#e8f5e9"],
+html[data-tema="escuro"] [style*="background-color: #e8f5e9"],
+html[data-tema="escuro"] [style*="background:#f0fdf4"],
+html[data-tema="escuro"] [style*="background: #f0fdf4"],
+html[data-tema="escuro"] [style*="background-color:#f0fdf4"],
+html[data-tema="escuro"] [style*="background-color: #f0fdf4"],
+html[data-tema="escuro"] [style*="background:rgb(212, 237, 218)"],
+html[data-tema="escuro"] [style*="background: rgb(212, 237, 218)"],
+html[data-tema="escuro"] [style*="background-color:rgb(212, 237, 218)"],
+html[data-tema="escuro"] [style*="background-color: rgb(212, 237, 218)"] { background: #1c3325 !important; }
+html[data-tema="escuro"] [style*="background:#f8d7da"],
+html[data-tema="escuro"] [style*="background: #f8d7da"],
+html[data-tema="escuro"] [style*="background-color:#f8d7da"],
+html[data-tema="escuro"] [style*="background-color: #f8d7da"],
+html[data-tema="escuro"] [style*="background:#fde8e8"],
+html[data-tema="escuro"] [style*="background: #fde8e8"],
+html[data-tema="escuro"] [style*="background-color:#fde8e8"],
+html[data-tema="escuro"] [style*="background-color: #fde8e8"],
+html[data-tema="escuro"] [style*="background:#fff5f5"],
+html[data-tema="escuro"] [style*="background: #fff5f5"],
+html[data-tema="escuro"] [style*="background-color:#fff5f5"],
+html[data-tema="escuro"] [style*="background-color: #fff5f5"],
+html[data-tema="escuro"] [style*="background:#fff8f8"],
+html[data-tema="escuro"] [style*="background: #fff8f8"],
+html[data-tema="escuro"] [style*="background-color:#fff8f8"],
+html[data-tema="escuro"] [style*="background-color: #fff8f8"],
+html[data-tema="escuro"] [style*="background:#fffbfb"],
+html[data-tema="escuro"] [style*="background: #fffbfb"],
+html[data-tema="escuro"] [style*="background-color:#fffbfb"],
+html[data-tema="escuro"] [style*="background-color: #fffbfb"],
+html[data-tema="escuro"] [style*="background:#ffe5e5"],
+html[data-tema="escuro"] [style*="background: #ffe5e5"],
+html[data-tema="escuro"] [style*="background-color:#ffe5e5"],
+html[data-tema="escuro"] [style*="background-color: #ffe5e5"],
+html[data-tema="escuro"] [style*="background:rgb(248, 215, 218)"],
+html[data-tema="escuro"] [style*="background: rgb(248, 215, 218)"],
+html[data-tema="escuro"] [style*="background-color:rgb(248, 215, 218)"],
+html[data-tema="escuro"] [style*="background-color: rgb(248, 215, 218)"] { background: #3b2227 !important; }
+html[data-tema="escuro"] [style*="background:#e8f4fd"],
+html[data-tema="escuro"] [style*="background: #e8f4fd"],
+html[data-tema="escuro"] [style*="background-color:#e8f4fd"],
+html[data-tema="escuro"] [style*="background-color: #e8f4fd"],
+html[data-tema="escuro"] [style*="background:#e3f2fd"],
+html[data-tema="escuro"] [style*="background: #e3f2fd"],
+html[data-tema="escuro"] [style*="background-color:#e3f2fd"],
+html[data-tema="escuro"] [style*="background-color: #e3f2fd"],
+html[data-tema="escuro"] [style*="background:#d1ecf1"],
+html[data-tema="escuro"] [style*="background: #d1ecf1"],
+html[data-tema="escuro"] [style*="background-color:#d1ecf1"],
+html[data-tema="escuro"] [style*="background-color: #d1ecf1"],
+html[data-tema="escuro"] [style*="background:rgb(232, 244, 253)"],
+html[data-tema="escuro"] [style*="background: rgb(232, 244, 253)"],
+html[data-tema="escuro"] [style*="background-color:rgb(232, 244, 253)"],
+html[data-tema="escuro"] [style*="background-color: rgb(232, 244, 253)"],
+html[data-tema="escuro"] [style*="background:rgb(209, 236, 241)"],
+html[data-tema="escuro"] [style*="background: rgb(209, 236, 241)"],
+html[data-tema="escuro"] [style*="background-color:rgb(209, 236, 241)"],
+html[data-tema="escuro"] [style*="background-color: rgb(209, 236, 241)"] { background: #1a3038 !important; }
+html[data-tema="escuro"] [style*="background:#fff3cd"],
+html[data-tema="escuro"] [style*="background: #fff3cd"],
+html[data-tema="escuro"] [style*="background-color:#fff3cd"],
+html[data-tema="escuro"] [style*="background-color: #fff3cd"],
+html[data-tema="escuro"] [style*="background:#fffde7"],
+html[data-tema="escuro"] [style*="background: #fffde7"],
+html[data-tema="escuro"] [style*="background-color:#fffde7"],
+html[data-tema="escuro"] [style*="background-color: #fffde7"],
+html[data-tema="escuro"] [style*="background:#fff4e5"],
+html[data-tema="escuro"] [style*="background: #fff4e5"],
+html[data-tema="escuro"] [style*="background-color:#fff4e5"],
+html[data-tema="escuro"] [style*="background-color: #fff4e5"],
+html[data-tema="escuro"] [style*="background:rgb(255, 243, 205)"],
+html[data-tema="escuro"] [style*="background: rgb(255, 243, 205)"],
+html[data-tema="escuro"] [style*="background-color:rgb(255, 243, 205)"],
+html[data-tema="escuro"] [style*="background-color: rgb(255, 243, 205)"] { background: #383220 !important; }
+html[data-tema="escuro"] [style*="background:#fff4ec"],
+html[data-tema="escuro"] [style*="background: #fff4ec"],
+html[data-tema="escuro"] [style*="background-color:#fff4ec"],
+html[data-tema="escuro"] [style*="background-color: #fff4ec"],
+html[data-tema="escuro"] [style*="background:#fff7f2"],
+html[data-tema="escuro"] [style*="background: #fff7f2"],
+html[data-tema="escuro"] [style*="background-color:#fff7f2"],
+html[data-tema="escuro"] [style*="background-color: #fff7f2"],
+html[data-tema="escuro"] [style*="background:#fff8f4"],
+html[data-tema="escuro"] [style*="background: #fff8f4"],
+html[data-tema="escuro"] [style*="background-color:#fff8f4"],
+html[data-tema="escuro"] [style*="background-color: #fff8f4"],
+html[data-tema="escuro"] [style*="background:#fff2ea"],
+html[data-tema="escuro"] [style*="background: #fff2ea"],
+html[data-tema="escuro"] [style*="background-color:#fff2ea"],
+html[data-tema="escuro"] [style*="background-color: #fff2ea"],
+html[data-tema="escuro"] [style*="background:#fff1ea"],
+html[data-tema="escuro"] [style*="background: #fff1ea"],
+html[data-tema="escuro"] [style*="background-color:#fff1ea"],
+html[data-tema="escuro"] [style*="background-color: #fff1ea"],
+html[data-tema="escuro"] [style*="background:#ffe3d4"],
+html[data-tema="escuro"] [style*="background: #ffe3d4"],
+html[data-tema="escuro"] [style*="background-color:#ffe3d4"],
+html[data-tema="escuro"] [style*="background-color: #ffe3d4"] { background: #3a2920 !important; }
+html[data-tema="escuro"] [style*="background:#f0e8f8"],
+html[data-tema="escuro"] [style*="background: #f0e8f8"],
+html[data-tema="escuro"] [style*="background-color:#f0e8f8"],
+html[data-tema="escuro"] [style*="background-color: #f0e8f8"],
+html[data-tema="escuro"] [style*="background:#f3e8fd"],
+html[data-tema="escuro"] [style*="background: #f3e8fd"],
+html[data-tema="escuro"] [style*="background-color:#f3e8fd"],
+html[data-tema="escuro"] [style*="background-color: #f3e8fd"],
+html[data-tema="escuro"] [style*="background:#f3e8ff"],
+html[data-tema="escuro"] [style*="background: #f3e8ff"],
+html[data-tema="escuro"] [style*="background-color:#f3e8ff"],
+html[data-tema="escuro"] [style*="background-color: #f3e8ff"] { background: #2f2539 !important; }
+html[data-tema="escuro"] [style*=";color:#333"], html[data-tema="escuro"] [style^="color:#333"], html[data-tema="escuro"] [style*=" color:#333"],
+html[data-tema="escuro"] [style*=";color: #333"], html[data-tema="escuro"] [style^="color: #333"], html[data-tema="escuro"] [style*=" color: #333"],
+html[data-tema="escuro"] [style*=";color:#222"], html[data-tema="escuro"] [style^="color:#222"], html[data-tema="escuro"] [style*=" color:#222"],
+html[data-tema="escuro"] [style*=";color: #222"], html[data-tema="escuro"] [style^="color: #222"], html[data-tema="escuro"] [style*=" color: #222"],
+html[data-tema="escuro"] [style*=";color:#444"], html[data-tema="escuro"] [style^="color:#444"], html[data-tema="escuro"] [style*=" color:#444"],
+html[data-tema="escuro"] [style*=";color: #444"], html[data-tema="escuro"] [style^="color: #444"], html[data-tema="escuro"] [style*=" color: #444"],
+html[data-tema="escuro"] [style*=";color:#555"], html[data-tema="escuro"] [style^="color:#555"], html[data-tema="escuro"] [style*=" color:#555"],
+html[data-tema="escuro"] [style*=";color: #555"], html[data-tema="escuro"] [style^="color: #555"], html[data-tema="escuro"] [style*=" color: #555"],
+html[data-tema="escuro"] [style*=";color:#2c3e50"], html[data-tema="escuro"] [style^="color:#2c3e50"], html[data-tema="escuro"] [style*=" color:#2c3e50"],
+html[data-tema="escuro"] [style*=";color: #2c3e50"], html[data-tema="escuro"] [style^="color: #2c3e50"], html[data-tema="escuro"] [style*=" color: #2c3e50"],
+html[data-tema="escuro"] [style*=";color:#1a1a1a"], html[data-tema="escuro"] [style^="color:#1a1a1a"], html[data-tema="escuro"] [style*=" color:#1a1a1a"],
+html[data-tema="escuro"] [style*=";color: #1a1a1a"], html[data-tema="escuro"] [style^="color: #1a1a1a"], html[data-tema="escuro"] [style*=" color: #1a1a1a"],
+html[data-tema="escuro"] [style*=";color:rgb(51, 51, 51)"], html[data-tema="escuro"] [style^="color:rgb(51, 51, 51)"], html[data-tema="escuro"] [style*=" color:rgb(51, 51, 51)"],
+html[data-tema="escuro"] [style*=";color: rgb(51, 51, 51)"], html[data-tema="escuro"] [style^="color: rgb(51, 51, 51)"], html[data-tema="escuro"] [style*=" color: rgb(51, 51, 51)"] { color: #d9dce1 !important; }
+html[data-tema="escuro"] [style*=";color:#666"], html[data-tema="escuro"] [style^="color:#666"], html[data-tema="escuro"] [style*=" color:#666"],
+html[data-tema="escuro"] [style*=";color: #666"], html[data-tema="escuro"] [style^="color: #666"], html[data-tema="escuro"] [style*=" color: #666"],
+html[data-tema="escuro"] [style*=";color:#777"], html[data-tema="escuro"] [style^="color:#777"], html[data-tema="escuro"] [style*=" color:#777"],
+html[data-tema="escuro"] [style*=";color: #777"], html[data-tema="escuro"] [style^="color: #777"], html[data-tema="escuro"] [style*=" color: #777"] { color: #a4abb4 !important; }
+html[data-tema="escuro"] [style*=";color:#155724"], html[data-tema="escuro"] [style^="color:#155724"], html[data-tema="escuro"] [style*=" color:#155724"],
+html[data-tema="escuro"] [style*=";color: #155724"], html[data-tema="escuro"] [style^="color: #155724"], html[data-tema="escuro"] [style*=" color: #155724"],
+html[data-tema="escuro"] [style*=";color:#1e7e34"], html[data-tema="escuro"] [style^="color:#1e7e34"], html[data-tema="escuro"] [style*=" color:#1e7e34"],
+html[data-tema="escuro"] [style*=";color: #1e7e34"], html[data-tema="escuro"] [style^="color: #1e7e34"], html[data-tema="escuro"] [style*=" color: #1e7e34"] { color: #6fd08c !important; }
+html[data-tema="escuro"] [style*=";color:#721c24"], html[data-tema="escuro"] [style^="color:#721c24"], html[data-tema="escuro"] [style*=" color:#721c24"],
+html[data-tema="escuro"] [style*=";color: #721c24"], html[data-tema="escuro"] [style^="color: #721c24"], html[data-tema="escuro"] [style*=" color: #721c24"] { color: #ff8a95 !important; }
+html[data-tema="escuro"] [style*=";color:#856404"], html[data-tema="escuro"] [style^="color:#856404"], html[data-tema="escuro"] [style*=" color:#856404"],
+html[data-tema="escuro"] [style*=";color: #856404"], html[data-tema="escuro"] [style^="color: #856404"], html[data-tema="escuro"] [style*=" color: #856404"] { color: #f2c94c !important; }
+html[data-tema="escuro"] [style*=";color:#0c5460"], html[data-tema="escuro"] [style^="color:#0c5460"], html[data-tema="escuro"] [style*=" color:#0c5460"],
+html[data-tema="escuro"] [style*=";color: #0c5460"], html[data-tema="escuro"] [style^="color: #0c5460"], html[data-tema="escuro"] [style*=" color: #0c5460"] { color: #7fd3e6 !important; }
+html[data-tema="escuro"] [style*=";color:#1565c0"], html[data-tema="escuro"] [style^="color:#1565c0"], html[data-tema="escuro"] [style*=" color:#1565c0"],
+html[data-tema="escuro"] [style*=";color: #1565c0"], html[data-tema="escuro"] [style^="color: #1565c0"], html[data-tema="escuro"] [style*=" color: #1565c0"] { color: #7fb6ff !important; }
+html[data-tema="escuro"] [style*=";color:rgb(12, 84, 96)"], html[data-tema="escuro"] [style^="color:rgb(12, 84, 96)"], html[data-tema="escuro"] [style*=" color:rgb(12, 84, 96)"], html[data-tema="escuro"] [style*=";color: rgb(12, 84, 96)"], html[data-tema="escuro"] [style^="color: rgb(12, 84, 96)"], html[data-tema="escuro"] [style*=" color: rgb(12, 84, 96)"] { color: #7fd3e6 !important; }
+html[data-tema="escuro"] [style*=";color:rgb(133, 100, 4)"], html[data-tema="escuro"] [style^="color:rgb(133, 100, 4)"], html[data-tema="escuro"] [style*=" color:rgb(133, 100, 4)"], html[data-tema="escuro"] [style*=";color: rgb(133, 100, 4)"], html[data-tema="escuro"] [style^="color: rgb(133, 100, 4)"], html[data-tema="escuro"] [style*=" color: rgb(133, 100, 4)"] { color: #f2c94c !important; }
+html[data-tema="escuro"] [style*=";color:rgb(21, 87, 36)"], html[data-tema="escuro"] [style^="color:rgb(21, 87, 36)"], html[data-tema="escuro"] [style*=" color:rgb(21, 87, 36)"], html[data-tema="escuro"] [style*=";color: rgb(21, 87, 36)"], html[data-tema="escuro"] [style^="color: rgb(21, 87, 36)"], html[data-tema="escuro"] [style*=" color: rgb(21, 87, 36)"], html[data-tema="escuro"] [style*=";color:rgb(30, 126, 52)"], html[data-tema="escuro"] [style^="color:rgb(30, 126, 52)"], html[data-tema="escuro"] [style*=" color:rgb(30, 126, 52)"], html[data-tema="escuro"] [style*=";color: rgb(30, 126, 52)"], html[data-tema="escuro"] [style^="color: rgb(30, 126, 52)"], html[data-tema="escuro"] [style*=" color: rgb(30, 126, 52)"] { color: #6fd08c !important; }
+html[data-tema="escuro"] [style*=";color:rgb(114, 28, 36)"], html[data-tema="escuro"] [style^="color:rgb(114, 28, 36)"], html[data-tema="escuro"] [style*=" color:rgb(114, 28, 36)"], html[data-tema="escuro"] [style*=";color: rgb(114, 28, 36)"], html[data-tema="escuro"] [style^="color: rgb(114, 28, 36)"], html[data-tema="escuro"] [style*=" color: rgb(114, 28, 36)"], html[data-tema="escuro"] [style*=";color:rgb(200, 35, 51)"], html[data-tema="escuro"] [style^="color:rgb(200, 35, 51)"], html[data-tema="escuro"] [style*=" color:rgb(200, 35, 51)"], html[data-tema="escuro"] [style*=";color: rgb(200, 35, 51)"], html[data-tema="escuro"] [style^="color: rgb(200, 35, 51)"], html[data-tema="escuro"] [style*=" color: rgb(200, 35, 51)"], html[data-tema="escuro"] [style*=";color:#c82333"], html[data-tema="escuro"] [style^="color:#c82333"], html[data-tema="escuro"] [style*=" color:#c82333"], html[data-tema="escuro"] [style*=";color: #c82333"], html[data-tema="escuro"] [style^="color: #c82333"], html[data-tema="escuro"] [style*=" color: #c82333"] { color: #ff8a95 !important; }
+html[data-tema="escuro"] [style*=";color:rgb(51, 51, 51)"], html[data-tema="escuro"] [style^="color:rgb(51, 51, 51)"], html[data-tema="escuro"] [style*=" color:rgb(51, 51, 51)"], html[data-tema="escuro"] [style*=";color: rgb(51, 51, 51)"], html[data-tema="escuro"] [style^="color: rgb(51, 51, 51)"], html[data-tema="escuro"] [style*=" color: rgb(51, 51, 51)"], html[data-tema="escuro"] [style*=";color:rgb(85, 85, 85)"], html[data-tema="escuro"] [style^="color:rgb(85, 85, 85)"], html[data-tema="escuro"] [style*=" color:rgb(85, 85, 85)"], html[data-tema="escuro"] [style*=";color: rgb(85, 85, 85)"], html[data-tema="escuro"] [style^="color: rgb(85, 85, 85)"], html[data-tema="escuro"] [style*=" color: rgb(85, 85, 85)"] { color: #d9dce1 !important; }
+html[data-tema="escuro"] [style*=";color:#ccc"], html[data-tema="escuro"] [style^="color:#ccc"], html[data-tema="escuro"] [style*=" color:#ccc"], html[data-tema="escuro"] [style*=";color: #ccc"], html[data-tema="escuro"] [style^="color: #ccc"], html[data-tema="escuro"] [style*=" color: #ccc"], html[data-tema="escuro"] [style*=";color:#bbb"], html[data-tema="escuro"] [style^="color:#bbb"], html[data-tema="escuro"] [style*=" color:#bbb"], html[data-tema="escuro"] [style*=";color: #bbb"], html[data-tema="escuro"] [style^="color: #bbb"], html[data-tema="escuro"] [style*=" color: #bbb"], html[data-tema="escuro"] [style*=";color:rgb(204, 204, 204)"], html[data-tema="escuro"] [style^="color:rgb(204, 204, 204)"], html[data-tema="escuro"] [style*=" color:rgb(204, 204, 204)"], html[data-tema="escuro"] [style*=";color: rgb(204, 204, 204)"], html[data-tema="escuro"] [style^="color: rgb(204, 204, 204)"], html[data-tema="escuro"] [style*=" color: rgb(204, 204, 204)"] { color: #5c626b !important; }
+html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style^="color:#aaa"], html[data-tema="escuro"] [style*=" color:#aaa"], html[data-tema="escuro"] [style*=";color: #aaa"], html[data-tema="escuro"] [style^="color: #aaa"], html[data-tema="escuro"] [style*=" color: #aaa"], html[data-tema="escuro"] [style*=";color:#999"], html[data-tema="escuro"] [style^="color:#999"], html[data-tema="escuro"] [style*=" color:#999"], html[data-tema="escuro"] [style*=";color: #999"], html[data-tema="escuro"] [style^="color: #999"], html[data-tema="escuro"] [style*=" color: #999"], html[data-tema="escuro"] [style*=";color:#888"], html[data-tema="escuro"] [style^="color:#888"], html[data-tema="escuro"] [style*=" color:#888"], html[data-tema="escuro"] [style*=";color: #888"], html[data-tema="escuro"] [style^="color: #888"], html[data-tema="escuro"] [style*=" color: #888"] { color: #8a9099 !important; }
     </style>
+    <script>
+        // Aplica o tema salvo antes de desenhar a página (evita "piscar" claro→escuro)
+        (function () {
+            var t = "claro";
+            try { t = localStorage.getItem("cap_tema") === "escuro" ? "escuro" : "claro"; } catch (e) {}
+            document.documentElement.setAttribute("data-tema", t);
+        })();
+    </script>
 </head>
 <body>
 
@@ -1014,6 +1428,11 @@
         <div class="menu-section-title">Menu</div>
         
         <div class="menu-item active" onclick="showPage('dashboard')">📊 Dashboard</div>
+        <div class="menu-item" onclick="showPage('dfc')">💹 DFC</div>
+        <div class="menu-item" onclick="showPage('fcd')">🗓️ Fluxo de Caixa Diário</div>
+        <div class="menu-item" onclick="showPage('dre')">📊 DRE</div>
+        <div class="menu-item" onclick="showPage('fcp')">🔮 Fluxo Projetado</div>
+        <div class="menu-item" onclick="showPage('analise-categorias')">🔎 Análise de Categorias</div>
 
         <div class="menu-section">
             <div class="menu-section-title">Lançamentos</div>
@@ -1032,10 +1451,6 @@
             <div class="menu-section-title">Análises</div>
             <div class="menu-item" onclick="showPage('relatorio-receber')">📈 Resumo Recebimentos</div>
             <div class="menu-item" onclick="showPage('relatorio-pagar')">📉 Resumo Pagamentos</div>
-            <div class="menu-item" onclick="showPage('dfc')">💹 DFC</div>
-            <div class="menu-item" onclick="showPage('dre')">📊 DRE</div>
-            <div class="menu-item" onclick="showPage('analise-categorias')">🔎 Análise de Categorias</div>
-            <div class="menu-item" onclick="showPage('fcp')">🔮 Fluxo Projetado</div>
         </div>
 
         <div class="menu-section">
@@ -1051,6 +1466,10 @@
         </div>
 
               </div><!-- fim sidebar-menu -->
+        <div class="tema-toggle" role="group" aria-label="Tema do sistema">
+            <button type="button" data-tema-btn="claro" onclick="aplicarTema('claro')">☀️ Claro</button>
+            <button type="button" data-tema-btn="escuro" onclick="aplicarTema('escuro')">🌙 Escuro</button>
+        </div>
         <button class="logout-btn" onclick="handleLogout()">🚪 Sair</button>
         <div style="text-align:center; padding: 6px 0 10px;">
             <span onclick="diagnosticarConexao()" style="font-size:10px; color:#666; cursor:pointer; text-decoration:underline;">🔧 diagnóstico</span>
@@ -2333,7 +2752,7 @@
         <div id="dfc" class="page">
             <div class="page-header">
                 <h1>Demonstração de Fluxo de Caixa (DFC)</h1>
-                <button class="btn btn-secondary" onclick="gerarPDFDFC()" style="background:#e67e22;color:white;">📄 PDF</button>
+                <button class="btn btn-secondary" onclick="gerarPDFDFCCategoria()" style="background:#e67e22;color:white;">📄 PDF</button>
             </div>
 
             <div id="dfcAviso" style="display:none;"></div>
@@ -2350,6 +2769,13 @@
                         <label>Ano</label>
                         <select id="filtroAnoDFC" onchange="carregarDFC()">
                             <option value="">Todos os anos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>PDF</label>
+                        <select id="orientPDFDFC" title="Orientação do PDF do DFC Detalhado por Categoria">
+                            <option value="landscape">Paisagem</option>
+                            <option value="portrait">Retrato</option>
                         </select>
                     </div>
                     <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:2px;">
@@ -2388,7 +2814,7 @@
             </div>
 
             <!-- Tabela mensal Jan-Dez DFC -->
-            <div class="card" id="cardDFCMensal" style="display:none;">
+            <div class="card dfc-oculto" id="cardDFCMensal" style="display:none;">
                 <div class="card-title" id="tituloDFCMensal">📅 DFC Mensal</div>
                 <div class="table-container">
                     <table id="tabelaDFCMensal" style="width:auto;min-width:500px;max-width:800px;">
@@ -2415,7 +2841,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card dfc-oculto" id="cardDFCAnalise">
                 <div class="card-title">Análise de Fluxo de Caixa</div>
                 <div class="table-container">
                     <table id="tabelaDFC">
@@ -2453,7 +2879,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card dfc-oculto" id="cardDFCGrafico">
                 <div class="card-title">Fluxo de Caixa Acumulado</div>
                 <div class="chart-container">
                     <canvas id="chartDFC"></canvas>
@@ -2469,6 +2895,10 @@
                             <option value="mensal">Mensal (Jan a Dez)</option>
                             <option value="total">Total do periodo</option>
                         </select>
+                        <div class="colunas-btn-wrap">
+                            <button class="btn btn-secondary btn-small" type="button" onclick="toggleMenuMesesDFC(event)" style="font-size:11px;background:#555;color:white;">📅 Meses</button>
+                            <div id="menuMesesDFC" class="colunas-dropdown"></div>
+                        </div>
                         <button onclick="gerarPDFDFCCategoria()" class="btn btn-secondary btn-small" style="font-size:11px;background:#e67e22;color:white;">&#128196; PDF</button>
                         <button onclick="exportarDFCCatXLSX()" class="btn btn-secondary btn-small" style="font-size:11px;background:#27ae60;color:white;">&#128190; Excel</button>
                     </div>
@@ -2481,6 +2911,78 @@
                     </table>
                 </div>
             </div>
+        </div>
+
+        <!-- FLUXO DE CAIXA DIÁRIO -->
+        <div id="fcd" class="page">
+            <div class="page-header">
+                <div>
+                    <h1 style="display:flex;align-items:center;gap:10px;">🗓️ Fluxo de Caixa Diário <span id="fcdBadge" class="fcd-badge">Consolidado</span></h1>
+                    <div style="font-size:12px;color:#888;margin-top:2px;">Receita, despesa e resultado de cada dia do mês</div>
+                </div>
+                <button class="btn btn-secondary" onclick="gerarPDFFCD()" style="background:#e67e22;color:white;">📄 PDF</button>
+            </div>
+
+            <div class="filter-container">
+                <div class="filter-row" style="align-items:flex-end;gap:12px;flex-wrap:wrap;">
+                    <div class="form-group">
+                        <label>Ano</label>
+                        <select id="fcdAno" onchange="carregarFCD()"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Mês</label>
+                        <select id="fcdMes" onchange="carregarFCD()">
+                            <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option>
+                            <option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option>
+                            <option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option>
+                            <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="display:flex;gap:6px;align-items:flex-end;padding-bottom:2px;">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="navegarMesFCD(-1)" title="Mês anterior" aria-label="Mês anterior">◀</button>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="irMesAtualFCD()">Mês atual</button>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="navegarMesFCD(1)" title="Próximo mês" aria-label="Próximo mês">▶</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Base</label>
+                        <select id="fcdBase" onchange="carregarFCD()">
+                            <option value="realizado">Realizado (o que entrou e saiu)</option>
+                            <option value="previsto">Previsto (em aberto, por vencimento)</option>
+                            <option value="ambos">Realizado + Previsto</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Conta / Banco</label>
+                        <select id="fcdBanco" onchange="carregarFCD()">
+                            <option value="">Todas as Contas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="filtroEmpresaFCD" onchange="carregarFCD()">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>PDF</label>
+                        <select id="orientPDFFCD" title="Orientação do PDF do Fluxo de Caixa Diário">
+                            <option value="portrait">Retrato</option>
+                            <option value="landscape">Paisagem</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fcd-cards">
+                <div class="fcd-card"><div class="fcd-card-valor" id="fcdCardReceita" style="color:#1e7e34;">R$ 0,00</div><div class="fcd-card-rotulo">Receita do mês</div></div>
+                <div class="fcd-card"><div class="fcd-card-valor" id="fcdCardDespesa" style="color:#c82333;">R$ 0,00</div><div class="fcd-card-rotulo">Despesa do mês</div></div>
+                <div class="fcd-card"><div class="fcd-card-valor" id="fcdCardResultado">R$ 0,00</div><div class="fcd-card-rotulo">Resultado do mês</div></div>
+                <div class="fcd-card"><div class="fcd-card-valor" id="fcdCardDias" style="color:#333;">0 <span style="font-size:15px;color:#999;font-weight:500;">/ 30</span></div><div class="fcd-card-rotulo">Dias com movimento</div></div>
+            </div>
+
+            <div class="fcd-analise" id="fcdAnalise"></div>
+
+            <div class="fcd-grade" id="fcdGrade"></div>
         </div>
 
         <!-- FLUXO DE CAIXA PROJETADO -->
@@ -2503,6 +3005,13 @@
                         <label>Ano de Projeção</label>
                         <select id="filtroAnoFCP" onchange="carregarFCP()">
                             <option value="">Selecione um ano</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>PDF</label>
+                        <select id="orientPDFFCP" title="Orientação do PDF do Fluxo Projetado">
+                            <option value="landscape">Paisagem</option>
+                            <option value="portrait">Retrato</option>
                         </select>
                     </div>
                     <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:2px;">
@@ -2542,7 +3051,13 @@
 
             <!-- Tabela mensal Jan-Dez (igual à DRE mensal) -->
             <div class="card" id="cardFCPMensal" style="display:none;">
-                <div class="card-title" id="fcpTituloTabela">📅 Fluxo de Caixa Projetado — Jan a Dez</div>
+                <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                    <span id="fcpTituloTabela">📅 Fluxo de Caixa Projetado — Jan a Dez</span>
+                    <div class="colunas-btn-wrap">
+                        <button class="btn btn-secondary btn-small" type="button" onclick="_colMesesReg.fcp.abrirFechar(event)" style="font-size:11px;background:#555;color:white;">📅 Meses</button>
+                        <div id="menuMesesFCP" class="colunas-dropdown"></div>
+                    </div>
+                </div>
                 <div style="overflow-x:auto;">
                     <table id="tabelaFCPMensal" style="font-size:12px;min-width:900px;border-collapse:collapse;">
                         <thead><tr id="fcpHeaderMeses"><th style="min-width:200px;text-align:left;padding:6px 8px;">Descrição</th></tr></thead>
@@ -2659,6 +3174,10 @@
                 <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
                     <span id="tituloDREMensal">📅 DRE Mensal</span>
                     <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:400;">
+                        <div class="dre-niveis" role="group" aria-label="Nível de detalhe">
+                            <button type="button" class="btn btn-secondary btn-small" onclick="expandirTodosDRE(false)" title="Mostrar somente os grupos da DRE">➖ Só grupos</button>
+                            <button type="button" class="btn btn-secondary btn-small" onclick="expandirTodosDRE(true)" title="Abrir as categorias de todos os grupos">➕ Com categorias</button>
+                        </div>
                         <div class="colunas-btn-wrap">
                             <button class="btn btn-secondary btn-small" type="button" onclick="toggleMenuMesesDRE(event)" style="background:#555;color:white;">📅 Meses</button>
                             <div id="menuMesesDRE" class="colunas-dropdown"></div>
@@ -2772,7 +3291,19 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-title" id="analiseCatTitulo">Valores por Categoria (competência)</div>
+                <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                    <span id="analiseCatTitulo">Valores por Categoria (competência)</span>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <select id="orientPDFAnaliseCat" title="Orientação do PDF" style="padding:5px 8px;font-size:12px;border:1px solid #ddd;border-radius:6px;width:auto;">
+                            <option value="landscape">PDF: Paisagem</option>
+                            <option value="portrait">PDF: Retrato</option>
+                        </select>
+                        <div class="colunas-btn-wrap">
+                            <button class="btn btn-secondary btn-small" type="button" onclick="_colMesesReg.analiseCat.abrirFechar(event)" style="font-size:11px;background:#555;color:white;">📅 Meses</button>
+                            <div id="menuMesesAnaliseCat" class="colunas-dropdown"></div>
+                        </div>
+                    </div>
+                </div>
                 <div style="font-size:12px;color:#888;margin-bottom:10px;" id="analiseCatDescricao">Somatório de contas a pagar por categoria e mês, com base na Data de Competência. Categorias sem movimento no período selecionado não aparecem na lista.</div>
                 <div style="overflow-x:auto;">
                     <table id="tabelaAnaliseCategorias" style="font-size:12.5px;min-width:900px;">
@@ -3644,7 +4175,7 @@
     const carregarEmpresasDebounced = debounce(() => carregarEmpresas(), 350);
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroGrupoDREPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "modoEmprestimoDRE", "orientPDFDRE", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "filtroAnoAnaliseCat", "filtroMesAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroGrupoDREPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "modoEmprestimoDRE", "orientPDFDRE", "orientPDFDFC", "orientPDFFCP", "orientPDFFCD", "orientPDFAnaliseCat", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "filtroAnoAnaliseCat", "filtroMesAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -5000,7 +5531,7 @@
 
     // Preenche todos os <select> de Empresa espalhados pelo sistema (lançamentos e filtros)
     function atualizarSelectEmpresas() {
-        const ids = ['empresaReceber', 'empresaPagar', 'filtroEmpresaReceber', 'filtroEmpresaPagar', 'filtroEmpresaRecebida', 'filtroEmpresaPaga', 'editLancEmpresa', 'lancDREEmpresa', 'filtroEmpresaRelReceber', 'filtroEmpresaRelPagar', 'filtroEmpresaDFC', 'filtroEmpresaDRE', 'filtroEmpresaFCP', 'filtroEmpresaAnaliseCat'];
+        const ids = ['empresaReceber', 'empresaPagar', 'filtroEmpresaReceber', 'filtroEmpresaPagar', 'filtroEmpresaRecebida', 'filtroEmpresaPaga', 'editLancEmpresa', 'lancDREEmpresa', 'filtroEmpresaRelReceber', 'filtroEmpresaRelPagar', 'filtroEmpresaDFC', 'filtroEmpresaDRE', 'filtroEmpresaFCP', 'filtroEmpresaAnaliseCat', 'filtroEmpresaFCD'];
         const itens = dadosCache.empresas.filter(e => e.ativo !== false);
         ids.forEach(id => {
             const select = document.getElementById(id);
@@ -6811,6 +7342,58 @@
         if (valorAtual) selectSubcategorias.value = valorAtual;
     }
 
+    // ================================================================
+    // TEMA CLARO / ESCURO (sistema inteiro, inclusive o menu)
+    // ================================================================
+    function _temaAtual() {
+        return document.documentElement.getAttribute('data-tema') === 'escuro' ? 'escuro' : 'claro';
+    }
+    // Plugin que ajusta eixos, grades e legendas de TODOS os gráficos ao tema atual
+    let _pluginTemaRegistrado = false;
+    function _registrarPluginTema() {
+        if (_pluginTemaRegistrado || !window.Chart) return;
+        _pluginTemaRegistrado = true;
+        Chart.register({
+            id: 'temaCAP',
+            beforeUpdate(chart) {
+                const escuro = _temaAtual() === 'escuro';
+                const txt = escuro ? '#b9bec6' : '#666';
+                const grade = escuro ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)';
+                Object.values(chart.options.scales || {}).forEach(sc => {
+                    if (sc.ticks) sc.ticks.color = txt;
+                    if (sc.grid && sc.grid.display !== false) sc.grid.color = grade;
+                    if (sc.title) sc.title.color = txt;
+                });
+                const leg = chart.options.plugins && chart.options.plugins.legend;
+                if (leg && leg.labels) leg.labels.color = txt;
+            }
+        });
+    }
+    function _aplicarCoresGraficos() {
+        if (!window.Chart) return;
+        _registrarPluginTema();
+        const escuro = _temaAtual() === 'escuro';
+        Chart.defaults.color = escuro ? '#b9bec6' : '#666';
+        Chart.defaults.borderColor = escuro ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)';
+        Object.values(charts || {}).forEach(ch => { try { if (ch && ch.update) ch.update('none'); } catch (e) {} });
+    }
+    function _marcarBotoesTema() {
+        const t = _temaAtual();
+        document.querySelectorAll('[data-tema-btn]').forEach(b => {
+            const ativo = b.getAttribute('data-tema-btn') === t;
+            b.classList.toggle('ativo', ativo);
+            b.setAttribute('aria-pressed', ativo ? 'true' : 'false');
+        });
+    }
+    function aplicarTema(tema) {
+        tema = tema === 'escuro' ? 'escuro' : 'claro';
+        document.documentElement.setAttribute('data-tema', tema);
+        try { localStorage.setItem('cap_tema', tema); } catch (e) {}
+        _marcarBotoesTema();
+        _aplicarCoresGraficos();
+    }
+    document.addEventListener('DOMContentLoaded', function () { _marcarBotoesTema(); _aplicarCoresGraficos(); });
+
     function showPage(pageId) {
         // Oculta todas as páginas
         document.querySelectorAll('.page').forEach(page => {
@@ -6850,6 +7433,7 @@
             else if (pageId === 'dre') carregarDRE();
             else if (pageId === 'analise-categorias') carregarAnaliseCategorias();
             else if (pageId === 'fcp') carregarFCP();
+            else if (pageId === 'fcd') carregarFCD();
             else if (pageId === 'bancos') carregarBancos();
             else if (pageId === 'empresas') carregarEmpresas();
             else if (pageId === 'dashboard') atualizarDashboard();
@@ -9458,282 +10042,336 @@
 
     // ================================================================
     // DFC POR CATEGORIA
+    // O usuário pode ocultar meses e a coluna Acumulado individualmente
+    // (menu "📅 Meses"). O Acumulado soma SOMENTE os meses exibidos.
+    // Tela, PDF e Excel são gerados a partir do mesmo modelo de dados.
     // ================================================================
-    function renderizarDFCCategoria() {
-        var recebidos = window._dfcRecebidos || [];
-        var pagos     = window._dfcPagos     || [];
-        var anoSel    = window._dfcAnoSel    || '';
-        var visao     = (document.getElementById('dfcCatVisao') || {}).value || 'mensal';
+    const _MESES_DFC_NOMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                              'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
-        var card = document.getElementById('cardDFCCategoria');
-        if (card) card.style.display = '';
-
-        var mesesLabel = anoSel
-            ? ['Jan/' + String(anoSel).slice(2),'Fev/' + String(anoSel).slice(2),'Mar/' + String(anoSel).slice(2),
-               'Abr/' + String(anoSel).slice(2),'Mai/' + String(anoSel).slice(2),'Jun/' + String(anoSel).slice(2),
-               'Jul/' + String(anoSel).slice(2),'Ago/' + String(anoSel).slice(2),'Set/' + String(anoSel).slice(2),
-               'Out/' + String(anoSel).slice(2),'Nov/' + String(anoSel).slice(2),'Dez/' + String(anoSel).slice(2)]
-            : ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-        var nums       = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-
-        // ---- Agrupar ENTRADAS por categoria de recebimento ----
-        // Contas a receber nao tem categoria_id na maioria dos sistemas,
-        // mas vamos agrupar por "Receitas" com sub por cliente se nao houver categoria
-        var entradasCat = {};
-        recebidos.forEach(function(c) {
-            var cat = dadosCache.categorias.find(function(x){ return x.id === c.categoria_id; });
-            var nome = cat ? cat.nome : 'Receitas de Clientes';
-            if (!entradasCat[nome]) entradasCat[nome] = { total: 0, meses: [0,0,0,0,0,0,0,0,0,0,0,0] };
-            var v = parseFloat(c.valor) || 0;
-            entradasCat[nome].total += v;
-            var mm = c.data_recebimento ? c.data_recebimento.substring(5,7) : null;
-            if (mm) { var i = parseInt(mm,10)-1; if(i>=0&&i<12) entradasCat[nome].meses[i]+=v; }
-        });
-
-        // ---- Agrupar SAIDAS: nivel 1 = prefixo, nivel 2 = nome completo ----
-        var saidasCat = {};    // { prefixo: { total, meses[], subs: { nomeCompleto: { total, meses[] } } } }
-        pagos.forEach(function(c) {
-            var cat  = dadosCache.categorias.find(function(x){ return x.id === c.categoria_id; });
-            var nome = cat ? cat.nome : 'Sem Categoria';
-            var pref = getCatPrefixo(nome);
-            var v    = parseFloat(c.valor) || 0;
-            var mm   = c.data_pagamento ? c.data_pagamento.substring(5,7) : null;
-            var mi   = mm ? parseInt(mm,10)-1 : -1;
-
-            if (!saidasCat[pref]) saidasCat[pref] = { total:0, meses:[0,0,0,0,0,0,0,0,0,0,0,0], subs:{} };
-            saidasCat[pref].total += v;
-            if (mi>=0&&mi<12) saidasCat[pref].meses[mi] += v;
-
-            // Subcategoria só quando o nome completo difere do prefixo
-            if (nome !== pref) {
-                if (!saidasCat[pref].subs[nome]) saidasCat[pref].subs[nome] = { total:0, meses:[0,0,0,0,0,0,0,0,0,0,0,0] };
-                saidasCat[pref].subs[nome].total += v;
-                if (mi>=0&&mi<12) saidasCat[pref].subs[nome].meses[mi] += v;
-            }
-        });
-
-        var totalEntradas = recebidos.reduce(function(s,c){ return s+parseFloat(c.valor||0); }, 0);
-        var totalSaidas   = pagos.reduce(function(s,c){ return s+parseFloat(c.valor||0); }, 0);
-        var fluxoLiq      = totalEntradas - totalSaidas;
-
-        var thead = document.getElementById('dfcCatHead');
-        var tbody = document.getElementById('dfcCatBody');
-        var tfoot = document.getElementById('dfcCatFoot');
-        if (!thead || !tbody) return;
-
-        // ---- Montar colunas ----
-        var colunas = visao === 'mensal' ? mesesLabel : ['Total'];
-
-        // Header
-        var thBg    = 'background:#FF7A42;color:white;';
-        var thStyle = 'padding:8px 10px;font-size:11px;white-space:nowrap;border-bottom:2px solid #e06020;font-weight:600;';
-        var thFirst = thStyle + thBg + 'text-align:left;min-width:200px;position:sticky;left:0;z-index:2;';
-        var thNum   = thStyle + thBg + 'text-align:right;min-width:90px;';
-
-        thead.innerHTML = '<tr>'
-            + '<th style="' + thFirst + '">Descrição</th>'
-            + colunas.map(function(c){ return '<th style="' + thNum + '">' + c + '</th>'; }).join('')
-            + '<th style="' + thNum + '">Total</th>'
-            + '</tr>';
-
-        tbody.innerHTML = '';
-
-        function fmtC(v, cor) {
-            if (!v || v === 0) return '<span style="color:#ccc;">\u2014</span>';
-            return '<span style="color:' + cor + ';font-weight:600;">' + fmtValFull(v) + '</span>';
-        }
-
-        function addSectionHeader(label, cor, bgCor) {
-            var cols = visao === 'mensal' ? 12 : 1;
-            tbody.innerHTML += '<tr style="background:' + bgCor + ';border-top:3px solid ' + cor + ';">'
-                + '<td style="font-weight:800;font-size:12px;padding:9px 10px;color:' + cor + ';position:sticky;left:0;background:' + bgCor + ';letter-spacing:0.3px;">' + label + '</td>'
-                + Array(cols+1).fill('<td style="border-bottom:1px solid ' + cor + '20;"></td>').join('')
-                + '</tr>';
-        }
-
-        function addCatRow(nome, data, cor, bgEven, bgOdd, idx, tipoDrill) {
-            var bg = idx%2===0 ? bgEven : bgOdd;
-            var nomeEsc = String(nome).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            var clk = function (mes) {
-                return tipoDrill
-                    ? ' onclick="abrirLancamentosDFC(\'' + tipoDrill + '\',\'' + nomeEsc + '\',' + mes + ')" title="Ver lançamentos"'
-                    : '';
-            };
-            var curs = tipoDrill ? 'cursor:pointer;' : '';
-            var cells = visao === 'mensal'
-                ? data.meses.map(function(v, i){
-                    return '<td style="text-align:right;padding:5px 8px;' + curs + 'color:' + (v>0?cor:'#ccc') + ';font-weight:' + (v>0?'600':'400') + ';"' + clk(i+1) + '>'
-                        + (v>0 ? fmtValFull(v) : '—') + '</td>';
-                  }).join('')
-                : '<td style="text-align:right;padding:5px 8px;' + curs + 'color:' + (data.total>0?cor:'#ccc') + ';font-weight:600;"' + clk(0) + '>'
-                    + (data.total>0 ? fmtValFull(data.total) : '—') + '</td>';
-            tbody.innerHTML += '<tr style="background:' + bg + ';">'
-                + '<td style="padding:6px 10px 6px 22px;font-size:12px;font-weight:500;color:#333;position:sticky;left:0;' + curs + 'background:' + bg + ';"' + clk(0) + '>'
-                + nome + (tipoDrill ? ' <span style="color:#bbb;font-size:11px;">🔍</span>' : '') + '</td>'
-                + cells
-                + '<td style="text-align:right;padding:5px 10px;' + curs + 'font-weight:700;color:' + cor + ';"' + clk(0) + '>'
-                + fmtValFull(data.total) + '</td>'
-                + '</tr>';
-        }
-
-        function addSubtotal(label, valor, cor, bgCor, tipo) {
-            tbody.innerHTML += '<tr style="background:' + bgCor + ';border-top:2px solid ' + cor + ';">'
-                + '<td style="font-weight:800;padding:8px 10px;font-size:12px;color:' + cor + ';position:sticky;left:0;background:' + bgCor + ';">' + label + '</td>'
-                + (visao === 'mensal'
-                    ? getSubtotalMeses(tipo, entradasCat, saidasCat, cor)
-                    : '<td style="text-align:right;padding:7px 8px;font-weight:700;color:' + cor + ';">' + fmtValFull(valor) + '</td>')
-                + '<td style="text-align:right;padding:8px 10px;font-weight:800;color:' + cor + ';">' + fmtValFull(valor) + '</td>'
-                + '</tr>';
-        }
-
-        function getSubtotalMeses(tipo, entCat, saiCat, cor) {
-            var meses12 = [0,0,0,0,0,0,0,0,0,0,0,0];
-            if (tipo === 'ent') {
-                Object.values(entCat).forEach(function(d){ d.meses.forEach(function(v,i){ meses12[i]+=v; }); });
-            } else {
-                // saiCat now has { total, meses, subs } structure
-                Object.values(saiCat).forEach(function(d){ d.meses.forEach(function(v,i){ meses12[i]+=v; }); });
-            }
-            return meses12.map(function(v){
-                return '<td style="text-align:right;padding:7px 8px;font-weight:700;color:' + (v>0?cor:'#ccc') + ';">'
-                    + (v>0 ? fmtValFull(v) : '\u2014') + '</td>';
-            }).join('');
-        }
-
-        // ---- ENTRADAS ----
-        addSectionHeader('(+) ENTRADAS DE CAIXA', '#28a745', '#f0fff4');
-        var entKeys = Object.keys(entradasCat).sort(function(a,b){ return entradasCat[b].total - entradasCat[a].total; });
-        entKeys.forEach(function(nome, idx) {
-            addCatRow(nome, entradasCat[nome], '#28a745', 'white', '#f8fff8', idx, 'catEnt');
-        });
-        addSubtotal('(=) TOTAL ENTRADAS', totalEntradas, '#28a745', '#e8f8ee', 'ent');
-
-        // ---- SAIDAS ----
-        addSectionHeader('(-) SAIDAS DE CAIXA', '#dc3545', '#fff5f5');
-        var saiKeys = Object.keys(saidasCat).sort(function(a,b){ return saidasCat[b].total - saidasCat[a].total; });
-        saiKeys.forEach(function(pref, idx) {
-            addCatRow(pref, saidasCat[pref], '#dc3545', 'white', '#fff8f8', idx, 'catSai');
-            // Subcategorias abertas abaixo do prefixo
-            var subs = saidasCat[pref].subs || {};
-            var subKeys = Object.keys(subs).sort(function(a,b){ return subs[b].total - subs[a].total; });
-            subKeys.forEach(function(subNome) {
-                var d = subs[subNome];
-                var subEsc = String(subNome).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                var clkSub = function (mes) {
-                    return ' onclick="abrirLancamentosDFC(\'catSai\',\'' + subEsc + '\',' + mes + ')" title="Ver lançamentos"';
-                };
-                var cells = visao === 'mensal'
-                    ? d.meses.map(function(v, i){
-                        return '<td style="text-align:right;padding:4px 8px;cursor:pointer;font-size:11px;color:' + (v>0?'#dc3545':'#ccc') + ';"' + clkSub(i+1) + '>'
-                            + (v>0 ? fmtValFull(v) : '—') + '</td>';
-                      }).join('')
-                    : '<td style="text-align:right;padding:4px 8px;cursor:pointer;font-size:11px;color:' + (d.total>0?'#dc3545':'#ccc') + ';"' + clkSub(0) + '>'
-                        + (d.total>0 ? fmtValFull(d.total) : '—') + '</td>';
-                tbody.innerHTML += '<tr style="background:#fffbfb;">'
-                    + '<td style="padding:4px 10px 4px 30px;font-size:11px;color:#999;position:sticky;left:0;cursor:pointer;background:#fffbfb;"' + clkSub(0) + '>'
-                    + '<span style="color:#ddd;margin-right:5px;">↳</span>' + subNome + '</td>'
-                    + cells
-                    + '<td style="text-align:right;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:600;color:#dc3545;"' + clkSub(0) + '>'
-                    + fmtValFull(d.total) + '</td>'
-                    + '</tr>';
-            });
-        });
-        addSubtotal('(=) TOTAL SAIDAS', totalSaidas, '#dc3545', '#fde8e8', 'sai');
-
-        // ---- FLUXO LIQUIDO (footer) ----
-        var fluxoCor = fluxoLiq >= 0 ? '#28a745' : '#dc3545';
-        var fluxoBg  = fluxoLiq >= 0 ? '#d4edda' : '#fde8e8';
-
-        var fluxoMeses = '';
-        if (visao === 'mensal') {
-            var entM = [0,0,0,0,0,0,0,0,0,0,0,0];
-            var saiM = [0,0,0,0,0,0,0,0,0,0,0,0];
-            Object.values(entradasCat).forEach(function(d){ d.meses.forEach(function(v,i){ entM[i]+=v; }); });
-            Object.values(saidasCat).forEach(function(d){ d.meses.forEach(function(v,i){ saiM[i]+=v; }); });
-            fluxoMeses = entM.map(function(e,i){
-                var liq = e - saiM[i];
-                var c   = liq >= 0 ? '#28a745' : '#dc3545';
-                return '<td style="text-align:right;padding:8px 8px;font-weight:700;color:' + c + ';">'
-                    + (e>0||saiM[i]>0 ? fmtValFull(liq) : '<span style="color:#ccc;">\u2014</span>') + '</td>';
-            }).join('');
-        } else {
-            fluxoMeses = '<td style="text-align:right;padding:8px;font-weight:700;color:' + fluxoCor + ';">' + fmtValFull(fluxoLiq) + '</td>';
-        }
-
-        tfoot.innerHTML = '<tr style="background:' + fluxoBg + ';border-top:3px solid ' + fluxoCor + ';">'
-            + '<td style="font-weight:800;font-size:13px;padding:9px 10px;color:' + fluxoCor + ';position:sticky;left:0;background:' + fluxoBg + ';">(=) FLUXO LIQUIDO</td>'
-            + fluxoMeses
-            + '<td style="text-align:right;padding:9px 10px;font-weight:800;font-size:13px;color:' + fluxoCor + ';">' + fmtValFull(fluxoLiq) + '</td>'
-            + '</tr>';
+    function _chaveDFC(sufixo) {
+        const user = usuarioAtual ? usuarioAtual.email : 'guest';
+        return 'cap_dfc_' + sufixo + '_' + user;
+    }
+    function _mesesOcultosDFC() {
+        try { const v = localStorage.getItem(_chaveDFC('meses_ocultos')); return v ? JSON.parse(v) : []; }
+        catch (e) { return []; }
+    }
+    function _acumOcultoDFC() {
+        try { return localStorage.getItem(_chaveDFC('acum_oculto')) === '1'; } catch (e) { return false; }
+    }
+    function _mesesVisiveisDFC() {
+        const oc = _mesesOcultosDFC();
+        return [0,1,2,3,4,5,6,7,8,9,10,11].filter(m => !oc.includes(m + 1));
     }
 
-    // Gera o PDF do "DFC Detalhado por Categoria", refletindo a visão selecionada
-    // na tela (Mensal Jan-Dez ou Total do período).
-    function gerarPDFDFCCategoria() {
-        const tabela = document.getElementById('tabelaDFCCategoria');
-        if (!tabela || !tabela.querySelector('tbody tr')) {
-            alert('Não há dados para exportar. Carregue a DFC antes de gerar o PDF.');
-            return;
-        }
-        const { jsPDF } = window.jspdf;
-        const visao = (document.getElementById('dfcCatVisao') || {}).value || 'mensal';
-        const doc = new jsPDF({
-            orientation: visao === 'mensal' ? 'landscape' : 'portrait',
-            unit: 'mm', format: 'a4'
+    function montarMenuMesesDFC() {
+        const menu = document.getElementById('menuMesesDFC');
+        if (!menu) return;
+        const oc = _mesesOcultosDFC();
+        let html = '<div class="colunas-dropdown-title">Mostrar colunas</div>';
+        _MESES_DFC_NOMES.forEach((nome, i) => {
+            html += '<label><input type="checkbox" ' + (oc.includes(i + 1) ? '' : 'checked') + ' onchange="toggleMesDFC(' + (i + 1) + ', this.checked)"> ' + nome + '</label>';
+        });
+        html += '<div style="border-top:1px solid var(--cor-borda);margin-top:6px;padding-top:6px;">'
+            + '<label><input type="checkbox" ' + (_acumOcultoDFC() ? '' : 'checked') + ' onchange="toggleAcumDFC(this.checked)"> <b>Acumulado</b></label></div>';
+        html += '<div class="colunas-dropdown-actions">'
+            + '<button type="button" class="btn btn-secondary" onclick="marcarTodosMesesDFC(true)">Mostrar todos</button>'
+            + '<button type="button" class="btn btn-secondary" onclick="marcarTodosMesesDFC(false)">Ocultar todos</button></div>';
+        menu.innerHTML = html;
+    }
+    function toggleMesDFC(mes, visivel) {
+        let oc = _mesesOcultosDFC();
+        if (visivel) oc = oc.filter(m => m !== mes); else if (!oc.includes(mes)) oc.push(mes);
+        try { localStorage.setItem(_chaveDFC('meses_ocultos'), JSON.stringify(oc)); } catch (e) {}
+        renderizarDFCCategoria();
+    }
+    function toggleAcumDFC(visivel) {
+        try { localStorage.setItem(_chaveDFC('acum_oculto'), visivel ? '0' : '1'); } catch (e) {}
+        renderizarDFCCategoria();
+    }
+    function marcarTodosMesesDFC(mostrar) {
+        try {
+            localStorage.setItem(_chaveDFC('meses_ocultos'), JSON.stringify(mostrar ? [] : [1,2,3,4,5,6,7,8,9,10,11,12]));
+            if (mostrar) localStorage.setItem(_chaveDFC('acum_oculto'), '0');
+        } catch (e) {}
+        renderizarDFCCategoria();
+        montarMenuMesesDFC();
+    }
+    function toggleMenuMesesDFC(event) {
+        if (event) event.stopPropagation();
+        const menu = document.getElementById('menuMesesDFC');
+        if (!menu) return;
+        const abrindo = !menu.classList.contains('aberto');
+        if (abrindo) montarMenuMesesDFC();
+        menu.classList.toggle('aberto', abrindo);
+    }
+    document.addEventListener('click', function (event) {
+        const menu = document.getElementById('menuMesesDFC');
+        if (!menu || !menu.classList.contains('aberto')) return;
+        if (!menu.contains(event.target) && !event.target.closest('.colunas-btn-wrap')) menu.classList.remove('aberto');
+    });
+
+    // Monta o modelo (linhas × meses) usado pela tela, PDF e Excel
+    function _modeloDFCCategoria() {
+        const recebidos = window._dfcRecebidos || [];
+        const pagos     = window._dfcPagos     || [];
+        const anoSel    = window._dfcAnoSel    || '';
+        const visao     = (document.getElementById('dfcCatVisao') || {}).value || 'mensal';
+        const zeros = () => [0,0,0,0,0,0,0,0,0,0,0,0];
+        const mCurto = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+        const visiveis   = _mesesVisiveisDFC();
+        const somaVis    = arr => visiveis.reduce((s, m) => s + (arr[m] || 0), 0);
+        const acumOculto = visao === 'mensal' && _acumOcultoDFC();
+        const colMeses   = visao === 'mensal' ? visiveis : [];
+        const parcial    = visiveis.length < 12;
+
+        // ENTRADAS por categoria
+        const entradasCat = {};
+        recebidos.forEach(c => {
+            const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
+            const nome = cat ? cat.nome : 'Receitas de Clientes';
+            if (!entradasCat[nome]) entradasCat[nome] = zeros();
+            const i = c.data_recebimento ? parseInt(c.data_recebimento.substring(5, 7), 10) - 1 : -1;
+            if (i >= 0 && i < 12) entradasCat[nome][i] += parseFloat(c.valor) || 0;
+        });
+        // SAÍDAS: nível 1 = prefixo, nível 2 = nome completo
+        const saidasCat = {};
+        pagos.forEach(c => {
+            const cat  = dadosCache.categorias.find(x => x.id === c.categoria_id);
+            const nome = cat ? cat.nome : 'Sem Categoria';
+            const pref = getCatPrefixo(nome);
+            const v    = parseFloat(c.valor) || 0;
+            const i    = c.data_pagamento ? parseInt(c.data_pagamento.substring(5, 7), 10) - 1 : -1;
+            if (!saidasCat[pref]) saidasCat[pref] = { meses: zeros(), subs: {} };
+            if (i >= 0 && i < 12) saidasCat[pref].meses[i] += v;
+            if (nome !== pref) {
+                if (!saidasCat[pref].subs[nome]) saidasCat[pref].subs[nome] = zeros();
+                if (i >= 0 && i < 12) saidasCat[pref].subs[nome][i] += v;
+            }
         });
 
-        const anoSel = window._dfcAnoSel || '';
+        const linhas = [];
+        const add = (tipo, label, meses, drill) => linhas.push({ tipo, label, meses: meses || zeros(), total: meses ? somaVis(meses) : 0, drill: drill || null });
+        const temValor = arr => visiveis.length === 0 || somaVis(arr) !== 0;
+
+        const totEnt = zeros(), totSai = zeros();
+        add('secao-ent', '(+) ENTRADAS DE CAIXA');
+        Object.keys(entradasCat)
+            .sort((a, b) => somaVis(entradasCat[b]) - somaVis(entradasCat[a]))
+            .forEach(nome => {
+                entradasCat[nome].forEach((v, i) => totEnt[i] += v);
+                if (temValor(entradasCat[nome])) add('cat-ent', nome, entradasCat[nome], { tipo: 'catEnt', nome });
+            });
+        add('subtotal-ent', '(=) TOTAL ENTRADAS', totEnt);
+
+        add('secao-sai', '(-) SAÍDAS DE CAIXA');
+        Object.keys(saidasCat)
+            .sort((a, b) => somaVis(saidasCat[b].meses) - somaVis(saidasCat[a].meses))
+            .forEach(pref => {
+                const d = saidasCat[pref];
+                d.meses.forEach((v, i) => totSai[i] += v);
+                if (!temValor(d.meses)) return;
+                add('cat-sai', pref, d.meses, { tipo: 'catSai', nome: pref });
+                Object.keys(d.subs)
+                    .sort((a, b) => somaVis(d.subs[b]) - somaVis(d.subs[a]))
+                    .forEach(sub => { if (temValor(d.subs[sub])) add('sub-sai', sub, d.subs[sub], { tipo: 'catSai', nome: sub }); });
+            });
+        add('subtotal-sai', '(=) TOTAL SAÍDAS', totSai);
+        add('fluxo', '(=) FLUXO LÍQUIDO', totEnt.map((e, i) => e - totSai[i]));
+
+        const sufAno = anoSel ? '/' + String(anoSel).slice(2) : '';
+        const rotuloAcum = visao === 'total'
+            ? 'Total' + (parcial ? ' (' + visiveis.map(m => mCurto[m]).join(', ') + ')' : '')
+            : 'Acumulado' + (parcial ? ' (' + visiveis.map(m => mCurto[m]).join(', ') + ')' : '');
+
+        return {
+            anoSel, visao, visiveis, colMeses, acumOculto, parcial,
+            cabMeses: colMeses.map(m => mCurto[m] + sufAno),
+            rotuloAcum, linhas,
+            periodoTxt: (anoSel || 'Todos os anos') + (parcial ? ' — meses: ' + (visiveis.length ? visiveis.map(m => mCurto[m]).join(', ') : 'nenhum') : '')
+        };
+    }
+
+    function renderizarDFCCategoria() {
+        const card = document.getElementById('cardDFCCategoria');
+        if (card) card.style.display = '';
+        const thead = document.getElementById('dfcCatHead');
+        const tbody = document.getElementById('dfcCatBody');
+        const tfoot = document.getElementById('dfcCatFoot');
+        if (!thead || !tbody) return;
+
+        const md = _modeloDFCCategoria();
+        const nCols = md.colMeses.length + (md.acumOculto ? 0 : 1);
+
+        const thBg    = 'background:#FF7A42;color:white;';
+        const thStyle = 'padding:8px 10px;font-size:11px;white-space:nowrap;border-bottom:2px solid #e06020;font-weight:600;';
+        const thFirst = thStyle + thBg + 'text-align:left;min-width:200px;position:sticky;left:0;z-index:2;';
+        const thNum   = thStyle + thBg + 'text-align:right;min-width:90px;';
+        thead.innerHTML = '<tr><th style="' + thFirst + '">Descrição</th>'
+            + md.cabMeses.map(c => '<th style="' + thNum + '">' + c + '</th>').join('')
+            + (md.acumOculto ? '' : '<th style="' + thNum + '">' + md.rotuloAcum + '</th>')
+            + '</tr>';
+
+        const esc = t => String(t).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const traco = '<span style="color:#ccc;">\u2014</span>';
+        let html = '', foot = '', idxEnt = 0, idxSai = 0;
+
+        md.linhas.forEach(l => {
+            if (l.tipo === 'secao-ent' || l.tipo === 'secao-sai') {
+                const cor = l.tipo === 'secao-ent' ? '#28a745' : '#dc3545';
+                const bg  = l.tipo === 'secao-ent' ? '#f0fff4' : '#fff5f5';
+                html += '<tr style="background:' + bg + ';border-top:3px solid ' + cor + ';">'
+                    + '<td style="font-weight:800;font-size:12px;padding:9px 10px;color:' + cor + ';position:sticky;left:0;background:' + bg + ';letter-spacing:0.3px;">' + l.label + '</td>'
+                    + Array(nCols).fill('<td style="border-bottom:1px solid ' + cor + '20;"></td>').join('') + '</tr>';
+                return;
+            }
+            if (l.tipo === 'subtotal-ent' || l.tipo === 'subtotal-sai') {
+                const cor = l.tipo === 'subtotal-ent' ? '#28a745' : '#dc3545';
+                const bg  = l.tipo === 'subtotal-ent' ? '#e8f8ee' : '#fde8e8';
+                html += '<tr style="background:' + bg + ';border-top:2px solid ' + cor + ';">'
+                    + '<td style="font-weight:800;padding:8px 10px;font-size:12px;color:' + cor + ';position:sticky;left:0;background:' + bg + ';">' + l.label + '</td>'
+                    + md.colMeses.map(m => '<td style="text-align:right;padding:7px 8px;font-weight:700;white-space:nowrap;color:' + (l.meses[m] > 0 ? cor : '#ccc') + ';">' + (l.meses[m] > 0 ? fmtValFull(l.meses[m]) : '\u2014') + '</td>').join('')
+                    + (md.acumOculto ? '' : '<td style="text-align:right;padding:8px 10px;font-weight:800;white-space:nowrap;color:' + cor + ';">' + fmtValFull(l.total) + '</td>')
+                    + '</tr>';
+                return;
+            }
+            if (l.tipo === 'fluxo') {
+                const corT = l.total >= 0 ? '#28a745' : '#dc3545';
+                const bg   = l.total >= 0 ? '#d4edda' : '#fde8e8';
+                foot = '<tr style="background:' + bg + ';border-top:3px solid ' + corT + ';">'
+                    + '<td style="font-weight:800;font-size:13px;padding:9px 10px;color:' + corT + ';position:sticky;left:0;background:' + bg + ';">' + l.label + '</td>'
+                    + md.colMeses.map(m => {
+                        const v = l.meses[m];
+                        return '<td style="text-align:right;padding:8px 8px;font-weight:700;white-space:nowrap;color:' + (v >= 0 ? '#28a745' : '#dc3545') + ';">' + (v !== 0 ? fmtValFull(v) : traco) + '</td>';
+                    }).join('')
+                    + (md.acumOculto ? '' : '<td style="text-align:right;padding:9px 10px;font-weight:800;font-size:13px;white-space:nowrap;color:' + corT + ';">' + fmtValFull(l.total) + '</td>')
+                    + '</tr>';
+                return;
+            }
+            // Categorias / subcategorias (clicáveis)
+            const ehSub = l.tipo === 'sub-sai';
+            const ehEnt = l.tipo === 'cat-ent';
+            const cor = ehEnt ? '#28a745' : '#dc3545';
+            const idx = ehEnt ? idxEnt++ : idxSai++;
+            const bg  = ehSub ? '#fffbfb' : (idx % 2 === 0 ? 'white' : (ehEnt ? '#f8fff8' : '#fff8f8'));
+            const clk = mes => ' onclick="abrirLancamentosDFC(\'' + l.drill.tipo + '\',\'' + esc(l.drill.nome) + '\',' + mes + ')" title="Ver lançamentos"';
+            const fs  = ehSub ? 'font-size:11px;' : '';
+            html += '<tr style="background:' + bg + ';">'
+                + (ehSub
+                    ? '<td style="padding:4px 10px 4px 30px;font-size:11px;color:#999;position:sticky;left:0;cursor:pointer;background:' + bg + ';"' + clk(0) + '><span style="color:#ddd;margin-right:5px;">↳</span>' + l.label + '</td>'
+                    : '<td style="padding:6px 10px 6px 22px;font-size:12px;font-weight:500;color:#333;position:sticky;left:0;cursor:pointer;background:' + bg + ';"' + clk(0) + '>' + l.label + ' <span style="color:#bbb;font-size:11px;">🔍</span></td>')
+                + md.colMeses.map(m => {
+                    const v = l.meses[m];
+                    return '<td style="text-align:right;padding:5px 8px;cursor:pointer;white-space:nowrap;' + fs + 'color:' + (v > 0 ? cor : '#ccc') + ';font-weight:' + (v > 0 && !ehSub ? '600' : '400') + ';"' + clk(m + 1) + '>' + (v > 0 ? fmtValFull(v) : '—') + '</td>';
+                }).join('')
+                + (md.acumOculto ? '' : '<td style="text-align:right;padding:5px 10px;cursor:pointer;white-space:nowrap;' + fs + 'font-weight:700;color:' + cor + ';"' + clk(0) + '>' + fmtValFull(l.total) + '</td>')
+                + '</tr>';
+        });
+
+        tbody.innerHTML = html;
+        if (tfoot) tfoot.innerHTML = foot;
+    }
+
+    function _orientPDFDFC() {
+        const el = document.getElementById('orientPDFDFC');
+        return el && el.value === 'portrait' ? 'portrait' : 'landscape';
+    }
+
+    // PDF do DFC: traz APENAS o "DFC Detalhado por Categoria", respeitando a visão
+    // (mensal/total), os meses e o acumulado exibidos, na orientação escolhida.
+    function gerarPDFDFCCategoria() {
+        if (!window.jspdf) { alert('Biblioteca de PDF não carregada. Recarregue a página.'); return; }
+        if (!window._dfcRecebidos && !window._dfcPagos) { alert('Carregue a DFC antes de gerar o PDF.'); return; }
+        const md = _modeloDFCCategoria();
+        if (md.visao === 'mensal' && md.colMeses.length === 0 && md.acumOculto) {
+            alert('Todas as colunas estão ocultas. Marque ao menos um mês ou o Acumulado no menu 📅 Meses.');
+            return;
+        }
+        const orient = _orientPDFDFC();
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: orient, unit: 'mm', format: 'a4' });
+        const pageW = doc.internal.pageSize.getWidth();
+
         const empresaSel = document.getElementById('filtroEmpresaDFC');
         const empresaTxt = (empresaSel && empresaSel.value && empresaSel.selectedOptions[0])
             ? empresaSel.selectedOptions[0].textContent.trim() : 'Todas as empresas';
 
-        doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
-        doc.text(normalizarTexto('DFC Detalhado por Categoria — ' + (anoSel || 'Todos os anos')), 14, 16);
+        // Faixa de cabeçalho
+        doc.setFillColor(255, 122, 66);
+        doc.rect(0, 0, pageW, 14, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(12); doc.setFont(undefined, 'bold');
+        doc.text(normalizarTexto('DFC Detalhado por Categoria'), 10, 9.2);
+        doc.setFontSize(8); doc.setFont(undefined, 'normal');
+        doc.text('Gerado em: ' + new Date().toLocaleDateString('pt-BR'), pageW - 10, 9.2, { align: 'right' });
+        doc.setTextColor(60, 60, 60);
         doc.setFontSize(9);
-        doc.setFont(undefined, 'normal');
-        doc.text(normalizarTexto('Empresa: ' + empresaTxt +
-            '  |  Visão: ' + (visao === 'mensal' ? 'Mensal (Jan a Dez)' : 'Total do período')), 14, 22);
-        doc.text('Gerado em: ' + new Date().toLocaleDateString('pt-BR'), 14, 27);
+        doc.text(normalizarTexto('Período: ' + md.periodoTxt + '   |   Empresa: ' + empresaTxt + '   |   Visão: ' + (md.visao === 'mensal' ? 'Mensal' : 'Total do período')), 10, 20);
 
-        // Monta cabeçalho, corpo e rodapé a partir da tabela em tela
-        const lerLinhas = seletor => Array.from(tabela.querySelectorAll(seletor))
-            .map(tr => Array.from(tr.querySelectorAll('th,td')).map(c => normalizarTexto(c.innerText.trim())))
-            .filter(linha => linha.length > 0);
+        const head = [['Descrição'].concat(md.cabMeses).concat(md.acumOculto ? [] : [md.rotuloAcum]).map(normalizarTexto)];
+        const fmtN = v => v ? fmtValFull(v) : '-';
+        const meta = [];
+        const body = [];
+        md.linhas.forEach(l => {
+            const secao = l.tipo.indexOf('secao') === 0;
+            const label = (l.tipo === 'sub-sai' ? '   > ' : (l.tipo.indexOf('cat') === 0 ? '  ' : '')) + l.label;
+            const row = [normalizarTexto(label)]
+                .concat(md.colMeses.map(m => secao ? '' : fmtN(l.meses[m])))
+                .concat(md.acumOculto ? [] : [secao ? '' : fmtN(l.total)]);
+            body.push(row); meta.push(l);
+        });
 
-        const head = lerLinhas('thead tr');
-        const body = lerLinhas('tbody tr');
-        lerLinhas('tfoot tr').forEach(l => body.push(l));
-
-        const nCols = (head[0] || body[0] || []).length;
-        const fonte = nCols > 12 ? 5.6 : (nCols > 9 ? 6.4 : (nCols > 5 ? 7.5 : 9));
-        const larguraDesc = nCols > 12 ? 38 : (nCols > 9 ? 45 : 70);
+        const nCols = head[0].length;
+        const retrato = orient === 'portrait';
+        const fonte = retrato
+            ? (nCols > 11 ? 4.6 : nCols > 8 ? 5.6 : nCols > 5 ? 7 : 8.5)
+            : (nCols > 12 ? 5.8 : nCols > 9 ? 6.6 : nCols > 5 ? 7.6 : 9);
+        const larguraDesc = retrato
+            ? (nCols > 11 ? 34 : nCols > 8 ? 42 : 60)
+            : (nCols > 12 ? 44 : nCols > 9 ? 52 : 70);
 
         doc.autoTable({
-            head: head,
-            body: body,
-            startY: 31,
-            margin: { left: 8, right: 8 },
-            tableWidth: 'auto',
-            styles: {
-                fontSize: fonte,
-                cellPadding: { top: 1.2, right: 1.6, bottom: 1.2, left: 1.6 },
-                overflow: 'linebreak',
-                valign: 'middle'
-            },
-            headStyles: { fillColor: [230, 102, 34], fontSize: fonte, halign: 'right' },
+            head, body,
+            startY: 24,
+            margin: { left: 8, right: 8, bottom: 12 },
+            theme: 'grid',
+            styles: { fontSize: fonte, cellPadding: { top: 1.2, right: 1.4, bottom: 1.2, left: 1.4 }, overflow: 'linebreak', valign: 'middle', lineColor: [235, 235, 235], lineWidth: 0.1 },
+            headStyles: { fillColor: [255, 122, 66], textColor: 255, fontStyle: 'bold', halign: 'right' },
             columnStyles: { 0: { cellWidth: larguraDesc, halign: 'left' } },
             didParseCell: function (data) {
-                if (data.column.index === 0) { data.cell.styles.halign = 'left'; return; }
-                if (data.section !== 'body') return;
-                const txt = (data.cell.raw || '').trim();
-                data.cell.styles.halign = 'right';
-                if (txt === '-' || txt === '') { data.cell.styles.textColor = [170, 170, 170]; return; }
-                if (txt.charAt(0) === '-' || txt.charAt(0) === '\u2212') data.cell.styles.textColor = [220, 53, 69];
+                if (data.section === 'head') { if (data.column.index === 0) data.cell.styles.halign = 'left'; return; }
+                const l = meta[data.row.index];
+                if (!l) return;
+                if (data.column.index > 0) data.cell.styles.halign = 'right';
+                const st = data.cell.styles;
+                if (l.tipo === 'secao-ent') { st.fillColor = [240, 255, 244]; st.textColor = [40, 167, 69]; st.fontStyle = 'bold'; }
+                else if (l.tipo === 'secao-sai') { st.fillColor = [255, 245, 245]; st.textColor = [220, 53, 69]; st.fontStyle = 'bold'; }
+                else if (l.tipo === 'subtotal-ent') { st.fillColor = [232, 248, 238]; st.textColor = [40, 167, 69]; st.fontStyle = 'bold'; }
+                else if (l.tipo === 'subtotal-sai') { st.fillColor = [253, 232, 232]; st.textColor = [220, 53, 69]; st.fontStyle = 'bold'; }
+                else if (l.tipo === 'fluxo') {
+                    st.fontStyle = 'bold';
+                    st.fillColor = l.total >= 0 ? [212, 237, 218] : [253, 232, 232];
+                    let v = l.total;
+                    if (data.column.index > 0 && data.column.index <= md.colMeses.length) v = l.meses[md.colMeses[data.column.index - 1]];
+                    st.textColor = data.column.index === 0 ? (l.total >= 0 ? [40, 167, 69] : [220, 53, 69]) : (v >= 0 ? [40, 167, 69] : [220, 53, 69]);
+                }
+                else if (l.tipo === 'sub-sai') { st.textColor = data.column.index === 0 ? [140, 140, 140] : [220, 53, 69]; st.fontSize = Math.max(fonte - 0.5, 4); }
+                else if (data.column.index > 0) {
+                    st.textColor = l.tipo === 'cat-ent' ? [40, 167, 69] : [220, 53, 69];
+                    if (data.cell.raw === '-') st.textColor = [190, 190, 190];
+                }
+                if (data.column.index === nCols - 1 && !md.acumOculto && data.column.index > 0) st.fontStyle = 'bold';
+            },
+            didDrawPage: function () {
+                const pH = doc.internal.pageSize.getHeight();
+                doc.setFontSize(7); doc.setTextColor(150);
+                doc.text('Página ' + doc.internal.getNumberOfPages(), pageW - 10, pH - 5, { align: 'right' });
             }
         });
 
-        doc.save('DFC_Categorias_' + (anoSel || 'todos') + '.pdf');
+        doc.save('DFC_Categorias_' + (md.anoSel || 'todos') + '_' + (orient === 'portrait' ? 'retrato' : 'paisagem') + '.pdf');
     }
 
     async function exportarDFCCatXLSX() {
@@ -9741,59 +10379,332 @@
             if (!window.XLSX && typeof garantirXLSX === 'function') await garantirXLSX();
         } catch (e) { /* segue e cai no aviso abaixo */ }
         if (!window.XLSX) { alert('Biblioteca de Excel (XLSX) não carregada. Recarregue a página e tente novamente.'); return; }
-        var recebidos = window._dfcRecebidos || [];
-        var pagos     = window._dfcPagos     || [];
-        var anoSel    = window._dfcAnoSel    || 'todos';
-
-        var rows = [['Categoria','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Total']];
-
-        rows.push(['ENTRADAS DE CAIXA','','','','','','','','','','','','','']);
-        var entradasCat = {};
-        recebidos.forEach(function(c) {
-            var cat = dadosCache.categorias.find(function(x){ return x.id === c.categoria_id; });
-            var nome = cat ? cat.nome : 'Receitas de Clientes';
-            if (!entradasCat[nome]) entradasCat[nome] = { total:0, meses:[0,0,0,0,0,0,0,0,0,0,0,0] };
-            var v = parseFloat(c.valor)||0;
-            entradasCat[nome].total+=v;
-            var mm=c.data_recebimento?c.data_recebimento.substring(5,7):null;
-            if(mm){var i=parseInt(mm,10)-1;if(i>=0&&i<12)entradasCat[nome].meses[i]+=v;}
+        const md = _modeloDFCCategoria();
+        const rows = [['Categoria'].concat(md.cabMeses).concat(md.acumOculto ? [] : [md.rotuloAcum])];
+        md.linhas.forEach(l => {
+            const secao = l.tipo.indexOf('secao') === 0;
+            if (l.tipo === 'secao-sai' || l.tipo === 'fluxo') rows.push([]);
+            rows.push([(l.tipo === 'sub-sai' ? '   ↳ ' : '') + l.label]
+                .concat(md.colMeses.map(m => secao ? '' : l.meses[m]))
+                .concat(md.acumOculto ? [] : [secao ? '' : l.total]));
         });
-        Object.entries(entradasCat).sort(function(a,b){return b[1].total-a[1].total;}).forEach(function(e){
-            rows.push([e[0]].concat(e[1].meses).concat([e[1].total]));
-        });
-        var totEntM=[0,0,0,0,0,0,0,0,0,0,0,0];
-        Object.values(entradasCat).forEach(function(d){d.meses.forEach(function(v,i){totEntM[i]+=v;});});
-        rows.push(['TOTAL ENTRADAS'].concat(totEntM).concat([recebidos.reduce(function(s,c){return s+parseFloat(c.valor||0);},0)]));
-
-        rows.push(['','','','','','','','','','','','','','']);
-        rows.push(['SAIDAS DE CAIXA','','','','','','','','','','','','','']);
-        var saidasCat = {};
-        pagos.forEach(function(c) {
-            var cat = dadosCache.categorias.find(function(x){ return x.id === c.categoria_id; });
-            var nome = cat ? getCatPrefixo(cat.nome) : 'Sem Categoria';
-            if (!saidasCat[nome]) saidasCat[nome] = { total:0, meses:[0,0,0,0,0,0,0,0,0,0,0,0] };
-            var v=parseFloat(c.valor)||0;
-            saidasCat[nome].total+=v;
-            var mm=c.data_pagamento?c.data_pagamento.substring(5,7):null;
-            if(mm){var i=parseInt(mm,10)-1;if(i>=0&&i<12)saidasCat[nome].meses[i]+=v;}
-        });
-        Object.entries(saidasCat).sort(function(a,b){return b[1].total-a[1].total;}).forEach(function(e){
-            rows.push([e[0]].concat(e[1].meses).concat([e[1].total]));
-        });
-        var totSaiM=[0,0,0,0,0,0,0,0,0,0,0,0];
-        Object.values(saidasCat).forEach(function(d){d.meses.forEach(function(v,i){totSaiM[i]+=v;});});
-        var totSai=pagos.reduce(function(s,c){return s+parseFloat(c.valor||0);},0);
-        rows.push(['TOTAL SAIDAS'].concat(totSaiM).concat([totSai]));
-
-        rows.push(['','','','','','','','','','','','','','']);
-        var totEntGeral=recebidos.reduce(function(s,c){return s+parseFloat(c.valor||0);},0);
-        var liqM=totEntM.map(function(e,i){return e-totSaiM[i];});
-        rows.push(['FLUXO LIQUIDO'].concat(liqM).concat([totEntGeral-totSai]));
-
-        var ws = XLSX.utils.aoa_to_sheet(rows);
-        var wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        ws['!cols'] = rows[0].map((_, i) => ({ wch: i === 0 ? 40 : 15 }));
+        const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'DFC_Categorias');
-        XLSX.writeFile(wb, 'DFC_Categorias_' + anoSel + '.xlsx');
+        XLSX.writeFile(wb, 'DFC_Categorias_' + (md.anoSel || 'todos') + '.xlsx');
+    }
+
+    // ================================================================
+    // FLUXO DE CAIXA DIÁRIO
+    // Receita, despesa e resultado de cada dia do mês, em três blocos
+    // (1–10, 11–20, 21–fim). Base: realizado (data de recebimento/pagamento),
+    // previsto (em aberto, pela data de vencimento) ou os dois somados.
+    // ================================================================
+    const _FCD_MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    let _fcdCache = null;   // { rec, pag } — dados brutos da última consulta
+
+    function _fcdInicializarFiltros(rec, pag) {
+        const selAno = document.getElementById('fcdAno');
+        const selMes = document.getElementById('fcdMes');
+        const hoje = new Date();
+        if (selAno && !selAno.options.length) {
+            const anos = new Set([hoje.getFullYear()]);
+            (rec || []).concat(pag || []).forEach(c => {
+                ['data_recebimento', 'data_pagamento', 'data_vencimento'].forEach(k => {
+                    if (c[k]) anos.add(parseInt(c[k].substring(0, 4), 10));
+                });
+            });
+            Array.from(anos).filter(a => a > 1990 && a < 2200).sort((a, b) => b - a).forEach(a => {
+                const o = document.createElement('option'); o.value = a; o.textContent = a; selAno.appendChild(o);
+            });
+            selAno.value = String(hoje.getFullYear());
+            if (selMes) selMes.value = String(hoje.getMonth() + 1);
+        }
+        const selBanco = document.getElementById('fcdBanco');
+        if (selBanco && selBanco.options.length <= 1 && (dadosCache.bancos || []).length) {
+            _repovoarSelect(selBanco, dadosCache.bancos.filter(b => b.ativo !== false), b => b.id, b => b.nome);
+        }
+        const selEmp = document.getElementById('filtroEmpresaFCD');
+        if (selEmp && selEmp.options.length <= 1 && (dadosCache.empresas || []).length) {
+            _repovoarSelect(selEmp, dadosCache.empresas.filter(e => e.ativo !== false), e => e.id, e => e.nome);
+        }
+    }
+
+    function navegarMesFCD(delta) {
+        const selAno = document.getElementById('fcdAno');
+        const selMes = document.getElementById('fcdMes');
+        let ano = parseInt(selAno.value, 10), mes = parseInt(selMes.value, 10) + delta;
+        if (mes < 1) { mes = 12; ano--; } else if (mes > 12) { mes = 1; ano++; }
+        if (!Array.from(selAno.options).some(o => o.value === String(ano))) {
+            const o = document.createElement('option'); o.value = ano; o.textContent = ano; selAno.appendChild(o);
+            Array.from(selAno.options).sort((a, b) => b.value - a.value).forEach(x => selAno.appendChild(x));
+        }
+        selAno.value = String(ano); selMes.value = String(mes);
+        _renderizarFCD();
+    }
+    function irMesAtualFCD() {
+        const h = new Date();
+        document.getElementById('fcdAno').value = String(h.getFullYear());
+        document.getElementById('fcdMes').value = String(h.getMonth() + 1);
+        _renderizarFCD();
+    }
+
+    async function carregarFCD() {
+        const [rec, pag] = await Promise.all([
+            fetchSupabase('contas_a_receber', 'GET'),
+            fetchSupabase('contas_a_pagar', 'GET')
+        ]);
+        if (!rec || !pag) return;
+        if (!(dadosCache.bancos || []).length) {
+            const bancos = await fetchSupabase('bancos', 'GET');
+            if (bancos) dadosCache.bancos = bancos;
+        }
+        _fcdCache = { rec, pag };
+        _fcdInicializarFiltros(rec, pag);
+        _renderizarFCD();
+    }
+
+    // Filtra e distribui os lançamentos pelos dias do mês selecionado
+    function _fcdDados() {
+        const ano   = parseInt((document.getElementById('fcdAno') || {}).value, 10);
+        const mes   = parseInt((document.getElementById('fcdMes') || {}).value, 10);
+        const base  = (document.getElementById('fcdBase') || {}).value || 'realizado';
+        const banco = (document.getElementById('fcdBanco') || {}).value || '';
+        const emp   = (document.getElementById('filtroEmpresaFCD') || {}).value || '';
+        const nDias = new Date(ano, mes, 0).getDate();
+        const pref  = ano + '-' + String(mes).padStart(2, '0') + '-';
+        const dias  = Array.from({ length: nDias }, () => ({ rec: 0, desp: 0, contasRec: [], contasPag: [] }));
+
+        const passaFiltro = c => (!banco || String(c.banco_id) === String(banco)) && (!emp || String(c.empresa_id) === String(emp));
+        const dataDe = (c, tipo) => {
+            const realizado = tipo === 'rec' ? c.status === 'recebido' : c.status === 'pago';
+            if (realizado && (base === 'realizado' || base === 'ambos')) return tipo === 'rec' ? c.data_recebimento : c.data_pagamento;
+            if (c.status === 'pendente' && (base === 'previsto' || base === 'ambos')) return c.data_vencimento;
+            return null;
+        };
+        const distribuir = (lista, tipo) => (lista || []).forEach(c => {
+            if (!passaFiltro(c)) return;
+            const d = dataDe(c, tipo);
+            if (!d || !d.startsWith(pref)) return;
+            const i = parseInt(d.substring(8, 10), 10) - 1;
+            if (i < 0 || i >= nDias) return;
+            const v = parseFloat(c.valor || 0);
+            if (tipo === 'rec') { dias[i].rec += v; dias[i].contasRec.push(c); }
+            else { dias[i].desp += v; dias[i].contasPag.push(c); }
+        });
+        distribuir(_fcdCache ? _fcdCache.rec : [], 'rec');
+        distribuir(_fcdCache ? _fcdCache.pag : [], 'pag');
+
+        const totRec = dias.reduce((s, d) => s + d.rec, 0);
+        const totDesp = dias.reduce((s, d) => s + d.desp, 0);
+        return { ano, mes, base, banco, nDias, dias, totRec, totDesp };
+    }
+
+    function _fcdMoeda(v) {
+        return 'R$ ' + Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function _renderizarFCD() {
+        if (!_fcdCache) return;
+        const dd = _fcdDados();
+        const res = dd.totRec - dd.totDesp;
+        const nomeMes = _FCD_MESES[dd.mes - 1];
+
+        // Selo: consolidado ou conta específica
+        const badge = document.getElementById('fcdBadge');
+        if (badge) {
+            const b = (dadosCache.bancos || []).find(x => String(x.id) === String(dd.banco));
+            badge.textContent = b ? '🏦 ' + b.nome : '📊 Consolidado';
+        }
+
+        document.getElementById('fcdCardReceita').textContent = _fcdMoeda(dd.totRec);
+        document.getElementById('fcdCardDespesa').textContent = _fcdMoeda(dd.totDesp);
+        const elRes = document.getElementById('fcdCardResultado');
+        elRes.textContent = (res < 0 ? '-' : '') + _fcdMoeda(res);
+        elRes.style.color = res < 0 ? '#c82333' : '#1e7e34';
+        const comMov = dd.dias.filter(d => d.rec || d.desp).length;
+        document.getElementById('fcdCardDias').innerHTML = comMov + ' <span style="font-size:15px;color:#999;font-weight:500;">/ ' + dd.nDias + '</span>';
+
+        // Melhor e pior dia (pelo resultado)
+        const analise = document.getElementById('fcdAnalise');
+        const movs = dd.dias.map((d, i) => ({ dia: i + 1, r: d.rec - d.desp, tem: d.rec || d.desp })).filter(x => x.tem);
+        if (analise) {
+            if (!movs.length) {
+                analise.innerHTML = '<span class="fcd-tag">Análise do resultado</span><span style="color:#999;">Nenhum lançamento em ' + nomeMes + '/' + dd.ano + ' para os filtros escolhidos.</span>';
+            } else {
+                const melhor = movs.reduce((a, b) => b.r > a.r ? b : a);
+                const pior   = movs.reduce((a, b) => b.r < a.r ? b : a);
+                const txt = x => (x.r < 0 ? '-' : '') + _fcdMoeda(x.r);
+                analise.innerHTML = '<span class="fcd-tag">Análise do resultado</span>'
+                    + '<span style="color:#1e7e34;font-weight:600;">Melhor dia de ' + nomeMes + ': dia ' + melhor.dia + ' (' + txt(melhor) + ')</span>'
+                    + '<span style="color:#ddd;">|</span>'
+                    + '<span style="color:#c82333;font-weight:600;">Pior dia: dia ' + pior.dia + ' (' + txt(pior) + ')</span>';
+            }
+        }
+
+        // Três blocos de dias
+        const hoje = new Date();
+        const ehMesAtual = hoje.getFullYear() === dd.ano && hoje.getMonth() + 1 === dd.mes;
+        const faixas = [[1, 10], [11, 20], [21, 31]];
+        const cel = (v, cls) => v ? '<span class="' + cls + '">' + _fcdMoeda(v) + '</span>' : '<span class="fcd-zero">R$ —</span>';
+        const pill = v => v > 0 ? '<span class="fcd-pill pos">' + _fcdMoeda(v) + '</span>'
+                         : v < 0 ? '<span class="fcd-pill neg">(' + _fcdMoeda(v) + ')</span>'
+                         : '<span class="fcd-pill nulo">—</span>';
+
+        const grade = document.getElementById('fcdGrade');
+        grade.innerHTML = faixas.map(([ini, fim], bi) => {
+            let linhas = '';
+            for (let dia = ini; dia <= fim; dia++) {
+                if (dia > dd.nDias) {
+                    linhas += '<tr class="fcd-vazio"><td></td><td></td><td></td><td></td></tr>';
+                    continue;
+                }
+                const d = dd.dias[dia - 1];
+                const dow = new Date(dd.ano, dd.mes - 1, dia).getDay();
+                const cls = ['fcd-dia'];
+                if (dow === 0 || dow === 6) cls.push('fcd-fds');
+                if (ehMesAtual && hoje.getDate() === dia) cls.push('fcd-hoje');
+                linhas += '<tr class="' + cls.join(' ') + '" onclick="abrirLancamentosFCD(' + dia + ')" title="Ver lançamentos do dia ' + dia + '">'
+                    + '<td>' + dia + '</td>'
+                    + '<td>' + cel(d.rec, 'fcd-rec') + '</td>'
+                    + '<td>' + cel(d.desp, 'fcd-desp') + '</td>'
+                    + '<td>' + pill(d.rec - d.desp) + '</td></tr>';
+            }
+            if (bi === 2) {
+                linhas += '<tr class="fcd-total"><td>Total</td>'
+                    + '<td class="fcd-rec">' + _fcdMoeda(dd.totRec) + '</td>'
+                    + '<td class="fcd-desp">' + _fcdMoeda(dd.totDesp) + '</td>'
+                    + '<td>' + pill(res) + '</td></tr>';
+            }
+            return '<div class="fcd-bloco"><table class="fcd-tab"><thead><tr>'
+                + '<th>Dia</th><th class="fcd-h-rec">Receita</th><th class="fcd-h-desp">Despesa</th><th>Resultado do dia</th>'
+                + '</tr></thead><tbody>' + linhas + '</tbody></table></div>';
+        }).join('');
+    }
+
+    function abrirLancamentosFCD(dia) {
+        const dd = _fcdDados();
+        const d = dd.dias[dia - 1];
+        if (!d) return;
+        const rows = _rowsDeContas(d.contasRec, 'receber').concat(_rowsComoSaida(_rowsDeContas(d.contasPag, 'pagar')));
+        const dataTxt = String(dia).padStart(2, '0') + '/' + String(dd.mes).padStart(2, '0') + '/' + dd.ano;
+        abrirModalLancamentosGen('Fluxo de Caixa Diário — ' + dataTxt, rows, {
+            parteLabel: 'Cliente / Fornecedor', liquido: true,
+            onChange: async () => { await carregarFCD(); abrirLancamentosFCD(dia); }
+        });
+    }
+
+    // PDF do Fluxo de Caixa Diário.
+    //  • Retrato: uma tabela única com todos os dias do mês.
+    //  • Paisagem: os três blocos lado a lado (1–10, 11–20, 21–fim), como na tela.
+    function gerarPDFFCD() {
+        if (!_fcdCache) { alert('Abra o Fluxo de Caixa Diário antes de gerar o PDF.'); return; }
+        if (!window.jspdf) { alert('Biblioteca de PDF não carregada. Recarregue a página.'); return; }
+        const selOr = document.getElementById('orientPDFFCD');
+        const paisagem = selOr && selOr.value === 'landscape';
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: paisagem ? 'landscape' : 'portrait', unit: 'mm', format: 'a4' });
+        const pageW = doc.internal.pageSize.getWidth();
+        const dd = _fcdDados();
+        const res = dd.totRec - dd.totDesp;
+        const baseTxt = { realizado: 'Realizado', previsto: 'Previsto (em aberto)', ambos: 'Realizado + Previsto' }[dd.base];
+        const b = (dadosCache.bancos || []).find(x => String(x.id) === String(dd.banco));
+        const sinal = v => (v < 0 ? '-' : '') + _fcdMoeda(v);
+        const nomeMes = _FCD_MESES[dd.mes - 1];
+
+        // Cabeçalho
+        doc.setFillColor(255, 122, 66); doc.rect(0, 0, pageW, 14, 'F');
+        doc.setTextColor(255); doc.setFontSize(12); doc.setFont(undefined, 'bold');
+        doc.text(normalizarTexto('Fluxo de Caixa Diário — ' + nomeMes + '/' + dd.ano), 10, 9.2);
+        doc.setFontSize(8); doc.setFont(undefined, 'normal');
+        doc.text('Gerado em: ' + new Date().toLocaleDateString('pt-BR'), pageW - 10, 9.2, { align: 'right' });
+        doc.setTextColor(60); doc.setFontSize(9);
+        doc.text(normalizarTexto('Base: ' + baseTxt + '   |   Conta: ' + (b ? b.nome : 'Consolidado')), 10, 20);
+
+        // Resumo (quatro caixas, como os cartões da tela)
+        const comMov = dd.dias.filter(d => d.rec || d.desp).length;
+        const caixas = [
+            ['Receita do mês', _fcdMoeda(dd.totRec), [30, 126, 52]],
+            ['Despesa do mês', _fcdMoeda(dd.totDesp), [200, 35, 51]],
+            ['Resultado do mês', sinal(res), res < 0 ? [200, 35, 51] : [30, 126, 52]],
+            ['Dias com movimento', comMov + ' / ' + dd.nDias, [60, 60, 60]]
+        ];
+        const gap = 4, cw = (pageW - 20 - gap * 3) / 4;
+        caixas.forEach((c, i) => {
+            const x = 10 + i * (cw + gap);
+            doc.setDrawColor(225); doc.setFillColor(250, 250, 250);
+            doc.roundedRect(x, 24, cw, 14, 1.5, 1.5, 'FD');
+            doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(c[2][0], c[2][1], c[2][2]);
+            doc.text(c[1], x + cw / 2, 30.5, { align: 'center' });
+            doc.setFontSize(6.5); doc.setFont(undefined, 'normal'); doc.setTextColor(140);
+            doc.text(normalizarTexto(c[0].toUpperCase()), x + cw / 2, 35, { align: 'center' });
+        });
+        // Melhor / pior dia
+        const movs = dd.dias.map((d, i) => ({ dia: i + 1, r: d.rec - d.desp, tem: d.rec || d.desp })).filter(x => x.tem);
+        let yTab = 42;
+        if (movs.length) {
+            const melhor = movs.reduce((a, x) => x.r > a.r ? x : a);
+            const pior = movs.reduce((a, x) => x.r < a.r ? x : a);
+            doc.setFontSize(8.5); doc.setFont(undefined, 'bold');
+            doc.setTextColor(30, 126, 52);
+            doc.text(normalizarTexto('Melhor dia: dia ' + melhor.dia + ' (' + sinal(melhor.r) + ')'), 10, 44);
+            doc.setTextColor(200, 35, 51);
+            doc.text(normalizarTexto('Pior dia: dia ' + pior.dia + ' (' + sinal(pior.r) + ')'), pageW / 2, 44);
+            yTab = 48;
+        }
+
+        const linhaDia = i => {
+            const d = dd.dias[i];
+            return [String(i + 1), d.rec ? _fcdMoeda(d.rec) : '-', d.desp ? _fcdMoeda(d.desp) : '-', (d.rec || d.desp) ? sinal(d.rec - d.desp) : '-'];
+        };
+        const estilizar = (totalIdx) => function (data) {
+            if (data.section === 'head') { if (data.column.index === 0) data.cell.styles.halign = 'left'; return; }
+            const st = data.cell.styles;
+            if (data.row.index === totalIdx) { st.fontStyle = 'bold'; st.fillColor = [245, 245, 245]; }
+            if (data.column.index === 0) return;
+            st.halign = 'right';
+            const t = String(data.cell.raw || '');
+            if (t === '-') { st.textColor = [190, 190, 190]; return; }
+            if (data.column.index === 1) st.textColor = [30, 126, 52];
+            if (data.column.index === 2) st.textColor = [200, 35, 51];
+            if (data.column.index === 3) {
+                st.textColor = 255; st.fontStyle = 'bold';
+                st.fillColor = t.charAt(0) === '-' ? [220, 53, 69] : [30, 158, 69];
+            }
+        };
+        const head = [['Dia', 'Receita', 'Despesa', 'Resultado']];
+
+        if (!paisagem) {
+            const body = dd.dias.map((_, i) => linhaDia(i));
+            body.push(['Total', _fcdMoeda(dd.totRec), _fcdMoeda(dd.totDesp), sinal(res)]);
+            doc.autoTable({
+                head: [['Dia', 'Receita', 'Despesa', 'Resultado do dia']], body, startY: yTab,
+                margin: { left: 10, right: 10 }, theme: 'grid',
+                styles: { fontSize: 8, cellPadding: 1.3, lineColor: [235, 235, 235], lineWidth: 0.1 },
+                headStyles: { fillColor: [255, 122, 66], textColor: 255, halign: 'right' },
+                columnStyles: { 0: { halign: 'left', cellWidth: 16 } },
+                didParseCell: estilizar(body.length - 1)
+            });
+        } else {
+            // Três blocos lado a lado
+            const faixas = [[1, 10], [11, 20], [21, dd.nDias]];
+            const gapB = 5, bw = (pageW - 20 - gapB * 2) / 3;
+            faixas.forEach(([ini, fim], bi) => {
+                const body = [];
+                for (let dia = ini; dia <= fim; dia++) body.push(linhaDia(dia - 1));
+                if (bi === 2) body.push(['Total', _fcdMoeda(dd.totRec), _fcdMoeda(dd.totDesp), sinal(res)]);
+                doc.autoTable({
+                    head, body, startY: yTab, theme: 'grid',
+                    margin: { left: 10 + bi * (bw + gapB) }, tableWidth: bw,
+                    styles: { fontSize: 8.5, cellPadding: 2.4, lineColor: [235, 235, 235], lineWidth: 0.1 },
+                    headStyles: { fillColor: [255, 122, 66], textColor: 255, halign: 'right', fontSize: 8.5 },
+                    columnStyles: { 0: { halign: 'left', cellWidth: 12 } },
+                    didParseCell: estilizar(bi === 2 ? body.length - 1 : -1)
+                });
+            });
+        }
+        doc.save('Fluxo_Caixa_Diario_' + dd.ano + '-' + String(dd.mes).padStart(2, '0') + '_' + (paisagem ? 'paisagem' : 'retrato') + '.pdf');
     }
 
     function gerarTabelaMensalDFC(recebidos, pagos, ano) {
@@ -9847,10 +10758,13 @@
                         'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
         const m = parseInt(mes, 10) || 0;
 
+        // mes = 0 → acumulado: considera só os meses exibidos no DFC por Categoria
+        const visDFC = (typeof _mesesVisiveisDFC === 'function') ? _mesesVisiveisDFC().map(x => x + 1) : [1,2,3,4,5,6,7,8,9,10,11,12];
         const noPeriodo = (data) => {
             if (!data) return false;
             if (ano && !data.startsWith(ano)) return false;
-            return m === 0 || parseInt(data.substring(5, 7), 10) === m;
+            const mm = parseInt(data.substring(5, 7), 10);
+            return m === 0 ? visDFC.includes(mm) : mm === m;
         };
         const nomeCategoria = (c, padrao) => {
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
@@ -9997,6 +10911,72 @@
     // FLUXO DE CAIXA PROJETADO — igual à DRE mensal Jan→Dez
     // ================================================================
 
+    // ================================================================
+    // CONTROLE GENÉRICO "📅 MESES" — ocultar meses e o acumulado
+    // Usado pelo Fluxo Projetado e pela Análise de Categorias.
+    // A preferência é salva por usuário; o acumulado soma só os meses exibidos.
+    // ================================================================
+    const _colMesesReg = {};
+    const _COLMESES_NOMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const _COLMESES_CURTOS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+    function criarControleMeses(chave, menuId, rotuloAcum, aoMudar) {
+        const k = suf => 'cap_' + chave + '_' + suf + '_' + (usuarioAtual ? usuarioAtual.email : 'guest');
+        const ctl = {
+            ocultos() { try { const v = localStorage.getItem(k('meses_ocultos')); return v ? JSON.parse(v) : []; } catch (e) { return []; } },
+            acumOculto() { try { return localStorage.getItem(k('acum_oculto')) === '1'; } catch (e) { return false; } },
+            visiveis() { const oc = ctl.ocultos(); return [0,1,2,3,4,5,6,7,8,9,10,11].filter(m => !oc.includes(m + 1)); },
+            rotuloAcum(base) {
+                const vis = ctl.visiveis();
+                return (base || rotuloAcum) + (vis.length < 12 ? ' (' + (vis.length ? vis.map(m => _COLMESES_CURTOS[m]).join(', ') : 'nenhum mês') + ')' : '');
+            },
+            setMes(mes, visivel) {
+                let oc = ctl.ocultos();
+                if (visivel) oc = oc.filter(m => m !== mes); else if (!oc.includes(mes)) oc.push(mes);
+                try { localStorage.setItem(k('meses_ocultos'), JSON.stringify(oc)); } catch (e) {}
+                aoMudar();
+            },
+            setAcum(visivel) { try { localStorage.setItem(k('acum_oculto'), visivel ? '0' : '1'); } catch (e) {} aoMudar(); },
+            todos(mostrar) {
+                try {
+                    localStorage.setItem(k('meses_ocultos'), JSON.stringify(mostrar ? [] : [1,2,3,4,5,6,7,8,9,10,11,12]));
+                    if (mostrar) localStorage.setItem(k('acum_oculto'), '0');
+                } catch (e) {}
+                aoMudar(); ctl.montarMenu();
+            },
+            montarMenu() {
+                const menu = document.getElementById(menuId);
+                if (!menu) return;
+                const oc = ctl.ocultos();
+                let html = '<div class="colunas-dropdown-title">Mostrar colunas</div>';
+                _COLMESES_NOMES.forEach((nome, i) => {
+                    html += '<label><input type="checkbox" ' + (oc.includes(i + 1) ? '' : 'checked') + ' onchange="_colMesesReg[\'' + chave + '\'].setMes(' + (i + 1) + ', this.checked)"> ' + nome + '</label>';
+                });
+                html += '<div style="border-top:1px solid var(--cor-borda);margin-top:6px;padding-top:6px;">'
+                    + '<label><input type="checkbox" ' + (ctl.acumOculto() ? '' : 'checked') + ' onchange="_colMesesReg[\'' + chave + '\'].setAcum(this.checked)"> <b>' + rotuloAcum + '</b></label></div>';
+                html += '<div class="colunas-dropdown-actions">'
+                    + '<button type="button" class="btn btn-secondary" onclick="_colMesesReg[\'' + chave + '\'].todos(true)">Mostrar todos</button>'
+                    + '<button type="button" class="btn btn-secondary" onclick="_colMesesReg[\'' + chave + '\'].todos(false)">Ocultar todos</button></div>';
+                menu.innerHTML = html;
+            },
+            abrirFechar(event) {
+                if (event) event.stopPropagation();
+                const menu = document.getElementById(menuId);
+                if (!menu) return;
+                const abrindo = !menu.classList.contains('aberto');
+                if (abrindo) ctl.montarMenu();
+                menu.classList.toggle('aberto', abrindo);
+            }
+        };
+        _colMesesReg[chave] = ctl;
+        document.addEventListener('click', function (event) {
+            const menu = document.getElementById(menuId);
+            if (!menu || !menu.classList.contains('aberto')) return;
+            if (!menu.contains(event.target) && !event.target.closest('.colunas-btn-wrap')) menu.classList.remove('aberto');
+        });
+        return ctl;
+    }
+
     async function carregarFCP() {
         let contasReceber = await fetchSupabase('contas_a_receber', 'GET');
         let contasPagar   = await fetchSupabase('contas_a_pagar',   'GET');
@@ -10068,14 +11048,6 @@
         // ── Montar tabela mensal horizontal (igual à DRE mensal) ─────────────
         const mNomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
-        // Cabeçalho
-        const headerRow = document.getElementById('fcpHeaderMeses');
-        if (headerRow) {
-            headerRow.innerHTML = '<th style="min-width:200px;text-align:left;padding:6px 10px;background:#2c3e50;color:#fff;">Descrição</th>' +
-                mNomes.map(m => '<th style="text-align:right;min-width:95px;padding:6px 8px;background:#2c3e50;color:#fff;">' + m + '/' + String(anoSel).slice(2) + '</th>').join('') +
-                '<th style="text-align:right;min-width:105px;padding:6px 8px;background:#1a252f;color:#fff;font-weight:700;">Total</th>';
-        }
-
         // Calcular entradas e saídas por mês
         // Entradas: agrupar recebimentos por categoria (ou "Receita" se sem categoria)
         const catRec = {}; // { catNome: [val_m0..val_m11] }
@@ -10106,71 +11078,97 @@
         let acumArr = [];
         saldoMes.reduce((acc, v, m) => { acumArr[m] = acc + v; return acc + v; }, 0);
 
-        const fmtV = v => v !== 0 ? 'R$&nbsp;' + Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '-';
-        const cor  = v => v < 0 ? 'color:#dc3545;' : v > 0 ? 'color:#28a745;' : 'color:#ccc;';
-
-        const tbody = document.getElementById('fcpCorpoMensal');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-
-        // ── Função auxiliar para uma linha ──
-        // opts.drill = { tipo: 'rec'|'pag'|'ent'|'sai'|'saldo', cat: 'nome da categoria' }
-        // Quando informado, cada célula vira clicável e abre a lista de lançamentos
-        // daquele mês (ou do ano inteiro, ao clicar no rótulo ou na coluna Total).
-        function linhaTabela(label, vals, opts = {}) {
-            const { bg = '', fc = '', bold = false, indent = false, drill = null } = opts;
-            const total = vals.reduce((s,v) => s + v, 0);
-            const rowStyle = (bg ? 'background:' + bg + ';' : '') + (fc ? 'color:' + fc + ';' : '') + (bold ? 'font-weight:700;' : '');
-            const lbl = (indent ? '&nbsp;&nbsp;&nbsp;↳ ' : '') + label;
-            const catEsc = drill && drill.cat ? String(drill.cat).replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
-            const clickCel = m => drill
-                ? ' onclick="abrirLancamentosFCP(\'' + drill.tipo + '\',\'' + catEsc + '\',' + m + ')" title="Ver lançamentos"'
-                : '';
-            const curs = drill ? 'cursor:pointer;' : '';
-            const lupa = drill ? ' <span style="color:#bbb;font-size:11px;">🔍</span>' : '';
-            return '<tr style="' + rowStyle + '">' +
-                '<td style="padding:5px 8px;' + curs + (bold ? 'font-weight:700;' : '') + (indent ? 'color:#555;' : '') + '"' + clickCel(0) + '>' + lbl + lupa + '</td>' +
-                vals.map((v, m) => '<td style="text-align:right;padding:5px 8px;' + curs + (fc ? '' : cor(v)) + '"' + clickCel(m + 1) + '>' + fmtV(v) + '</td>').join('') +
-                '<td style="text-align:right;padding:5px 8px;font-weight:700;' + curs + (fc ? '' : cor(total)) + '"' + clickCel(0) + '>' + fmtV(total) + '</td>' +
-                '</tr>';
-        }
-
-        function linhaSeparador(label) {
-            return '<tr style="background:#e9ecef;"><td colspan="' + (13+1) + '" style="font-weight:700;font-size:11px;color:#555;padding:5px 10px;text-transform:uppercase;letter-spacing:0.5px;">' + label + '</td></tr>';
-        }
-
-        // ── Seção ENTRADAS ──
-        tbody.innerHTML += linhaSeparador('ENTRADAS DE CAIXA');
-        if (Object.keys(catRec).length === 0) {
-            tbody.innerHTML += '<tr><td colspan="' + (13+1) + '" style="padding:6px 10px;color:#aaa;font-size:12px;">Nenhum recebimento no período</td></tr>';
-        } else {
-            Object.entries(catRec).sort((a,b) => b[1].reduce((s,v)=>s+v,0) - a[1].reduce((s,v)=>s+v,0)).forEach(([cat, arr]) => {
-                tbody.innerHTML += linhaTabela(cat, arr, { indent: true, drill: { tipo: 'rec', cat: cat } });
-            });
-        }
-        tbody.innerHTML += linhaTabela('= Total Entradas', totEntMes, { bg: '#d4edda', fc: '#155724', bold: true, drill: { tipo: 'ent' } });
-
-        // ── Seção SAÍDAS ──
-        tbody.innerHTML += linhaSeparador('SAÍDAS DE CAIXA');
-        if (Object.keys(catPag).length === 0) {
-            tbody.innerHTML += '<tr><td colspan="' + (13+1) + '" style="padding:6px 10px;color:#aaa;font-size:12px;">Nenhum pagamento no período</td></tr>';
-        } else {
-            Object.entries(catPag).sort((a,b) => b[1].reduce((s,v)=>s+v,0) - a[1].reduce((s,v)=>s+v,0)).forEach(([cat, arr]) => {
-                const negArr = arr.map(v => -v);
-                tbody.innerHTML += linhaTabela(cat, negArr, { indent: true, drill: { tipo: 'pag', cat: cat } });
-            });
-        }
-        tbody.innerHTML += linhaTabela('= Total Saídas', totSaiMes.map(v => -v), { bg: '#f8d7da', fc: '#721c24', bold: true, drill: { tipo: 'sai' } });
-
-        // ── Saldo mensal e acumulado ──
-        tbody.innerHTML += linhaSeparador('SALDO');
-        tbody.innerHTML += linhaTabela('Saldo Mensal (Entradas - Saídas)', saldoMes, { bg: '#f5f5f5', bold: true, drill: { tipo: 'saldo' } });
-        tbody.innerHTML += linhaTabela('Saldo Acumulado', acumArr, { bg: 'var(--cor-primaria)', fc: 'white', bold: true });
+        window._fcpModelo = { anoSel, catRec, catPag, totEntMes, totSaiMes };
+        renderizarTabelaFCP();
 
         // Mostrar card
         const cardMensal = document.getElementById('cardFCPMensal');
         if (cardMensal) cardMensal.style.display = '';
 
+        criarGraficoFCP();
+    }
+
+    const _ctlMesesFCP = criarControleMeses('fcp', 'menuMesesFCP', 'Acumulado', () => { renderizarTabelaFCP(); criarGraficoFCP(); });
+
+    // Desenha a tabela do Fluxo Projetado só com os meses marcados no "📅 Meses".
+    // A coluna Acumulado soma apenas os meses exibidos.
+    function _linhasFCP() {
+        const md = window._fcpModelo;
+        if (!md) return null;
+        const vis = _ctlMesesFCP.visiveis();
+        const soma = arr => vis.reduce((s, m) => s + arr[m], 0);
+        const linhas = [];
+        linhas.push({ tipo: 'secao', label: 'ENTRADAS DE CAIXA' });
+        const ent = Object.entries(md.catRec).filter(([, a]) => vis.length === 0 || soma(a) !== 0).sort((a, b) => soma(b[1]) - soma(a[1]));
+        if (!ent.length) linhas.push({ tipo: 'vazio', label: 'Nenhum recebimento no período' });
+        ent.forEach(([cat, arr]) => linhas.push({ tipo: 'cat', label: cat, vals: arr, drill: { tipo: 'rec', cat } }));
+        linhas.push({ tipo: 'totEnt', label: '= Total Entradas', vals: md.totEntMes, drill: { tipo: 'ent' } });
+        linhas.push({ tipo: 'secao', label: 'SAÍDAS DE CAIXA' });
+        const sai = Object.entries(md.catPag).filter(([, a]) => vis.length === 0 || soma(a) !== 0).sort((a, b) => soma(b[1]) - soma(a[1]));
+        if (!sai.length) linhas.push({ tipo: 'vazio', label: 'Nenhum pagamento no período' });
+        sai.forEach(([cat, arr]) => linhas.push({ tipo: 'cat', label: cat, vals: arr.map(v => -v), drill: { tipo: 'pag', cat } }));
+        linhas.push({ tipo: 'totSai', label: '= Total Saídas', vals: md.totSaiMes.map(v => -v), drill: { tipo: 'sai' } });
+        linhas.push({ tipo: 'secao', label: 'SALDO' });
+        const saldo = md.totEntMes.map((e, m) => e - md.totSaiMes[m]);
+        linhas.push({ tipo: 'saldo', label: 'Saldo Mensal (Entradas - Saídas)', vals: saldo, drill: { tipo: 'saldo' } });
+        // Saldo acumulado corre apenas pelos meses exibidos
+        const acum = Array(12).fill(0); let run = 0;
+        vis.forEach(m => { run += saldo[m]; acum[m] = run; });
+        linhas.push({ tipo: 'acum', label: 'Saldo Acumulado', vals: acum, totalFixo: run });
+        linhas.forEach(l => { if (l.vals) l.total = (l.totalFixo !== undefined) ? l.totalFixo : soma(l.vals); });
+        return { md, vis, acumOculto: _ctlMesesFCP.acumOculto(), linhas };
+    }
+
+    function renderizarTabelaFCP() {
+        const r = _linhasFCP();
+        const headerRow = document.getElementById('fcpHeaderMeses');
+        const tbody = document.getElementById('fcpCorpoMensal');
+        if (!r || !headerRow || !tbody) return;
+        const { md, vis, acumOculto, linhas } = r;
+        const yy = String(md.anoSel).slice(2);
+        const nCols = 1 + vis.length + (acumOculto ? 0 : 1);
+        headerRow.innerHTML = '<th style="min-width:200px;text-align:left;padding:6px 10px;background:#2c3e50;color:#fff;">Descrição</th>' +
+            vis.map(m => '<th style="text-align:right;min-width:95px;padding:6px 8px;background:#2c3e50;color:#fff;">' + _COLMESES_CURTOS[m] + '/' + yy + '</th>').join('') +
+            (acumOculto ? '' : '<th style="text-align:right;min-width:105px;padding:6px 8px;background:#1a252f;color:#fff;font-weight:700;">' + _ctlMesesFCP.rotuloAcum() + '</th>');
+
+        const fmtV = v => v !== 0 ? 'R$&nbsp;' + Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '-';
+        const cor  = v => v < 0 ? 'color:#dc3545;' : v > 0 ? 'color:#28a745;' : 'color:#ccc;';
+        const estilos = {
+            cat:    { bg: '', fc: '', bold: false, indent: true },
+            totEnt: { bg: '#d4edda', fc: '#155724', bold: true },
+            totSai: { bg: '#f8d7da', fc: '#721c24', bold: true },
+            saldo:  { bg: '#f5f5f5', fc: '', bold: true },
+            acum:   { bg: 'var(--cor-primaria)', fc: 'white', bold: true }
+        };
+        let html = '';
+        linhas.forEach(l => {
+            if (l.tipo === 'secao') { html += '<tr style="background:#e9ecef;"><td colspan="' + nCols + '" style="font-weight:700;font-size:11px;color:#555;padding:5px 10px;text-transform:uppercase;letter-spacing:0.5px;">' + l.label + '</td></tr>'; return; }
+            if (l.tipo === 'vazio') { html += '<tr><td colspan="' + nCols + '" style="padding:6px 10px;color:#aaa;font-size:12px;">' + l.label + '</td></tr>'; return; }
+            const e = estilos[l.tipo];
+            const drill = l.drill;
+            const catEsc = drill && drill.cat ? String(drill.cat).replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
+            const clk = m => drill ? ' onclick="abrirLancamentosFCP(\'' + drill.tipo + '\',\'' + catEsc + '\',' + m + ')" title="Ver lançamentos"' : '';
+            const curs = drill ? 'cursor:pointer;' : '';
+            const rowStyle = (e.bg ? 'background:' + e.bg + ';' : '') + (e.fc ? 'color:' + e.fc + ';' : '') + (e.bold ? 'font-weight:700;' : '');
+            html += '<tr style="' + rowStyle + '">' +
+                '<td style="padding:5px 8px;' + curs + (e.indent ? 'color:#555;' : '') + '"' + clk(0) + '>' + (e.indent ? '&nbsp;&nbsp;&nbsp;↳ ' : '') + l.label + (drill ? ' <span style="color:#bbb;font-size:11px;">🔍</span>' : '') + '</td>' +
+                vis.map(m => '<td style="text-align:right;padding:5px 8px;white-space:nowrap;' + curs + (e.fc ? '' : cor(l.vals[m])) + '"' + clk(m + 1) + '>' + fmtV(l.vals[m]) + '</td>').join('') +
+                (acumOculto ? '' : '<td style="text-align:right;padding:5px 8px;white-space:nowrap;font-weight:700;' + curs + (e.fc ? '' : cor(l.total)) + '"' + clk(0) + '>' + fmtV(l.total) + '</td>') +
+                '</tr>';
+        });
+        tbody.innerHTML = html;
+    }
+
+    function criarGraficoFCP() {
+        const md = window._fcpModelo;
+        if (!md) return;
+        const anoSel = md.anoSel;
+        const vis = _ctlMesesFCP.visiveis();
+        const totEntMes = vis.map(m => md.totEntMes[m]);
+        const totSaiMes = vis.map(m => md.totSaiMes[m]);
+        let run = 0;
+        const acumArr = vis.map(m => (run += md.totEntMes[m] - md.totSaiMes[m]));
+        const mNomes = vis.map(m => _COLMESES_CURTOS[m]);
         // ── Gráfico ──
         const ctx = document.getElementById('chartFCP');
         if (ctx) {
@@ -10216,10 +11214,13 @@
         const m = parseInt(mes, 10) || 0;
 
         // O FCP posiciona os lançamentos pendentes pela data de vencimento.
+        // mes = 0 (rótulo / Acumulado) → apenas os meses exibidos na tabela.
+        const visFCP = _ctlMesesFCP.visiveis().map(x => x + 1);
         const noPeriodo = c => {
             const d = c.data_vencimento || '';
             if (!d.startsWith(ano)) return false;
-            return m === 0 || parseInt(d.substring(5, 7), 10) === m;
+            const mm = parseInt(d.substring(5, 7), 10);
+            return m === 0 ? visFCP.includes(mm) : mm === m;
         };
         const nomeCategoria = (c, padrao) => {
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
@@ -10255,20 +11256,76 @@
         abrirModalLancamentosGen(titulo + ' · ' + periodo, rows, { parteLabel: 'Cliente / Fornecedor', liquido: liquido, onChange: () => abrirLancamentosFCP(tipo, nomeCat, mes) });
     }
 
+    // PDF do Fluxo Projetado: retrato ou paisagem (seletor "PDF" nos filtros),
+    // respeitando os meses e o Acumulado exibidos na tela.
     function gerarPDFFCP() {
-        const anoSel = document.getElementById('filtroAnoFCP')?.value || '';
+        if (!window.jspdf) { alert('Biblioteca de PDF não carregada. Recarregue a página.'); return; }
+        const r = _linhasFCP();
+        if (!r) { alert('Selecione um ano de projeção para gerar o PDF.'); return; }
+        const { md, vis, acumOculto, linhas } = r;
+        if (!vis.length && acumOculto) { alert('Todas as colunas estão ocultas. Marque ao menos um mês ou o Acumulado no menu 📅 Meses.'); return; }
+        const el = document.getElementById('orientPDFFCP');
+        const orient = el && el.value === 'portrait' ? 'portrait' : 'landscape';
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-        doc.setFontSize(14);
-        doc.text(normalizarTexto('Fluxo de Caixa Projetado — ' + (anoSel || 'Todos')), 14, 16);
-        doc.setFontSize(9);
-        doc.text('Gerado em: ' + new Date().toLocaleDateString('pt-BR'), 14, 22);
+        const doc = new jsPDF({ orientation: orient, unit: 'mm', format: 'a4' });
+        const pageW = doc.internal.pageSize.getWidth();
+        const empSel = document.getElementById('filtroEmpresaFCP');
+        const empTxt = (empSel && empSel.value && empSel.selectedOptions[0]) ? empSel.selectedOptions[0].textContent.trim() : 'Todas as empresas';
 
-        const table = document.getElementById('tabelaFCPMensal');
-        if (table && window.autoTable) {
-            doc.autoTable({ html: table, startY: 26, styles: { fontSize: 7, cellPadding: 2 }, headStyles: { fillColor: [230,102,34] } });
-        }
-        doc.save('FluxoProjetado_' + (anoSel || 'todos') + '.pdf');
+        doc.setFillColor(255, 122, 66); doc.rect(0, 0, pageW, 14, 'F');
+        doc.setTextColor(255); doc.setFontSize(12); doc.setFont(undefined, 'bold');
+        doc.text(normalizarTexto('Fluxo de Caixa Projetado — ' + md.anoSel), 10, 9.2);
+        doc.setFontSize(8); doc.setFont(undefined, 'normal');
+        doc.text('Gerado em: ' + new Date().toLocaleDateString('pt-BR'), pageW - 10, 9.2, { align: 'right' });
+        doc.setTextColor(60); doc.setFontSize(9);
+        const mesesTxt = vis.length === 12 ? 'Jan a Dez' : (vis.length ? vis.map(m => _COLMESES_CURTOS[m]).join(', ') : 'nenhum');
+        doc.text(normalizarTexto('Empresa: ' + empTxt + '   |   Meses: ' + mesesTxt + '   |   Lançamentos pendentes pela data de vencimento'), 10, 20);
+
+        const yy = String(md.anoSel).slice(2);
+        const head = [['Descrição'].concat(vis.map(m => _COLMESES_CURTOS[m] + '/' + yy)).concat(acumOculto ? [] : [_ctlMesesFCP.rotuloAcum()]).map(normalizarTexto)];
+        const fmt = v => v ? (v < 0 ? '-' : '') + 'R$ ' + Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-';
+        const meta = [], body = [];
+        linhas.forEach(l => {
+            if (l.tipo === 'secao' || l.tipo === 'vazio') {
+                body.push([normalizarTexto(l.label)].concat(vis.map(() => '')).concat(acumOculto ? [] : [''])); meta.push(l); return;
+            }
+            body.push([normalizarTexto((l.tipo === 'cat' ? '   ' : '') + l.label)].concat(vis.map(m => fmt(l.vals[m]))).concat(acumOculto ? [] : [fmt(l.total)]));
+            meta.push(l);
+        });
+        const nCols = head[0].length, retrato = orient === 'portrait';
+        const fonte = retrato ? (nCols > 11 ? 4.6 : nCols > 8 ? 5.6 : nCols > 5 ? 7 : 8.5) : (nCols > 12 ? 5.8 : nCols > 9 ? 6.6 : nCols > 5 ? 7.6 : 9);
+        const larguraDesc = retrato ? (nCols > 11 ? 34 : nCols > 8 ? 42 : 60) : (nCols > 12 ? 44 : nCols > 9 ? 52 : 70);
+
+        doc.autoTable({
+            head, body, startY: 24, theme: 'grid',
+            margin: { left: 8, right: 8, bottom: 12 },
+            styles: { fontSize: fonte, cellPadding: { top: 1.2, right: 1.4, bottom: 1.2, left: 1.4 }, overflow: 'linebreak', valign: 'middle', lineColor: [235, 235, 235], lineWidth: 0.1 },
+            headStyles: { fillColor: [44, 62, 80], textColor: 255, fontStyle: 'bold', halign: 'right' },
+            columnStyles: { 0: { cellWidth: larguraDesc, halign: 'left' } },
+            didParseCell: function (data) {
+                if (data.section === 'head') { if (data.column.index === 0) data.cell.styles.halign = 'left'; return; }
+                const l = meta[data.row.index]; if (!l) return;
+                const st = data.cell.styles;
+                if (data.column.index > 0) st.halign = 'right';
+                const raw = String(data.cell.raw || '');
+                if (l.tipo === 'secao') { st.fillColor = [233, 236, 239]; st.fontStyle = 'bold'; st.textColor = [85, 85, 85]; return; }
+                if (l.tipo === 'vazio') { st.textColor = [170, 170, 170]; return; }
+                if (l.tipo === 'totEnt') { st.fillColor = [212, 237, 218]; st.textColor = [21, 87, 36]; st.fontStyle = 'bold'; return; }
+                if (l.tipo === 'totSai') { st.fillColor = [248, 215, 218]; st.textColor = [114, 28, 36]; st.fontStyle = 'bold'; return; }
+                if (l.tipo === 'acum') { st.fillColor = [255, 122, 66]; st.textColor = 255; st.fontStyle = 'bold'; return; }
+                if (l.tipo === 'saldo') { st.fillColor = [245, 245, 245]; st.fontStyle = 'bold'; }
+                if (data.column.index === 0) return;
+                if (raw === '-') st.textColor = [190, 190, 190];
+                else st.textColor = raw.charAt(0) === '-' ? [220, 53, 69] : [40, 167, 69];
+                if (!acumOculto && data.column.index === nCols - 1) st.fontStyle = 'bold';
+            },
+            didDrawPage: function () {
+                const pH = doc.internal.pageSize.getHeight();
+                doc.setFontSize(7); doc.setTextColor(150);
+                doc.text('Página ' + doc.internal.getNumberOfPages(), pageW - 10, pH - 5, { align: 'right' });
+            }
+        });
+        doc.save('FluxoProjetado_' + md.anoSel + '_' + (retrato ? 'retrato' : 'paisagem') + '.pdf');
     }
 
     // ================================================================
@@ -10642,10 +11699,13 @@
                 ? 'DRE Acumulada<div style="font-size:10px;font-weight:400;opacity:0.85;">(' + mesesVisiveis.map(m => mNomes[m]).join(', ') + ')</div>'
                 : 'DRE Acumulada');
 
-        // Cabeçalho com meses
+        // Cabeçalho: cada mês visível ganha uma coluna "%" ao lado (sobre a Receita Bruta).
+        // Meses ocultos e a coluna acumulada oculta simplesmente não são desenhados.
+        const acumOculto = _acumOcultoDRE();
+        const thPct = '<th class="dre-pct-h" style="text-align:right;min-width:52px;">%</th>';
         headerRow.innerHTML = '<th style="min-width:180px;text-align:left;">Descrição</th>' +
-            mNomes.map(m => '<th style="text-align:right;min-width:90px;">' + m + '/' + String(ano).slice(2) + '</th>').join('') +
-            '<th style="text-align:right;min-width:120px;">' + rotuloAcum + '</th>';
+            mesesVisiveis.map(m => '<th style="text-align:right;min-width:95px;">' + mNomes[m] + '/' + String(ano).slice(2) + '</th>' + thPct).join('') +
+            (acumOculto ? '' : '<th style="text-align:right;min-width:120px;">' + rotuloAcum + '</th>' + thPct);
 
         // Para cada mês, calcular valores por grupo
         const dados = {};
@@ -10704,121 +11764,133 @@
         const fmtV = v => v !== 0 ? (v > 0 ? '+' : '\u2212') + 'R$&nbsp;' + Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '-';
         const cor  = v => v < 0 ? 'color:#dc3545;' : v > 0 ? 'color:#28a745;' : 'color:#ccc;';
 
-        // ---- Subcategorias do CPV por mes ----
-        // Agrupa contas_a_pagar do grupo CPV por nome de categoria
-        const cpvSubcats = {};
-        contasPag.filter(c => {
+        // ---- Categorias de cada grupo, por mês ----
+        // Usa exatamente as mesmas regras de posicionamento da tabela (competência /
+        // empréstimos por vencimento), então a soma das categorias bate com o grupo.
+        const subsPorGrupo = {};
+        const addSub = (g, nome, m, v) => {
+            if (m < 0 || m > 11 || !dados[g]) return;
+            if (!subsPorGrupo[g]) subsPorGrupo[g] = {};
+            if (!subsPorGrupo[g][nome]) subsPorGrupo[g][nome] = Array(12).fill(0);
+            subsPorGrupo[g][nome][m] += v;
+        };
+        contasRec.filter(c => c.data_competencia && c.data_competencia.startsWith(ano)).forEach(c => {
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            return cat && grupoEstruturalDRE(cat.grupo_dre) === 'CPV' && c.data_competencia && c.data_competencia.startsWith(ano);
-        }).forEach(c => {
-            const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            const nome = cat ? cat.nome : 'Sem Categoria';
-            if (!cpvSubcats[nome]) cpvSubcats[nome] = Array(12).fill(0);
-            const m = parseInt(c.data_competencia.substring(5,7)) - 1;
-            if (m >= 0 && m < 12) cpvSubcats[nome][m] += parseFloat(c.valor || 0);
+            addSub(_grupoDeConta(c, 'receber'), cat ? cat.nome : 'Sem Categoria', parseInt(c.data_competencia.substring(5, 7)) - 1, parseFloat(c.valor || 0));
         });
-        // Tambem DRE lancamentos do grupo CPV
-        (dreLancs || []).filter(l => l.grupo === 'CPV' && l.competencia && l.competencia.startsWith(ano)).forEach(l => {
-            const nome = l.categoria || 'CPV/CSP';
-            if (!cpvSubcats[nome]) cpvSubcats[nome] = Array(12).fill(0);
-            const m = parseInt(l.competencia.substring(5,7)) - 1;
-            if (m >= 0 && m < 12) cpvSubcats[nome][m] += parseFloat(l.valor || 0);
-        });
-        const cpvSubOrdenado = Object.entries(cpvSubcats).sort((a,b) =>
-            b[1].reduce((s,v)=>s+v,0) - a[1].reduce((s,v)=>s+v,0)
-        );
-
-        // ---- Subcategorias DESP_ADMIN por mes ----
-        const daSubcats = {};
-        contasPag.filter(c => {
+        contasPag.forEach(c => {
+            const g = _grupoDeConta(c, 'pagar');
+            const ref = _dataRefDRE(c, g);
+            if (!ref || !ref.startsWith(ano)) return;
             const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            return cat && grupoEstruturalDRE(cat.grupo_dre) === 'DESP_ADMIN' && c.data_competencia && c.data_competencia.startsWith(ano);
-        }).forEach(c => {
-            const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
-            const nome = cat ? cat.nome : 'Sem Categoria';
-            if (!daSubcats[nome]) daSubcats[nome] = Array(12).fill(0);
-            const m = parseInt(c.data_competencia.substring(5,7)) - 1;
-            if (m >= 0 && m < 12) daSubcats[nome][m] += parseFloat(c.valor || 0);
+            addSub(g, cat ? cat.nome : 'Sem Categoria', parseInt(ref.substring(5, 7)) - 1, parseFloat(c.valor || 0));
         });
-        const daSubOrdenado = Object.entries(daSubcats).sort((a,b) =>
-            b[1].reduce((s,v)=>s+v,0) - a[1].reduce((s,v)=>s+v,0)
-        );
+        (dreLancs || []).filter(l => l.competencia && l.competencia.startsWith(ano)).forEach(l => {
+            addSub(l.grupo, l.categoria || 'Lançamento direto', parseInt(l.competencia.substring(5, 7)) - 1, parseFloat(l.valor || 0));
+        });
+        const subsOrdenados = g => Object.entries(subsPorGrupo[g] || {}).sort((a, b) =>
+            b[1].reduce((s, v) => s + v, 0) - a[1].reduce((s, v) => s + v, 0));
+        const cpvSubOrdenado = subsOrdenados('CPV');
+        const daSubOrdenado  = subsOrdenados('DESP_ADMIN');
 
         const linhas = [
-            { label: _labelGrupoDRE('RECEITA_BRUTA', ''),        fn: m => calcMes(m).rb,   bg: '', grupoId: 'RECEITA_BRUTA' },
-            { label: _labelGrupoDRE('DEDUCOES', '(-) '),         fn: m => -calcMes(m).ded, bg: '', grupoId: 'DEDUCOES', pctBase: 'RB' },
+            { label: _labelGrupoDRE('RECEITA_BRUTA', ''),        fn: m => calcMes(m).rb,   bg: '', grupoId: 'RECEITA_BRUTA', expandir: subsOrdenados('RECEITA_BRUTA') },
+            { label: _labelGrupoDRE('DEDUCOES', '(-) '),         fn: m => -calcMes(m).ded, bg: '', grupoId: 'DEDUCOES', expandir: subsOrdenados('DEDUCOES'), pctBase: 'RB' },
             { label: '= Receita L\u00edquida',    fn: m => calcMes(m).rl,   bg: '#f5f5f5', bold: true },
-            { label: _labelGrupoDRE('CPV', '(-) '),              fn: m => -calcMes(m).cpv, bg: '', bold: false, expandir: cpvSubOrdenado, grupoId: 'CPV', pctBase: 'RL' },
+            { label: _labelGrupoDRE('CPV', '(-) '),              fn: m => -calcMes(m).cpv, bg: '', bold: false, grupoId: 'CPV', expandir: subsOrdenados('CPV'), pctBase: 'RL' },
             { label: '= Lucro Bruto',             fn: m => calcMes(m).lb,   bg: '#f5f5f5', bold: true, pctBase: 'RL' },
-            { label: _labelGrupoDRE('DESP_COMERCIAL', '(-) '),   fn: m => -calcMes(m).dc,  bg: '', grupoId: 'DESP_COMERCIAL' },
-            { label: _labelGrupoDRE('DESP_ADMIN', '(-) '),       fn: m => -calcMes(m).da,  bg: '', expandir: daSubOrdenado, grupoId: 'DESP_ADMIN' },
+            { label: _labelGrupoDRE('DESP_COMERCIAL', '(-) '),   fn: m => -calcMes(m).dc,  bg: '', grupoId: 'DESP_COMERCIAL', expandir: subsOrdenados('DESP_COMERCIAL') },
+            { label: _labelGrupoDRE('DESP_ADMIN', '(-) '),       fn: m => -calcMes(m).da,  bg: '', grupoId: 'DESP_ADMIN', expandir: subsOrdenados('DESP_ADMIN') },
             { label: '= EBITDA',                  fn: m => calcMes(m).ebt,  bg: '#e8f4fd', bold: true, pctBase: 'RL' },
-            { label: _labelGrupoDRE('RECEITA_FINANCEIRA', '(+) '), fn: m => calcMes(m).rf, bg: '', grupoId: 'RECEITA_FINANCEIRA' },
-            { label: _labelGrupoDRE('DESP_FINANCEIRA', '(-) '),  fn: m => -calcMes(m).df,  bg: '', grupoId: 'DESP_FINANCEIRA' },
+            { label: _labelGrupoDRE('RECEITA_FINANCEIRA', '(+) '), fn: m => calcMes(m).rf, bg: '', grupoId: 'RECEITA_FINANCEIRA', expandir: subsOrdenados('RECEITA_FINANCEIRA') },
+            { label: _labelGrupoDRE('DESP_FINANCEIRA', '(-) '),  fn: m => -calcMes(m).df,  bg: '', grupoId: 'DESP_FINANCEIRA', expandir: subsOrdenados('DESP_FINANCEIRA') },
             { label: '= Resultado Antes do IR (LAJIR)', fn: m => calcMes(m).lajir, bg: '#f0f0f0', bold: true, pctBase: 'RL' },
-            { label: _labelGrupoDRE('EMPRESTIMO', '(-) ') + '<span style="font-weight:400;font-size:10px;color:#888;"> (por ' + rotuloModoEmprestimoDRE() + ')</span>', fn: m => -calcMes(m).emp, bg: '', grupoId: 'EMPRESTIMO' },
-            { label: _labelGrupoDRE('INVESTIMENTO', '(-) '),     fn: m => -calcMes(m).inv, bg: '', grupoId: 'INVESTIMENTO' },
-            { label: _labelGrupoDRE('OUTRAS_RECEITAS', '(+) '),  fn: m => calcMes(m).or,   bg: '', grupoId: 'OUTRAS_RECEITAS' },
-            { label: _labelGrupoDRE('OUTRAS_DESPESAS', '(-) '),  fn: m => -calcMes(m).od,  bg: '', grupoId: 'OUTRAS_DESPESAS' },
+            { label: _labelGrupoDRE('EMPRESTIMO', '(-) ') + '<span style="font-weight:400;font-size:10px;color:#888;"> (por ' + rotuloModoEmprestimoDRE() + ')</span>', fn: m => -calcMes(m).emp, bg: '', grupoId: 'EMPRESTIMO', expandir: subsOrdenados('EMPRESTIMO') },
+            { label: _labelGrupoDRE('INVESTIMENTO', '(-) '),     fn: m => -calcMes(m).inv, bg: '', grupoId: 'INVESTIMENTO', expandir: subsOrdenados('INVESTIMENTO') },
+            { label: _labelGrupoDRE('OUTRAS_RECEITAS', '(+) '),  fn: m => calcMes(m).or,   bg: '', grupoId: 'OUTRAS_RECEITAS', expandir: subsOrdenados('OUTRAS_RECEITAS') },
+            { label: _labelGrupoDRE('OUTRAS_DESPESAS', '(-) '),  fn: m => -calcMes(m).od,  bg: '', grupoId: 'OUTRAS_DESPESAS', expandir: subsOrdenados('OUTRAS_DESPESAS') },
             { label: '= Gera\u00e7\u00e3o de Caixa Ap\u00f3s as D\u00edvidas', fn: m => calcMes(m).res, bg: '', bold: true, destaque: true, pctBase: 'RL' },
         ];
 
-        // Bases para o cálculo de % (Receita Líquida ou Receita Bruta), por mês e total
-        const baseMes = (pb, m) => pb === 'RB' ? calcMes(m).rb : calcMes(m).rl;
-        // % em relação à base do próprio mês/total, exibido em fonte menor logo abaixo do valor
-        const pctCel = (v, base) => (base > 0)
-            ? '<div style="font-size:10px;color:#888;font-weight:400;">(' + (Math.abs(v) / base * 100).toFixed(2).replace('.', ',') + '%)</div>'
-            : '';
+        // % sempre em relação ao FATURAMENTO BRUTO (Receita Bruta) do próprio mês / do acumulado
+        const rbMes   = Array.from({length: 12}, (_, m) => calcMes(m).rb);
+        const rbTotal = mesesVisiveis.reduce((s, m) => s + rbMes[m], 0);
+        // Guarda as séries para o gráfico usar exatamente os mesmos números da tabela
+        window._dreSerieMensal = { ano: String(ano), rb: rbMes.slice(), res: Array.from({length: 12}, (_, m) => calcMes(m).res) };
+        // comSinal: linhas de resultado (=) mostram o % negativo quando o resultado é negativo
+        const pctTxt = (v, base, comSinal) => {
+            if (!(base > 0)) return '-';
+            const p = (comSinal ? v : Math.abs(v)) / base * 100;
+            return p.toFixed(1) + '%';
+        };
+        const tdPct = (v, base, comSinal, extra) =>
+            '<td class="dre-pct" style="text-align:right;padding:3px 6px;font-size:10.5px;color:#888;white-space:nowrap;' + (extra || '') + '">' + pctTxt(v, base, comSinal) + '</td>';
 
+        const recolhidos = _gruposRecolhidosDRE();
         tbody.innerHTML = '';
+        let html = '';
         linhas.forEach(linha => {
             const vals = Array.from({length: 12}, (_, m) => linha.fn(m));
             // Acumulado = soma apenas dos meses marcados no menu "📅 Meses"
             const total = mesesVisiveis.reduce((s, m) => s + vals[m], 0);
-            // Bases de % por mês/total (só para linhas com pctBase definido)
-            const basesMes  = linha.pctBase ? Array.from({length: 12}, (_, m) => baseMes(linha.pctBase, m)) : null;
-            const baseTotal = linha.pctBase ? mesesVisiveis.reduce((s, m) => s + basesMes[m], 0) : 0;
+            const ehResultado = !linha.grupoId;   // linhas "=" calculadas
             // Linha de fecho (Geração de Caixa Após as Dívidas): fundo branco, destacada por bordas
             const rowBg = linha.destaque
                 ? 'background:#fff;border-top:2px solid var(--cor-primaria);border-bottom:2px solid var(--cor-primaria);'
                 : (linha.bg ? 'background:' + linha.bg + ';' : '');
-            const labelFc = '';
             const bold  = linha.bold ? 'font-weight:700;' : '';
             const clicavel = linha.grupoId ? 'cursor:pointer;' : '';
-            // Clique agora é por célula: mes = 1..12 abre só aquele mês;
+            // Clique por célula: mes = 1..12 abre só aquele mês;
             // mes = 0 (rótulo e coluna acumulada) abre os meses marcados.
             const clickCel = m => linha.grupoId
                 ? ' onclick="abrirLancamentosDRE(\'' + linha.grupoId + '\',' + m + ')" title="Ver lançamentos"'
                 : '';
             const setaLupa = linha.grupoId ? ' <span style="color:#bbb;font-size:11px;">🔍</span>' : '';
-            tbody.innerHTML += '<tr style="' + rowBg + '">' +
-                '<td style="padding:3px 8px;' + clicavel + labelFc + bold + '"' + clickCel(0) + '>' + linha.label + setaLupa + '</td>' +
-                vals.map((v, m) => '<td style="text-align:right;padding:3px 8px;' + clicavel + cor(v) + '"' + clickCel(m + 1) + '>' + fmtV(v) + (linha.pctBase ? pctCel(v, basesMes[m]) : '') + '</td>').join('') +
-                '<td style="text-align:right;padding:3px 8px;font-weight:700;' + clicavel + cor(total) + '"' + clickCel(0) + '>' + fmtV(total) + (linha.pctBase ? pctCel(total, baseTotal) : '') + '</td>' +
+            // Seta para abrir/fechar as categorias do grupo (só quando o grupo tem categorias no período)
+            const temSubs = linha.expandir && linha.expandir.some(([, ms]) => mesesVisiveis.reduce((s, m) => s + ms[m], 0) !== 0);
+            const aberto  = temSubs && !recolhidos.includes(linha.grupoId);
+            const seta = temSubs
+                ? '<span class="dre-seta" onclick="event.stopPropagation();toggleGrupoDRE(\'' + linha.grupoId + '\')" title="' + (aberto ? 'Fechar categorias' : 'Abrir categorias') + '">' + (aberto ? '▾' : '▸') + '</span>'
+                : (linha.grupoId ? '<span class="dre-seta dre-seta-vazia"></span>' : '');
+            html += '<tr style="' + rowBg + '">' +
+                '<td style="padding:3px 8px;' + clicavel + bold + '"' + clickCel(0) + '>' + seta + linha.label + setaLupa + '</td>' +
+                mesesVisiveis.map(m =>
+                    '<td style="text-align:right;padding:3px 8px;white-space:nowrap;' + clicavel + bold + cor(vals[m]) + '"' + clickCel(m + 1) + '>' + fmtV(vals[m]) + '</td>' +
+                    tdPct(vals[m], rbMes[m], ehResultado, bold)
+                ).join('') +
+                (acumOculto ? '' :
+                    '<td style="text-align:right;padding:3px 8px;white-space:nowrap;font-weight:700;' + clicavel + cor(total) + '"' + clickCel(0) + '>' + fmtV(total) + '</td>' +
+                    tdPct(total, rbTotal, ehResultado, 'font-weight:600;')) +
                 '</tr>';
 
-            // Subcategorias expandidas
-            if (linha.expandir && linha.expandir.length > 0) {
+            // Categorias do grupo (somente quando o grupo está aberto)
+            const sinalGrupo = ['RECEITA_BRUTA', 'RECEITA_FINANCEIRA', 'OUTRAS_RECEITAS'].includes(linha.grupoId) ? 1 : -1;
+            const corSub = sinalGrupo > 0 ? '#28a745' : '#dc3545';
+            if (aberto) {
                 linha.expandir.forEach(([nomeSub, mesesSub]) => {
                     // Acumulado da subcategoria também considera só os meses marcados
-                    const totalSub = mesesVisiveis.length > 0
-                        ? mesesVisiveis.reduce((s, m) => s + mesesSub[m], 0)
-                        : mesesSub.reduce((s, v) => s + v, 0);
+                    const totalSub = mesesVisiveis.reduce((s, m) => s + mesesSub[m], 0);
                     if (totalSub === 0) return;
                     const nomeEsc = nomeSub.replace(/'/g, "\\'");
                     const clickSub = m => linha.grupoId
                         ? ' onclick="abrirLancamentosDRECategoria(\'' + linha.grupoId + '\',\'' + nomeEsc + '\',' + m + ')" title="Ver lançamentos"'
                         : '';
                     const curSub = linha.grupoId ? 'cursor:pointer;' : '';
-                    tbody.innerHTML += '<tr style="background:#fafafa;">' +
-                        '<td style="padding:2px 8px 2px 22px;font-size:11px;color:#888;' + curSub + '"' + clickSub(0) + '>' +
+                    html += '<tr style="background:#fafafa;">' +
+                        '<td style="padding:2px 8px 2px 30px;font-size:11px;color:#888;' + curSub + '"' + clickSub(0) + '>' +
                         '<span style="color:#bbb;margin-right:4px;">\u21b3</span>' + nomeSub + '</td>' +
-                        mesesSub.map((v, m) => '<td style="text-align:right;padding:2px 8px;font-size:11px;color:#dc3545;' + curSub + '"' + clickSub(m + 1) + '>' + (v > 0 ? fmtV(-v) : '-') + '</td>').join('') +
-                        '<td style="text-align:right;padding:2px 8px;font-size:11px;font-weight:600;color:#dc3545;' + curSub + '"' + clickSub(0) + '>' + fmtV(-totalSub) + '</td>' +
+                        mesesVisiveis.map(m =>
+                            '<td style="text-align:right;padding:2px 8px;font-size:11px;white-space:nowrap;color:' + corSub + ';' + curSub + '"' + clickSub(m + 1) + '>' + (mesesSub[m] !== 0 ? fmtV(sinalGrupo * mesesSub[m]) : '-') + '</td>' +
+                            tdPct(mesesSub[m], rbMes[m], false, 'font-size:10px;color:#aaa;')
+                        ).join('') +
+                        (acumOculto ? '' :
+                            '<td style="text-align:right;padding:2px 8px;font-size:11px;white-space:nowrap;font-weight:600;color:' + corSub + ';' + curSub + '"' + clickSub(0) + '>' + fmtV(sinalGrupo * totalSub) + '</td>' +
+                            tdPct(totalSub, rbTotal, false, 'font-size:10px;color:#aaa;')) +
                         '</tr>';
                 });
             }
         });
+        tbody.innerHTML = html;
     }
 
     // Determina o grupo estrutural de uma conta (mesma lógica da tabela mensal)
@@ -10876,7 +11948,14 @@
             // subcategoria pode ser "Categoria / Fornecedor" — casa pelo início
             return nome === nomeCat || nomeCat.indexOf(nome) === 0;
         });
-        abrirModalLancamentosGen('DRE — ' + nomeCat + ' · ' + _rotuloPeriodoDRE(mes), _rowsDeContas(pag, 'pagar'), { parteLabel: 'Despesas/Fornecedor', onChange: () => abrirLancamentosDRECategoria(grupoId, nomeCat, mes) });
+        const rec = (window._dreContasRecMensal || []).filter(c => {
+            if (_grupoDeConta(c, 'receber') !== grupoId) return false;
+            const comp = c.data_competencia;
+            if (!(comp && comp.startsWith(ano) && meses.includes(parseInt(comp.substring(5, 7), 10)))) return false;
+            const cat = dadosCache.categorias.find(x => x.id === c.categoria_id);
+            return (cat ? cat.nome : 'Sem Categoria') === nomeCat;
+        });
+        abrirModalLancamentosGen('DRE — ' + nomeCat + ' · ' + _rotuloPeriodoDRE(mes), _rowsDeContas(rec, 'receber').concat(_rowsDeContas(pag, 'pagar')), { parteLabel: 'Cliente / Despesas/Fornecedor', onChange: () => abrirLancamentosDRECategoria(grupoId, nomeCat, mes) });
     }
 
     // ── OCULTAR MESES INDIVIDUAIS NA DRE MENSAL ──────────────────────────────
@@ -10907,6 +11986,9 @@
             const marcado = !ocultos.includes(mes) ? 'checked' : '';
             html += `<label><input type="checkbox" ${marcado} onchange="toggleMesDRE(${mes}, this.checked)"> ${nome}</label>`;
         });
+        html += `<div style="border-top:1px solid var(--cor-borda);margin-top:6px;padding-top:6px;">
+            <label><input type="checkbox" ${_acumOcultoDRE() ? '' : 'checked'} onchange="toggleAcumDRE(this.checked)"> <b>DRE Acumulada</b></label>
+        </div>`;
         html += `<div class="colunas-dropdown-actions">
             <button type="button" class="btn btn-secondary" onclick="marcarTodosMesesDRE(true)">Mostrar todos</button>
             <button type="button" class="btn btn-secondary" onclick="marcarTodosMesesDRE(false)">Ocultar todos</button>
@@ -10914,13 +11996,53 @@
         menu.innerHTML = html;
     }
 
+    // As colunas ocultas já não são desenhadas pela tabela; aqui só atualizamos
+    // o gráfico para acompanhar os meses visíveis.
     function aplicarEstadoOcultarMesesDRE() {
-        const tabela = document.getElementById('tabelaDREMensal');
-        if (!tabela) return;
-        const ocultos = _mesesOcultosDRE();
-        for (let m = 1; m <= 12; m++) {
-            tabela.classList.toggle('hide-mes-' + m, ocultos.includes(m));
+        if (window._dreAnoSelMensal && window._dreContasRecMensal) {
+            criarGraficoDRE(window._dreLancsMensal || [], window._dreContasRecMensal || [],
+                            window._dreContasPagMensal || [], window._dreAnoSelMensal);
         }
+    }
+
+    // A coluna "DRE Acumulada" pode ser ocultada independentemente dos meses
+    function _chaveAcumOcultoDRE() {
+        const user = usuarioAtual ? usuarioAtual.email : 'guest';
+        return 'cap_dre_acum_oculto_' + user;
+    }
+    function _acumOcultoDRE() {
+        try { return localStorage.getItem(_chaveAcumOcultoDRE()) === '1'; } catch (e) { return false; }
+    }
+    // ── ABRIR / FECHAR CATEGORIAS DOS GRUPOS NA DRE MENSAL ──────────────────
+    // Guarda os grupos fechados; "*" = fechar todos por padrão.
+    function _chaveRecolhidosDRE() {
+        const user = usuarioAtual ? usuarioAtual.email : 'guest';
+        return 'cap_dre_recolhidos_' + user;
+    }
+    const _GRUPOS_DRE_EXPANSIVEIS = ['RECEITA_BRUTA','DEDUCOES','CPV','DESP_COMERCIAL','DESP_ADMIN','RECEITA_FINANCEIRA',
+                                     'DESP_FINANCEIRA','EMPRESTIMO','INVESTIMENTO','OUTRAS_RECEITAS','OUTRAS_DESPESAS'];
+    function _gruposRecolhidosDRE() {
+        try { const v = localStorage.getItem(_chaveRecolhidosDRE()); return v ? JSON.parse(v) : []; }
+        catch (e) { return []; }
+    }
+    function _salvarRecolhidosDRE(lista) {
+        try { localStorage.setItem(_chaveRecolhidosDRE(), JSON.stringify(lista)); } catch (e) {}
+    }
+    function toggleGrupoDRE(grupoId) {
+        let lista = _gruposRecolhidosDRE();
+        lista = lista.includes(grupoId) ? lista.filter(g => g !== grupoId) : lista.concat([grupoId]);
+        _salvarRecolhidosDRE(lista);
+        recalcularDREMensal();
+    }
+    // abrir = true → mostra todas as categorias; false → fica só com os grupos
+    function expandirTodosDRE(abrir) {
+        _salvarRecolhidosDRE(abrir ? [] : _GRUPOS_DRE_EXPANSIVEIS.slice());
+        recalcularDREMensal();
+    }
+
+    function toggleAcumDRE(visivel) {
+        try { localStorage.setItem(_chaveAcumOcultoDRE(), visivel ? '0' : '1'); } catch (e) {}
+        recalcularDREMensal();
     }
 
     // Redesenha a DRE Mensal com os dados já carregados, para que a coluna
@@ -10947,6 +12069,7 @@
     function marcarTodosMesesDRE(mostrar) {
         const ocultos = mostrar ? [] : [1,2,3,4,5,6,7,8,9,10,11,12];
         localStorage.setItem(_chaveOcultarMesesDRE(), JSON.stringify(ocultos));
+        if (mostrar) { try { localStorage.setItem(_chaveAcumOcultoDRE(), '0'); } catch (e) {} }
         recalcularDREMensal();
         montarMenuMesesDRE();
     }
@@ -10991,26 +12114,24 @@
         doc.text(normalizarTexto('Empresa: ' + empresaTxt), 14, 22);
         doc.text('Gerado em: ' + new Date().toLocaleDateString('pt-BR'), 14, 27);
 
-        // Índices das colunas ocultas (para não sairem no PDF)
-        const ocultos = _mesesOcultosDRE();
-        const colunasOcultas = ocultos.map(m => m); // col 0 = Descrição, col m = mês m
-
+        // A tabela em tela já contém só as colunas visíveis (meses marcados, % e acumulado)
         const head = [];
         const body = [];
         const ths = Array.from(tabela.querySelectorAll('thead th'));
-        head.push(ths.filter((_, i) => !colunasOcultas.includes(i)).map(th => normalizarTexto(th.innerText.trim())));
+        head.push(ths.map(th => normalizarTexto(th.innerText.replace(/\s+/g, ' ').trim())));
+        const colPct = ths.map(th => th.classList.contains('dre-pct-h'));
 
         Array.from(tabela.querySelectorAll('tbody tr')).forEach(tr => {
             const tds = Array.from(tr.querySelectorAll('td'));
             if (!tds.length) return;
-            body.push(tds.filter((_, i) => !colunasOcultas.includes(i)).map(td => normalizarTexto(td.innerText.trim())));
+            body.push(tds.map((td, i) => normalizarTexto(td.innerText.replace(/🔍/g, '').replace(/[▾▸]/g, '').trim())));
         });
 
         // Ajusta o tamanho da fonte conforme a quantidade de colunas visíveis,
         // para que os valores caibam inteiros e não sejam cortados.
         const nCols = head[0].length;
-        const fonte = nCols > 12 ? 5.6 : (nCols > 9 ? 6.4 : (nCols > 5 ? 7.5 : 9));
-        const larguraDesc = nCols > 12 ? 38 : (nCols > 9 ? 45 : 60);
+        const fonte = nCols > 20 ? 4.6 : (nCols > 14 ? 5.4 : (nCols > 9 ? 6.4 : (nCols > 5 ? 7.5 : 9)));
+        const larguraDesc = nCols > 20 ? 32 : (nCols > 14 ? 38 : (nCols > 9 ? 45 : 60));
 
         doc.autoTable({
             head: head,
@@ -11035,6 +12156,7 @@
                 if (data.section !== 'body') return;
                 const txt = (data.cell.raw || '').trim();
                 data.cell.styles.halign = 'right';
+                if (colPct[data.column.index]) { data.cell.styles.textColor = [130, 130, 130]; data.cell.styles.fontSize = Math.max(fonte - 0.6, 4); return; }
                 if (txt === '-' || txt === '') { data.cell.styles.textColor = [170, 170, 170]; return; }
                 if (txt.charAt(0) === '-' || txt.charAt(0) === '\u2212') data.cell.styles.textColor = [220, 53, 69];
                 else if (txt.charAt(0) === '+') data.cell.styles.textColor = [40, 167, 69];
@@ -11157,56 +12279,37 @@
             return;
         }
 
-        // Colunas ocultas: índice 0 = Descrição, 1..12 = meses, 13 = acumulada
-        const ocultos = _mesesOcultosDRE();
-        const visivel = i => !ocultos.includes(i);
-
-        // Cabeçalho, direto do que está renderizado
+        // A tabela em tela já traz só as colunas visíveis: valores e colunas "%"
         const ths = Array.from(tabela.querySelectorAll('thead th'));
-        const cabecalho = ths
-            .filter((_, i) => visivel(i))
-            .map(th => th.innerText.replace(/\s+/g, ' ').trim());
-
-        const linhasValor   = [cabecalho];
-        const linhasPercent = [cabecalho];
+        const cabecalho = ths.map(th => th.innerText.replace(/\s+/g, ' ').trim());
+        const ehPct = ths.map(th => th.classList.contains('dre-pct-h'));
+        const linhas = [cabecalho];
 
         Array.from(tabela.querySelectorAll('tbody tr')).forEach(tr => {
             const tds = Array.from(tr.querySelectorAll('td'));
             if (!tds.length) return;
-            const visiveis = tds.filter((_, i) => visivel(i));
-
-            const linhaV = [];
-            const linhaP = [];
-            visiveis.forEach((td, pos) => {
+            linhas.push(tds.map((td, i) => {
                 const txt = td.innerText || '';
-                if (pos === 0) {
-                    // Rótulo: remove a lupa e mantém a indentação "↳" das subcategorias
-                    const label = txt.replace(/🔍/g, '').replace(/\s+/g, ' ').trim();
-                    linhaV.push(label);
-                    linhaP.push(label);
-                } else {
-                    linhaV.push(_numeroCelulaDRE(txt));
-                    linhaP.push(_percentualCelulaDRE(txt));
+                if (i === 0) return txt.replace(/🔍/g, '').replace(/[▾▸]/g, '').replace(/\s+/g, ' ').trim();
+                if (ehPct[i]) {
+                    const n = parseFloat(txt.replace('%', '').replace(',', '.'));
+                    return isNaN(n) ? '' : n / 100;
                 }
-            });
-            linhasValor.push(linhaV);
-            linhasPercent.push(linhaP);
+                return _numeroCelulaDRE(txt);
+            }));
         });
 
         const wb = XLSX.utils.book_new();
-
-        const wsValor = XLSX.utils.aoa_to_sheet(linhasValor);
-        wsValor['!cols'] = cabecalho.map((_, i) => ({ wch: i === 0 ? 42 : 16 }));
-        XLSX.utils.book_append_sheet(wb, wsValor, 'DRE Mensal');
-
-        // A aba de percentuais só entra se houver algum percentual na tela
-        const temPercentual = linhasPercent.slice(1)
-            .some(l => l.slice(1).some(v => v !== '' && v !== null && v !== undefined));
-        if (temPercentual) {
-            const wsPct = XLSX.utils.aoa_to_sheet(linhasPercent);
-            wsPct['!cols'] = cabecalho.map((_, i) => ({ wch: i === 0 ? 42 : 16 }));
-            XLSX.utils.book_append_sheet(wb, wsPct, 'DRE Mensal (%)');
+        const ws = XLSX.utils.aoa_to_sheet(linhas);
+        ws['!cols'] = cabecalho.map((_, i) => ({ wch: i === 0 ? 42 : (ehPct[i] ? 8 : 16) }));
+        // Formata as colunas de % e de valores
+        for (let r = 1; r < linhas.length; r++) {
+            for (let c = 1; c < cabecalho.length; c++) {
+                const ref = XLSX.utils.encode_cell({ r, c });
+                if (ws[ref] && typeof ws[ref].v === 'number') ws[ref].z = ehPct[c] ? '0.0%' : '#,##0.00;-#,##0.00';
+            }
         }
+        XLSX.utils.book_append_sheet(wb, ws, 'DRE Mensal');
 
         XLSX.writeFile(wb, 'DRE_Mensal_' + (ano || 'todos') + '.xlsx');
     }
@@ -11221,7 +12324,17 @@
         const receitasData = [];
         const resultadosData = [];
 
-        if (anoSel) {
+        const serie = window._dreSerieMensal;
+        if (anoSel && serie && serie.ano === String(anoSel)) {
+            // Mesmos números da DRE Mensal, apenas os meses visíveis
+            const ocultos = _mesesOcultosDRE();
+            for (let m = 0; m < 12; m++) {
+                if (ocultos.includes(m + 1)) continue;
+                labels.push(mNomes[m] + '/' + String(anoSel).slice(2));
+                receitasData.push(serie.rb[m]);
+                resultadosData.push(serie.res[m]);
+            }
+        } else if (anoSel) {
             for (let m = 0; m < 12; m++) {
                 const mm = String(m + 1).padStart(2, '0');
                 const pref = anoSel + '-' + mm;
@@ -11257,27 +12370,50 @@
             }
         }
 
+        // Rótulo compacto para caber sobre as barras (ex.: R$ 635,3 mil / R$ 1,2 mi)
+        const fmtRot = v => {
+            if (!v) return '';
+            const a = Math.abs(v), sg = v < 0 ? '-' : '';
+            if (a >= 1e6) return sg + 'R$ ' + (a / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + ' mi';
+            if (a >= 1e3) return sg + 'R$ ' + (a / 1e3).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' mil';
+            return sg + 'R$ ' + a.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+        };
+
         charts.dre = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels,
                 datasets: [
-                    { label: 'Receita Bruta', data: receitasData, backgroundColor: 'rgba(40,167,69,0.6)', borderColor: '#28a745', borderWidth: 1, borderRadius: 4 },
+                    { label: 'Receita Bruta', data: receitasData, backgroundColor: 'rgba(40,167,69,0.6)', borderColor: '#28a745', borderWidth: 1, borderRadius: 4,
+                      datalabels: { anchor: 'end', align: 'end', offset: 2, color: '#1e7e34', font: { size: 10, weight: '600' } } },
                     { label: 'Geração de Caixa Após as Dívidas', data: resultadosData, type: 'line', borderColor: '#FF7A42', backgroundColor: 'rgba(255,122,66,0.08)',
-                      borderWidth: 2, pointBackgroundColor: '#FF7A42', pointRadius: 4, tension: 0.3, fill: false }
+                      borderWidth: 2, pointBackgroundColor: '#FF7A42', pointRadius: 4, tension: 0.3, fill: false,
+                      datalabels: {
+                          align: ctx => (ctx.dataset.data[ctx.dataIndex] < 0 ? 'bottom' : 'top'), offset: 6,
+                          color: ctx => (ctx.dataset.data[ctx.dataIndex] < 0 ? '#dc3545' : '#c05621'),
+                          backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 3, padding: { top: 1, bottom: 1, left: 3, right: 3 },
+                          font: { size: 10, weight: '700' }
+                      } }
                 ]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
+                layout: { padding: { top: 24, bottom: 6 } },
                 plugins: {
                     legend: { display: true, position: 'top' },
-                    tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': R$ ' + Math.abs(ctx.parsed.y).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) }}
+                    tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + (ctx.parsed.y < 0 ? '-' : '') + 'R$ ' + Math.abs(ctx.parsed.y).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) }},
+                    datalabels: {
+                        display: ctx => !!ctx.dataset.data[ctx.dataIndex],
+                        formatter: v => fmtRot(v),
+                        clamp: true
+                    }
                 },
                 scales: {
-                    y: { beginAtZero: true, ticks: { callback: v => 'R$ ' + v.toFixed(0) }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    y: { beginAtZero: true, grace: '10%', ticks: { callback: v => (v < 0 ? '-' : '') + 'R$ ' + Math.abs(v).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) }, grid: { color: 'rgba(0,0,0,0.05)' } },
                     x: { grid: { display: false } }
                 }
-            }
+            },
+            plugins: [window.ChartDataLabels || null].filter(Boolean)
         });
     }
 
@@ -11949,6 +13085,8 @@
         renderizarAnaliseCategorias();
     }
 
+    const _ctlMesesAnaliseCat = criarControleMeses('analise_cat', 'menuMesesAnaliseCat', 'Total', () => renderizarAnaliseCategorias());
+
     function renderizarAnaliseCategorias() {
         const cabecalho = document.getElementById('analiseCategoriasCabecalho');
         const corpo = document.getElementById('analiseCategoriasCorpo');
@@ -11982,14 +13120,18 @@
                 ' Categorias sem movimento no período selecionado não aparecem na lista.';
         }
 
-        const mesesExibir = mesSel ? [parseInt(mesSel, 10) - 1] : [0,1,2,3,4,5,6,7,8,9,10,11];
+        // Com "Todos (Jan-Dez)" valem os meses marcados no menu "📅 Meses";
+        // o Total soma somente os meses exibidos.
+        const mesesExibir = mesSel ? [parseInt(mesSel, 10) - 1] : _ctlMesesAnaliseCat.visiveis();
+        const totalOculto = !mesSel && _ctlMesesAnaliseCat.acumOculto();
+        const rotuloTotal = mesSel ? 'Total' : _ctlMesesAnaliseCat.rotuloAcum('Total');
         const fmt = v => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         // Cabeçalho — colunas ordenáveis (clique para classificar)
         let headHtml = '<th class="th-ordenavel" data-campo-ordenar="categoria" onclick="ordenarAnaliseCategoriaPor(\'categoria\')" style="text-align:left;min-width:200px;">Categoria</th>' +
             '<th class="th-ordenavel" data-campo-ordenar="grupo" onclick="ordenarAnaliseCategoriaPor(\'grupo\')" style="min-width:150px;">Grupo DRE</th>';
         mesesExibir.forEach(m => headHtml += '<th class="th-ordenavel" data-campo-ordenar="m' + m + '" onclick="ordenarAnaliseCategoriaPor(\'m' + m + '\')" style="text-align:right;min-width:100px;">' + _MESES_ABREV_ANALISE[m] + '/' + anoSel.slice(2) + '</th>');
-        headHtml += '<th class="th-ordenavel" data-campo-ordenar="total" onclick="ordenarAnaliseCategoriaPor(\'total\')" style="text-align:right;min-width:110px;">Total</th>';
+        if (!totalOculto) headHtml += '<th class="th-ordenavel" data-campo-ordenar="total" onclick="ordenarAnaliseCategoriaPor(\'total\')" style="text-align:right;min-width:110px;">' + rotuloTotal + '</th>';
         cabecalho.innerHTML = headHtml;
         _atualizarIconesOrdenacao('tabelaAnaliseCategorias');
 
@@ -12052,14 +13194,14 @@
             mesesExibir.forEach(m => {
                 corpoHtml += '<td style="text-align:right;">' + (linha.valoresPorMes[m] ? fmt(linha.valoresPorMes[m]) : '<span style="color:#ccc;">-</span>') + '</td>';
             });
-            corpoHtml += '<td style="text-align:right;font-weight:600;">' + fmt(linha.totalCategoria) + '</td></tr>';
+            corpoHtml += (totalOculto ? '' : '<td style="text-align:right;font-weight:600;">' + fmt(linha.totalCategoria) + '</td>') + '</tr>';
         });
 
-        corpo.innerHTML = corpoHtml || ('<tr><td colspan="' + (mesesExibir.length + 3) + '" style="text-align:center;color:#999;padding:24px;">Nenhum lançamento encontrado para os filtros selecionados.</td></tr>');
+        corpo.innerHTML = corpoHtml || ('<tr><td colspan="' + (mesesExibir.length + (totalOculto ? 2 : 3)) + '" style="text-align:center;color:#999;padding:24px;">Nenhum lançamento encontrado para os filtros selecionados.</td></tr>');
 
         let rodapeHtml = '<tr style="background:#fafafa;font-weight:700;border-top:2px solid #eee;"><td>Total</td><td></td>';
         mesesExibir.forEach(m => rodapeHtml += '<td style="text-align:right;">' + fmt(totalPorMes[m]) + '</td>');
-        rodapeHtml += '<td style="text-align:right;">' + fmt(totalGeral) + '</td></tr>';
+        rodapeHtml += (totalOculto ? '' : '<td style="text-align:right;">' + fmt(totalGeral) + '</td>') + '</tr>';
         rodape.innerHTML = rodapeHtml;
     }
 
@@ -12077,6 +13219,10 @@
         let contas = (dadosCache.contasAnaliseCategorias || []).filter(c => c.categoria_id === catId && c[campoData] && c[campoData].startsWith(anoSel));
         if (statusSel) contas = contas.filter(c => c.status === statusSel);
         if (mesSel) contas = contas.filter(c => c[campoData].substring(5, 7) === mesSel);
+        else {
+            const vis = _ctlMesesAnaliseCat.visiveis().map(m => m + 1);
+            contas = contas.filter(c => vis.includes(parseInt(c[campoData].substring(5, 7), 10)));
+        }
         if (selEmpresa && selEmpresa.value) contas = contas.filter(c => c.empresa_id == selEmpresa.value);
         abrirModalLancamentosGen('Categoria: ' + (catNome || '') + ' · ' + anoSel, _rowsDeContas(contas, 'pagar'), { parteLabel: 'Despesas/Fornecedor' });
     }
@@ -12097,7 +13243,8 @@
     // Exporta a tabela de Análise de Categorias (como está na tela, incluindo ordenação e filtros aplicados) para PDF
     function gerarPDFAnaliseCategorias() {
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        const selOr = document.getElementById('orientPDFAnaliseCat');
+        const doc = new jsPDF({ orientation: selOr && selOr.value === 'portrait' ? 'portrait' : 'landscape', unit: 'mm', format: 'a4' });
 
         const tituloEl = document.getElementById('analiseCatTitulo');
         const titulo = tituloEl ? tituloEl.textContent.trim() : 'Análise de Categorias';
@@ -12121,8 +13268,20 @@
         }
 
         const table = document.getElementById('tabelaAnaliseCategorias');
-        if (table && window.autoTable) {
-            doc.autoTable({ html: table, startY: filtrosAplicados.length ? 31 : 26, styles: { fontSize: 7, cellPadding: 2 }, headStyles: { fillColor: [230,102,34] } });
+        if (table && typeof doc.autoTable === 'function') {
+            const nCols = table.querySelectorAll('thead th').length;
+            const retrato = selOr && selOr.value === 'portrait';
+            const fonte = retrato ? (nCols > 10 ? 5 : 6.5) : (nCols > 12 ? 6 : 7);
+            doc.autoTable({
+                html: table, startY: filtrosAplicados.length ? 31 : 26, theme: 'grid',
+                margin: { left: 8, right: 8 },
+                styles: { fontSize: fonte, cellPadding: 1.4, lineColor: [235, 235, 235], lineWidth: 0.1 },
+                headStyles: { fillColor: [230,102,34], textColor: 255 },
+                didParseCell: function (data) {
+                    data.cell.text = (data.cell.text || []).map(t => normalizarTexto(String(t).replace(/🔍/g, '').trim()));
+                    if (data.column.index > 1) data.cell.styles.halign = 'right';
+                }
+            });
         }
 
         const selAno = document.getElementById('filtroAnoAnaliseCat');
@@ -12276,7 +13435,9 @@
     // ================================================================
     // PDF — DFC
     // ================================================================
-    function gerarPDFDFC() {
+    // O PDF da tela DFC agora traz somente o "DFC Detalhado por Categoria"
+    function gerarPDFDFC() { return gerarPDFDFCCategoria(); }
+    function _gerarPDFDFCAntigo() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
         const pageW = doc.internal.pageSize.getWidth();
