@@ -503,6 +503,28 @@
         .colunas-dropdown.aberto { display: block; }
         /* DFC: blocos que ficam ocultos na tela (os dados continuam sendo calculados) */
         #dfc .dfc-oculto { display: none !important; }
+        /* Dicas da C@P Consultoria (Dashboard) */
+        .dica-cap-card { border-top: 3px solid var(--cor-primaria); }
+        .dica-cap-card .card-title { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+        .dica-cap-sub { font-size: 12px; font-weight: 400; color: #999; }
+        .dica-cap-alertas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-bottom: 12px; }
+        .dica-cap-alerta { border-radius: 8px; padding: 10px 12px; font-size: 13px; line-height: 1.45; border-left: 4px solid; }
+        .dica-cap-alerta.alerta { background: #fdecee; border-color: #dc3545; color: #6b1d24; }
+        .dica-cap-alerta.atencao { background: #fff6e0; border-color: #e0a800; color: #6b5200; }
+        .dica-cap-alerta.ok { background: #e9f7ee; border-color: #28a745; color: #1d5a2e; }
+        .dica-cap-alerta-t { font-weight: 700; margin-bottom: 2px; }
+        .dica-cap-dia { display: flex; gap: 14px; align-items: center; background: #fff5ef; border-radius: 8px; padding: 12px 14px; font-size: 13.5px; line-height: 1.5; color: #4a3a32; }
+        .dica-cap-num { font-size: 11px; font-weight: 700; color: var(--cor-primaria); background: #fff; border: 1px solid #ffd9c7; border-radius: 20px; padding: 3px 9px; white-space: nowrap; }
+        .dica-cap-texto { flex: 1; }
+        .dica-cap-titulo { font-weight: 700; color: #c4521e; margin-bottom: 2px; }
+        .dica-cap-nav { display: flex; gap: 6px; }
+        html[data-tema="escuro"] .dica-cap-alerta.alerta { background: #3b2227; color: #ffb3bb; }
+        html[data-tema="escuro"] .dica-cap-alerta.atencao { background: #383220; color: #f2d680; }
+        html[data-tema="escuro"] .dica-cap-alerta.ok { background: #1c3325; color: #9fe0b3; }
+        html[data-tema="escuro"] .dica-cap-dia { background: #2d241f; color: #e6d6cc; }
+        html[data-tema="escuro"] .dica-cap-num { background: #1f2228; border-color: #5a3a2a; }
+        html[data-tema="escuro"] .dica-cap-titulo { color: #ff9a6c; }
+        @media (max-width: 700px) { .dica-cap-dia { flex-wrap: wrap; } }
         /* DRE Mensal: seta de abrir/fechar categorias */
         .dre-seta { display: inline-block; width: 16px; text-align: center; color: #888; cursor: pointer; font-size: 11px; margin-right: 2px; border-radius: 3px; user-select: none; }
         .dre-seta:hover { background: #ffe3d4; color: var(--cor-primaria); }
@@ -1378,6 +1400,91 @@ html[data-tema="escuro"] [style*=";color:rgb(114, 28, 36)"], html[data-tema="esc
 html[data-tema="escuro"] [style*=";color:rgb(51, 51, 51)"], html[data-tema="escuro"] [style^="color:rgb(51, 51, 51)"], html[data-tema="escuro"] [style*=" color:rgb(51, 51, 51)"], html[data-tema="escuro"] [style*=";color: rgb(51, 51, 51)"], html[data-tema="escuro"] [style^="color: rgb(51, 51, 51)"], html[data-tema="escuro"] [style*=" color: rgb(51, 51, 51)"], html[data-tema="escuro"] [style*=";color:rgb(85, 85, 85)"], html[data-tema="escuro"] [style^="color:rgb(85, 85, 85)"], html[data-tema="escuro"] [style*=" color:rgb(85, 85, 85)"], html[data-tema="escuro"] [style*=";color: rgb(85, 85, 85)"], html[data-tema="escuro"] [style^="color: rgb(85, 85, 85)"], html[data-tema="escuro"] [style*=" color: rgb(85, 85, 85)"] { color: #d9dce1 !important; }
 html[data-tema="escuro"] [style*=";color:#ccc"], html[data-tema="escuro"] [style^="color:#ccc"], html[data-tema="escuro"] [style*=" color:#ccc"], html[data-tema="escuro"] [style*=";color: #ccc"], html[data-tema="escuro"] [style^="color: #ccc"], html[data-tema="escuro"] [style*=" color: #ccc"], html[data-tema="escuro"] [style*=";color:#bbb"], html[data-tema="escuro"] [style^="color:#bbb"], html[data-tema="escuro"] [style*=" color:#bbb"], html[data-tema="escuro"] [style*=";color: #bbb"], html[data-tema="escuro"] [style^="color: #bbb"], html[data-tema="escuro"] [style*=" color: #bbb"], html[data-tema="escuro"] [style*=";color:rgb(204, 204, 204)"], html[data-tema="escuro"] [style^="color:rgb(204, 204, 204)"], html[data-tema="escuro"] [style*=" color:rgb(204, 204, 204)"], html[data-tema="escuro"] [style*=";color: rgb(204, 204, 204)"], html[data-tema="escuro"] [style^="color: rgb(204, 204, 204)"], html[data-tema="escuro"] [style*=" color: rgb(204, 204, 204)"] { color: #5c626b !important; }
 html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style^="color:#aaa"], html[data-tema="escuro"] [style*=" color:#aaa"], html[data-tema="escuro"] [style*=";color: #aaa"], html[data-tema="escuro"] [style^="color: #aaa"], html[data-tema="escuro"] [style*=" color: #aaa"], html[data-tema="escuro"] [style*=";color:#999"], html[data-tema="escuro"] [style^="color:#999"], html[data-tema="escuro"] [style*=" color:#999"], html[data-tema="escuro"] [style*=";color: #999"], html[data-tema="escuro"] [style^="color: #999"], html[data-tema="escuro"] [style*=" color: #999"], html[data-tema="escuro"] [style*=";color:#888"], html[data-tema="escuro"] [style^="color:#888"], html[data-tema="escuro"] [style*=" color:#888"], html[data-tema="escuro"] [style*=";color: #888"], html[data-tema="escuro"] [style^="color: #888"], html[data-tema="escuro"] [style*=" color: #888"] { color: #8a9099 !important; }
+        /* ===== Modal de lançamentos (DRE, dashboard, análises) — layout compacto ===== */
+        .modal-content.lg-modal { max-width: 1180px; width: 96%; padding: 0; max-height: 92vh; overflow: hidden; display: flex; flex-direction: column; }
+        .lg-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 18px 22px 12px; border-bottom: 1px solid #eceef1; }
+        .lg-titulo { font-size: 18px; font-weight: 600; color: #2b2f36; line-height: 1.3; }
+        .lg-sub { font-size: 13px; color: #7a8089; margin-top: 2px; }
+        .lg-head .modal-close { line-height: 1; padding: 2px 6px; border-radius: 6px; }
+        .lg-head .modal-close:hover { background: #f1f2f4; }
+        .lg-resumo { display: flex; flex-wrap: wrap; gap: 8px 22px; padding: 12px 22px; background: #fafbfc; border-bottom: 1px solid #eceef1; }
+        .lg-chip { padding: 2px 0 2px 10px; border-left: 3px solid #d5d9df; min-width: 110px; }
+        .lg-chip span { display: block; font-size: 11px; color: #7a8089; }
+        .lg-chip b { font-size: 15px; font-weight: 600; color: #2b2f36; font-variant-numeric: tabular-nums; }
+        .lg-chip-total { border-left-color: var(--cor-primaria); }
+        .lg-chip-ok { border-left-color: #28a745; }
+        .lg-chip-pend { border-left-color: #e0a800; }
+        .lg-chip-neg { border-left-color: #dc3545; }
+        .lg-toolbar { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 22px; border-bottom: 1px solid #eceef1; }
+        .lg-toolbar input { flex: 1 1 260px; padding: 7px 10px; font-size: 13px; border: 1px solid #d9dde3; border-radius: 6px; }
+        .lg-toolbar select { flex: 0 0 auto; padding: 7px 10px; font-size: 13px; border: 1px solid #d9dde3; border-radius: 6px; background: #fff; }
+        .lg-toolbar input:focus, .lg-toolbar select:focus { outline: 2px solid var(--cor-primaria); outline-offset: -1px; border-color: transparent; }
+        .lg-tabela-wrap { flex: 1 1 auto; overflow: auto; min-height: 140px; }
+        table.lg-tabela { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 12.5px; }
+        table.lg-tabela thead { background: none; color: inherit; }
+        table.lg-tabela th { position: sticky; top: 0; z-index: 1; background: #f3f4f6; color: #5b616b; font-size: 11.5px; font-weight: 600; padding: 8px 10px; border-bottom: 1px solid #e3e6ea; white-space: nowrap; cursor: pointer; user-select: none; }
+        table.lg-tabela th:hover { color: var(--cor-primaria); }
+        table.lg-tabela th.lg-c-acoes { cursor: default; }
+        table.lg-tabela th.lg-ord-asc::after { content: ' \25B2'; font-size: 8px; }
+        table.lg-tabela th.lg-ord-desc::after { content: ' \25BC'; font-size: 8px; }
+        table.lg-tabela td { padding: 6px 10px; border-bottom: 1px solid #eef0f2; vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        table.lg-tabela .lg-c-data { width: 92px; color: #5b616b; font-variant-numeric: tabular-nums; }
+        table.lg-tabela .lg-c-cat { width: 170px; }
+        table.lg-tabela .lg-c-emp { width: 130px; }
+        table.lg-tabela .lg-c-nf { width: 100px; color: #5b616b; font-variant-numeric: tabular-nums; }
+        table.lg-tabela .lg-c-val { width: 118px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+        table.lg-tabela .lg-c-st { width: 92px; }
+        table.lg-tabela .lg-c-acoes { width: 88px; text-align: right; padding-right: 14px; overflow: visible; text-overflow: clip; }
+        table.lg-tabela.lg-sem-cat .lg-c-cat { display: none; }
+        .lg-parte { font-weight: 600; color: #2b2f36; overflow: hidden; text-overflow: ellipsis; }
+        .lg-desc { font-size: 11.5px; color: #8a9099; overflow: hidden; text-overflow: ellipsis; }
+        .lg-st { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+        .lg-st-pago { background: #e3f4ea; color: #1e7a46; }
+        .lg-st-pendente { background: #fdf1d8; color: #8a5a00; }
+        .lg-btn { border: 0; background: none; width: 28px; height: 28px; border-radius: 6px; color: #7a8089; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; }
+        .lg-btn:hover { background: #f1f2f4; color: #2b2f36; }
+        .lg-btn-del:hover { background: #fdecee; color: #dc3545; }
+        .lg-btn:focus-visible { outline: 2px solid var(--cor-primaria); }
+        .lg-btn svg { width: 15px; height: 15px; }
+        .lg-vazio { text-align: center !important; color: #999; padding: 28px !important; }
+        .lg-rodape { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 22px; border-top: 1px solid #eceef1; font-size: 12px; color: #7a8089; }
+        @media (max-width: 1000px) { table.lg-tabela .lg-c-nf { display: none; } }
+        @media (max-width: 760px) {
+            table.lg-tabela .lg-c-emp { display: none; }
+            table.lg-tabela .lg-c-cat { width: 120px; }
+            .lg-head, .lg-resumo, .lg-toolbar, .lg-rodape { padding-left: 14px; padding-right: 14px; }
+        }
+
+        /* Cadastro rápido de categoria dentro da edição de lançamento */
+        .lg-cat-linha { display: flex; gap: 6px; align-items: stretch; }
+        .lg-cat-linha select { flex: 1 1 auto; min-width: 0; }
+        .lg-cat-add { white-space: nowrap; }
+        .lg-nova-cat { margin-top: 8px; padding: 12px; border: 1px dashed #f3b998; border-radius: 8px; background: #fff8f4; }
+        .lg-nova-cat .form-group { margin-bottom: 10px; }
+        .lg-nova-cat-acoes { display: flex; justify-content: flex-end; gap: 8px; }
+        .lg-nova-cat-msg { color: #c8323c; font-size: 12px; margin-bottom: 8px; }
+        .lg-cat-info { display: block; font-size: 12px; color: #1e7a46; margin-top: 4px; }
+
+        /* Aviso de categorias duplicadas */
+        .lg-aviso-dup { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; margin-bottom: 14px; border-radius: 8px; background: #fff4e5; border: 1px solid #ffd8a8; color: #7a4a00; font-size: 13px; }
+        .lg-tag-dup { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 8px; font-size: 10.5px; font-weight: 600; background: #fff4e5; color: #b36b00; border: 1px solid #ffd8a8; }
+
+        html[data-tema="escuro"] .lg-head, html[data-tema="escuro"] .lg-resumo, html[data-tema="escuro"] .lg-toolbar, html[data-tema="escuro"] .lg-rodape { border-color: #2e333a; }
+        html[data-tema="escuro"] .lg-resumo { background: #1b1e23; }
+        html[data-tema="escuro"] .lg-titulo, html[data-tema="escuro"] .lg-chip b, html[data-tema="escuro"] .lg-parte { color: #e2e4e8; }
+        html[data-tema="escuro"] .lg-sub, html[data-tema="escuro"] .lg-chip span, html[data-tema="escuro"] .lg-desc, html[data-tema="escuro"] .lg-rodape { color: #9aa0a8; }
+        html[data-tema="escuro"] table.lg-tabela th { background: #1b1e23; color: #9aa0a8; border-bottom-color: #2e333a; }
+        html[data-tema="escuro"] table.lg-tabela td { border-bottom-color: #2a2e35; }
+        html[data-tema="escuro"] table.lg-tabela .lg-c-data, html[data-tema="escuro"] table.lg-tabela .lg-c-nf { color: #9aa0a8; }
+        html[data-tema="escuro"] .lg-st-pago { background: rgba(40,167,69,0.18); color: #6fd08c; }
+        html[data-tema="escuro"] .lg-st-pendente { background: rgba(224,168,0,0.18); color: #f0c75e; }
+        html[data-tema="escuro"] .lg-btn { color: #9aa0a8; }
+        html[data-tema="escuro"] .lg-btn:hover { background: #2a2f37; color: #e2e4e8; }
+        html[data-tema="escuro"] .lg-btn-del:hover { background: rgba(220,53,69,0.18); color: #ff6b7a; }
+        html[data-tema="escuro"] .lg-head .modal-close:hover { background: #2a2f37; }
+        html[data-tema="escuro"] .lg-nova-cat { background: #24211f; border-color: #6b4a36; }
+        html[data-tema="escuro"] .lg-aviso-dup { background: #2a2418; border-color: #5c4a22; color: #f0c75e; }
+        html[data-tema="escuro"] .lg-tag-dup { background: #2a2418; border-color: #5c4a22; color: #f0c75e; }
     </style>
     <script>
         // Aplica o tema salvo antes de desenhar a página (evita "piscar" claro→escuro)
@@ -1550,6 +1657,12 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
                 </div>
             </div>
 
+            <!-- Dicas financeiras da C@P Consultoria -->
+            <div class="card dica-cap-card" style="margin-top:16px;">
+                <div class="card-title"><span>💡 Dicas da C@P Consultoria</span><span class="dica-cap-sub">Alertas com base nos seus números e uma dica por dia</span></div>
+                <div id="dicasCAP"></div>
+            </div>
+
             <!-- Gráfico de fluxo -->
             <div class="card" style="margin-top:16px;">
                 <div class="card-title">Fluxo de Caixa (Últimos 30 dias)</div>
@@ -1653,10 +1766,15 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         <div id="categorias" class="page">
             <div class="page-header">
                 <h1>Categorias</h1>
-                <button class="btn btn-primary btn-small" onclick="openModalCategoria()">+ Nova Categoria</button>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-secondary btn-small" onclick="analisarCategoriasDuplicadas()" title="Encontra categorias repetidas, transfere os lançamentos e exclui as cópias">🧹 Eliminar duplicadas</button>
+                    <button class="btn btn-secondary btn-small" onclick="padronizarNomesSistema()" title="Regrava nomes e descrições com a primeira letra de cada palavra maiúscula">🔤 Padronizar nomes</button>
+                    <button class="btn btn-primary btn-small" onclick="openModalCategoria()">+ Nova Categoria</button>
+                </div>
             </div>
 
             <div class="alert alert-success" id="alertCategorias"></div>
+            <div class="lg-aviso-dup" id="avisoCatDuplicadas" hidden></div>
 
             <div class="filter-container">
                 <div class="filter-row">
@@ -4175,7 +4293,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
     const carregarEmpresasDebounced = debounce(() => carregarEmpresas(), 350);
 
     // ── PERSISTÊNCIA DE FILTROS ──────────────────────────────────────────────
-    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroGrupoDREPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "modoEmprestimoDRE", "orientPDFDRE", "orientPDFDFC", "orientPDFFCP", "orientPDFFCD", "orientPDFAnaliseCat", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "filtroAnoAnaliseCat", "filtroMesAnaliseCat", "dashFiltroAno", "dashFiltroMes"];
+    const _FILTER_IDS = ["filtroClienteReceber", "filtroEmpresaReceber", "filtroStatusReceber", "filtroTipoDataReceber", "filtroAnoReceber", "filtroMesReceber", "filtroFornecedorPagar", "filtroGrupoDREPagar", "filtroCategoriaPagar", "filtroSubcategoriaPagar", "filtroEmpresaPagar", "filtroStatusPagar", "filtroTipoDataPagar", "filtroAnoPagar", "filtroMesPagar", "filtroAnoRecebida", "filtroMesRecebida", "filtroClienteRecebida", "filtroEmpresaRecebida", "filtroAnoPaga", "filtroMesPaga", "filtroFornecedorPaga", "filtroEmpresaPaga", "filtroEmpresaRelReceber", "filtroAnoRelReceber", "filtroMesRelReceber", "filtroDialRelReceber", "filtroEmpresaRelPagar", "filtroAnoRelPagar", "filtroMesRelPagar", "filtroDialRelPagar", "filtroEmpresaDFC", "filtroAnoDFC", "filtroEmpresaDRE", "filtroAnoDRE", "filtroMesDRE", "modoDRE", "modoEmprestimoDRE", "orientPDFDRE", "orientPDFDFC", "orientPDFFCP", "orientPDFFCD", "orientPDFAnaliseCat", "filtroMesCalendario", "filtroAnoCalendario", "extratoFiltrobancoId", "extratoFiltroAno", "extratoFiltroMes", "filtroEmpresaFCP", "filtroAnoFCP", "filtroEmpresaAnaliseCat", "filtroTipoDataAnaliseCat", "filtroStatusAnaliseCat", "filtroAnoAnaliseCat", "filtroMesAnaliseCat", "dashFiltroAno", "dashFiltroMes", "fcdAno", "fcdMes", "filtroAnoCatMensal"];
 
     function _filtroKey(id) {
         const user = usuarioAtual ? usuarioAtual.email : 'guest';
@@ -4209,27 +4327,54 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         });
     }
 
-    // Ao abrir o sistema, TODOS os filtros de Ano e Mês (em todas as telas) já vêm
-    // preenchidos com o ano e o mês atuais. Durante a sessão o usuário pode trocar
-    // à vontade — a troca continua sendo salva e respeitada enquanto ele navega
-    // entre as telas; o padrão da data atual é reaplicado no próximo acesso.
-    // Análise de Categorias é a única exceção no Mês: ela mantém a visão de 12 meses.
+    // Vigência padrão: ao abrir o sistema, TODOS os filtros de Ano e Mês (em todas
+    // as telas) vêm com o ano e o mês atuais. Durante a sessão o usuário pode trocar
+    // à vontade e a escolha é respeitada enquanto navega entre as telas. Quando o mês
+    // vira com o sistema aberto (ex.: 30/09 → 01/10), o padrão é reaplicado sozinho.
+    let _vigenciaPadrao = null;   // 'AAAA-MM' aplicado por último
+
+    function _vigenciaHoje() {
+        const h = new Date();
+        return h.getFullYear() + '-' + String(h.getMonth() + 1).padStart(2, '0');
+    }
+
     function _aplicarPadraoAnoMes(forcar) {
-        const anoAtual = String(new Date().getFullYear());
-        const mesAtual = String(new Date().getMonth() + 1).padStart(2, '0');
-        _FILTER_IDS.forEach(id => {
+        const hoje = new Date();
+        const anoAtual = String(hoje.getFullYear());
+        const mes1a12 = hoje.getMonth() + 1;
+        const ids = _FILTER_IDS.filter(id => /Ano|Mes/.test(id));
+        ids.forEach(id => {
             const el = document.getElementById(id);
             if (!el || el.tagName !== 'SELECT') return;
             const saved = localStorage.getItem(_filtroKey(id));
             if (!forcar && saved !== null) return; // já existe preferência do usuário
-            const temOpt = val => Array.from(el.options).some(o => o.value === val);
-            if (/Ano/.test(id) && temOpt(anoAtual)) {
-                el.value = anoAtual;
-            } else if (/Mes/.test(id) && !/AnaliseCat/.test(id) && temOpt(mesAtual)) {
-                el.value = mesAtual;
+            const opcoes = Array.from(el.options).map(o => o.value);
+            let candidatos;
+            if (/Ano/.test(id)) {
+                candidatos = [anoAtual];
+            } else if (id === 'filtroMesCalendario') {
+                candidatos = [String(mes1a12 - 1)];                       // calendário usa 0 = janeiro
+            } else {
+                candidatos = [String(mes1a12).padStart(2, '0'), String(mes1a12)]; // "01".."12" ou "1".."12", conforme a tela
             }
+            const valor = candidatos.find(v => opcoes.includes(v));
+            if (valor !== undefined) el.value = valor;
         });
+        _vigenciaPadrao = _vigenciaHoje();
     }
+
+    // Se o mês virou desde a última aplicação, volta todos os filtros para a nova vigência
+    function _conferirViradaDoMes() {
+        if (!_vigenciaPadrao || _vigenciaPadrao === _vigenciaHoje()) return false;
+        _aplicarPadraoAnoMes(true);
+        salvarFiltros();
+        return true;
+    }
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible' || !_conferirViradaDoMes()) return;
+        const ativa = document.querySelector('.page.active');
+        if (ativa) showPage(ativa.id);   // recarrega a tela aberta já no mês novo
+    });
     // ────────────────────────────────────────────────────────────────────────
 
 
@@ -4477,6 +4622,102 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
     // REQUISIÇÕES SUPABASE
     let _ultimoErroSupabase = null;
 
+    // ================================================================
+    // PADRÃO DE ESCRITA — Primeira Letra Maiúscula em Cada Palavra
+    // Siglas (FGTS, INSS, EPI, RH, CNPJ...) ficam em maiúsculas.
+    // Preposições e conjunções no meio do nome (de, da, do, e, em...) ficam
+    // em minúsculas, como em "Salários e Encargos" e "Custo de Matéria-Prima".
+    // Aplicado automaticamente em tudo que é lido e gravado no banco.
+    // ================================================================
+    const _SIGLAS_CAP = new Set(('FGTS INSS EPI EPIS RH TI PIS PASEP COFINS CSLL IRPJ IRRF IR IPI ICMS ISS ISSQN IPTU IPVA IOF DAS DARF GPS GFIP ' +
+        'CNPJ CPF NF NFE NFSE NFCE CTE MDFE CPV CSP DRE DFC EBITDA LAJIR SA LTDA ME EPP EIRELI MEI PJ PF CLT PLR VT VR VA ' +
+        'TV SMS API ERP CRM PIX TED DOC BB CEF BNDES UF SP SC RJ MG PR RS BA GO DF ES PE CE EUA USA CEP IA CIPA PPRA PGR PCMSO ASO ' +
+        'SESMT NR CTPS DCTF DCTFWEB SPED ECF ECD EFD CND ART CREA CRC OAB ANVISA INMETRO SENAI SESI SEBRAE SENAC SESC IBGE ' +
+        'RPA DDA ST NCM CFOP XML PDF OFX CSV CNH RG PET PVC MDF LED GLP GNV ISO KM KG UN LTDA-ME II III IV VI VII VIII IX XI XII ' +
+        'CAP TAG RNTRC ANTT DETRAN CRLV DPVAT SST TST GED BI KPI OKR RFB PGFN SEFAZ INPI ABNT CIEE PAT FAP RAT SAT SISCOSERV ' +
+        'DIRF RAIS CAGED ESOCIAL REINF DEFIS PGDAS TFE TLF TCFA IBAMA CETESB FEPAM FATMA IMA CASAN CELESC SAMAE').split(/\s+/));
+    const _SIGLAS_AMBIGUAS = new Set(['DAS', 'DOC', 'ART', 'UN', 'ME', 'SA', 'IR', 'VA', 'TAG', 'PAT', 'SAT', 'CAP', 'RAT', 'FAP', 'II']);
+    const _MINUSCULAS_CAP = new Set(['de','da','do','das','dos','e','em','na','no','nas','nos','a','o','as','os','para','por',
+        'com','sem','ao','aos','à','às','ou','pela','pelo','pelas','pelos','sob','sobre','entre','até','via']);
+
+    function _semAcento(t) { return String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+
+    function formatarNomeProprio(texto) {
+        if (texto === null || texto === undefined) return texto;
+        const str = String(texto);
+        if (!/[A-Za-zÀ-ÿ]/.test(str)) return str;
+        const letras = str.replace(/[^A-Za-zÀ-ÿ]/g, '');
+        const tudoMaiusculo = letras === letras.toUpperCase();
+        let primeira = true;
+
+        const tratarPalavra = (w, ehPrimeira) => {
+            if (!w || !/[A-Za-zÀ-ÿ]/.test(w)) return w;
+            if (/[0-9@&]/.test(w)) return w;                       // códigos, "C@P", "NF123"
+            const U = w.toLocaleUpperCase('pt-BR');
+            const L = w.toLocaleLowerCase('pt-BR');
+            const base = _semAcento(U);
+            const digitadaMaiuscula = w === U && w.length > 1;
+            if (_SIGLAS_CAP.has(base)) {
+                // Siglas que também são palavras comuns ("das", "doc") só ficam
+                // maiúsculas quando foram digitadas assim num texto de caixa mista.
+                if (!_SIGLAS_AMBIGUAS.has(base) || (digitadaMaiuscula && !tudoMaiusculo)) return U;
+            }
+            // Em texto de caixa mista, palavra curta toda em maiúsculas é uma sigla do usuário
+            if (!tudoMaiusculo && digitadaMaiuscula && w.length <= 5 && !_MINUSCULAS_CAP.has(L)) return U;
+            // Sem vogal (RH, PJ, TV...) é sigla
+            if (digitadaMaiuscula && !/[AEIOUÁÉÍÓÚÂÊÔÃÕÀY]/i.test(_semAcento(w))) return U;
+            if (!ehPrimeira && _MINUSCULAS_CAP.has(L)) return L;
+            return L.charAt(0).toLocaleUpperCase('pt-BR') + L.slice(1);
+        };
+
+        return str.replace(/\S+/g, token => {
+            const ehPrimeira = primeira;
+            primeira = false;
+            const tokBase = _semAcento(token.toUpperCase()).replace(/[.,;:]+$/, '');
+            if (['S/A', 'S.A', 'S.A.', 'LTDA.', 'LTDA-ME', 'CIA', 'CIA.'].includes(tokBase)) {
+                return tokBase === 'CIA' || tokBase === 'CIA.' ? token.charAt(0).toUpperCase() + token.slice(1).toLowerCase() : token.toUpperCase();
+            }
+            // separa hífen, barra e parênteses: "matéria-prima" → "Matéria-Prima"
+            let idxParte = 0;
+            return token.split(/([\-\/()\[\].,;:"'])/).map(p => {
+                if (!p || /^[\-\/()\[\].,;:"']$/.test(p)) return p;
+                const r = tratarPalavra(p, ehPrimeira && idxParte === 0);
+                idxParte++;
+                return r;
+            }).join('');
+        });
+    }
+
+    // Campos de texto padronizados em cada tabela
+    const _CAMPOS_PADRONIZADOS = {
+        categorias:       ['nome'],
+        subcategorias:    ['nome'],
+        produtos:         ['nome'],
+        fornecedores:     ['nome'],
+        clientes:         ['nome'],
+        bancos:           ['nome'],
+        empresas:         ['nome'],
+        contas_a_pagar:   ['descricao'],
+        contas_a_receber: ['descricao'],
+        lancamentos_dre:  ['descricao', 'categoria', 'parte', 'centro']
+    };
+    let _fetchSemPadronizar = false;   // usado pela rotina que regrava os nomes antigos
+
+    function _padronizarRegistro(tabela, reg) {
+        const campos = _CAMPOS_PADRONIZADOS[tabela];
+        if (!campos || !reg || typeof reg !== 'object') return reg;
+        campos.forEach(c => {
+            if (typeof reg[c] === 'string' && reg[c].trim()) reg[c] = formatarNomeProprio(reg[c].replace(/\s+/g, ' ').trim());
+        });
+        return reg;
+    }
+    function _padronizarDados(tabela, dados) {
+        if (_fetchSemPadronizar || !_CAMPOS_PADRONIZADOS[tabela] || !dados) return dados;
+        if (Array.isArray(dados)) dados.forEach(r => _padronizarRegistro(tabela, r));
+        else _padronizarRegistro(tabela, dados);
+        return dados;
+    }
+
     async function fetchSupabase(tabela, metodo = 'GET', dados = null, filtros = '', _jaTentouRenovar = false) {
         // Sem sessão válida não se fala com o banco.
         const token = tokenAtual();
@@ -4502,6 +4743,10 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
             }
 
             const opcoes = { method: metodo, headers: headers };
+            // Padrão de escrita: nomes e descrições saem sempre com Iniciais Maiúsculas
+            if (dados && (metodo === 'POST' || metodo === 'PATCH')) {
+                dados = _padronizarDados(tabela, Array.isArray(dados) ? dados.map(d => Object.assign({}, d)) : Object.assign({}, dados));
+            }
             if (dados) opcoes.body = JSON.stringify(dados);
 
             const resposta = await fetch(url, opcoes);
@@ -4527,7 +4772,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
             }
 
             if (!text || text.trim() === '') return [];
-            try { return JSON.parse(text); }
+            try { return _padronizarDados(tabela, JSON.parse(text)); }
             catch(e) { return []; }
 
         } catch (erro) {
@@ -4606,6 +4851,170 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
     }
 
     // CATEGORIAS
+    // ================================================================
+    // MANUTENÇÃO DE CADASTROS
+    //  1) Eliminar categorias duplicadas: une as cópias numa só categoria,
+    //     transfere os lançamentos (contas a pagar/receber, DRE, subcategorias
+    //     e itens) para a categoria mantida e só então exclui as cópias.
+    //  2) Padronizar nomes: regrava no banco os nomes antigos no padrão
+    //     "Primeira Letra Maiúscula" (a tela já mostra padronizado).
+    // ================================================================
+    const _TABELAS_COM_CATEGORIA = ['contas_a_pagar', 'contas_a_receber', 'lancamentos_dre', 'subcategorias', 'produtos'];
+    let _planoDuplicadas = null;
+
+    async function _buscarBruto(tabela, filtros) {
+        _fetchSemPadronizar = true;
+        try { return await fetchSupabase(tabela, 'GET', null, filtros || ''); }
+        finally { _fetchSemPadronizar = false; }
+    }
+    function _chaveNomeCategoria(nome) {
+        return _semAcento(String(nome || '')).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    }
+    function _abrirModalManut(titulo, html) {
+        document.getElementById('tituloModalManut').textContent = titulo;
+        document.getElementById('corpoModalManut').innerHTML = html;
+        document.getElementById('modalManutencao').classList.add('active');
+    }
+    const _escHtml = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    async function analisarCategoriasDuplicadas() {
+        _abrirModalManut('🧹 Categorias duplicadas', '<p style="padding:16px;color:#888;">Analisando categorias e lançamentos…</p>');
+        const cats = await _buscarBruto('categorias');
+        if (!cats) { _abrirModalManut('🧹 Categorias duplicadas', '<p style="padding:16px;">Não foi possível ler as categorias.</p>'); return; }
+
+        // Quantos registros usam cada categoria
+        const uso = {};
+        for (const t of _TABELAS_COM_CATEGORIA) {
+            const rows = await _buscarBruto(t, 'select=categoria_id');
+            (rows || []).forEach(r => { if (r.categoria_id != null) uso[r.categoria_id] = (uso[r.categoria_id] || 0) + 1; });
+        }
+
+        const grupos = {};
+        cats.forEach(c => { const k = _chaveNomeCategoria(c.nome); if (k) (grupos[k] = grupos[k] || []).push(c); });
+        const plano = [];
+        Object.values(grupos).filter(g => g.length > 1).forEach(g => {
+            // Mantém: ativa > mais usada > mais antiga (menor id)
+            g.sort((a, b) => ((b.ativo !== false) - (a.ativo !== false)) || ((uso[b.id] || 0) - (uso[a.id] || 0)) || (a.id - b.id));
+            const manter = g[0], copias = g.slice(1);
+            const grupoDRE = manter.grupo_dre || (copias.find(c => c.grupo_dre) || {}).grupo_dre || null;
+            const conflitoGrupo = new Set(g.map(c => c.grupo_dre || '').filter(Boolean)).size > 1;
+            plano.push({ manter, copias, grupoDRE, conflitoGrupo, mover: copias.reduce((s, c) => s + (uso[c.id] || 0), 0) });
+        });
+        _planoDuplicadas = plano;
+
+        if (!plano.length) {
+            _abrirModalManut('🧹 Categorias duplicadas', '<div style="padding:18px;">✅ Nenhuma categoria duplicada encontrada. Foram verificadas ' + cats.length + ' categorias (comparando o nome sem acentos, maiúsculas ou espaços extras).</div>');
+            return;
+        }
+        const nomeGrupo = g => g ? (_GRUPOS_DRE_LABELS[g] || g) : '—';
+        const totalMover = plano.reduce((s, p) => s + p.mover, 0);
+        let html = '<div style="padding:4px 2px 10px;font-size:13px;">Encontrei <b>' + plano.length + '</b> categoria(s) com cópias. '
+            + 'A categoria mantida recebe os <b>' + totalMover + '</b> registro(s) que hoje usam as cópias; depois as cópias são excluídas.</div>'
+            + '<div class="table-container"><table style="font-size:12.5px;"><thead><tr><th>Categoria mantida</th><th>Grupo DRE</th><th>Cópias a excluir</th><th style="text-align:right;">Registros a transferir</th></tr></thead><tbody>';
+        plano.forEach(p => {
+            html += '<tr><td><b>' + _escHtml(formatarNomeProprio(p.manter.nome)) + '</b><div style="font-size:11px;color:#999;">id ' + p.manter.id + ' · ' + (uso[p.manter.id] || 0) + ' uso(s)</div></td>'
+                + '<td>' + _escHtml(nomeGrupo(p.grupoDRE)) + (p.conflitoGrupo ? '<div style="font-size:11px;color:#b36b00;">⚠️ as cópias estavam em grupos diferentes: ' + _escHtml(Array.from(new Set(p.copias.map(c => nomeGrupo(c.grupo_dre)))).join(', ')) + '</div>' : '') + '</td>'
+                + '<td>' + p.copias.map(c => _escHtml(c.nome) + ' <span style="font-size:11px;color:#999;">(id ' + c.id + ')</span>').join('<br>') + '</td>'
+                + '<td style="text-align:right;font-weight:600;">' + p.mover + '</td></tr>';
+        });
+        html += '</tbody></table></div>'
+            + (plano.some(p => p.conflitoGrupo) ? '<div style="margin-top:10px;font-size:12px;color:#b36b00;">⚠️ Onde há conflito de grupo, os lançamentos passam para o grupo da categoria mantida, o que muda a DRE. Se preferir outro grupo, ajuste a categoria mantida depois em Categorias.</div>' : '')
+            + '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">'
+            + '<button class="btn btn-secondary" onclick="closeModal(\'modalManutencao\')">Cancelar</button>'
+            + '<button class="btn btn-primary" onclick="executarUnificacaoCategorias()">Unificar e excluir cópias</button></div>';
+        _abrirModalManut('🧹 Categorias duplicadas', html);
+    }
+
+    // Quantos registros ainda usam a categoria (‑1 se não foi possível conferir)
+    async function _contarUsoCategoria(id) {
+        let total = 0;
+        for (const t of _TABELAS_COM_CATEGORIA) {
+            const rows = await _buscarBruto(t, 'select=id&categoria_id=eq.' + id);
+            if (rows === null) return -1;
+            total += rows.length;
+        }
+        return total;
+    }
+
+    async function executarUnificacaoCategorias() {
+        const plano = _planoDuplicadas || [];
+        if (!plano.length) return;
+        if (!confirm('Confirma a unificação? Os lançamentos serão transferidos e as cópias excluídas. Essa ação não pode ser desfeita.')) return;
+        const corpo = document.getElementById('corpoModalManut');
+        const log = [];
+        const escrever = () => { corpo.innerHTML = '<div style="padding:10px;font-size:13px;line-height:1.7;max-height:60vh;overflow:auto;">' + log.join('<br>') + '</div>'; };
+        let excluidas = 0, falhas = 0;
+        for (const p of plano) {
+            if (!p.manter.grupo_dre && p.grupoDRE) await fetchSupabase('categorias', 'PATCH', { grupo_dre: p.grupoDRE }, 'id=eq.' + p.manter.id);
+            for (const c of p.copias) {
+                let ok = true;
+                for (const t of _TABELAS_COM_CATEGORIA) {
+                    const r = await fetchSupabase(t, 'PATCH', { categoria_id: p.manter.id }, 'categoria_id=eq.' + c.id);
+                    if (r === null) { ok = false; log.push('❌ Falha ao transferir registros de "' + _escHtml(c.nome) + '" em ' + t + '. A cópia foi mantida.'); break; }
+                }
+                // O banco pode responder "ok" sem alterar nada (regra de permissão).
+                // Só exclui a cópia depois de conferir que nenhum registro ainda aponta para ela.
+                if (ok) {
+                    const restantes = await _contarUsoCategoria(c.id);
+                    if (restantes !== 0) {
+                        ok = false;
+                        log.push('❌ "' + _escHtml(c.nome) + '" (id ' + c.id + '): ' + (restantes < 0 ? 'não consegui conferir os registros' : restantes + ' registro(s) continuam ligados a ela (o banco não permitiu a alteração)') + '. A cópia foi mantida para não perder lançamentos.');
+                    }
+                }
+                if (ok) {
+                    const d = await fetchSupabase('categorias', 'DELETE', null, 'id=eq.' + c.id);
+                    const aindaExiste = d === null ? null : await _buscarBruto('categorias', 'select=id&id=eq.' + c.id);
+                    if (d === null) { ok = false; log.push('❌ Registros transferidos, mas não consegui excluir "' + _escHtml(c.nome) + '" (id ' + c.id + ').'); }
+                    else if (aindaExiste && aindaExiste.length) { ok = false; log.push('❌ Registros transferidos, mas o banco não permitiu excluir "' + _escHtml(c.nome) + '" (id ' + c.id + '). Verifique a permissão de exclusão da tabela categorias.'); }
+                }
+                if (ok) { excluidas++; log.push('✅ "' + _escHtml(c.nome) + '" (id ' + c.id + ') unida a "' + _escHtml(formatarNomeProprio(p.manter.nome)) + '".'); }
+                else falhas++;
+                escrever();
+            }
+        }
+        log.push('<br><b>Concluído:</b> ' + excluidas + ' cópia(s) excluída(s)' + (falhas ? ', ' + falhas + ' com falha' : '') + '.');
+        escrever();
+        _planoDuplicadas = null;
+        await carregarCategorias();
+        await carregarSubcategorias();
+        await carregarProdutos();
+    }
+
+    async function padronizarNomesSistema() {
+        if (!confirm('Regravar no banco todos os nomes e descrições no padrão "Primeira Letra Maiúscula" (mantendo siglas como FGTS e INSS)?\n\nIsso vale para categorias, subcategorias, itens, fornecedores, clientes, bancos, empresas e descrições dos lançamentos.')) return;
+        _abrirModalManut('🔤 Padronizar nomes', '<p style="padding:16px;color:#888;">Verificando registros…</p>');
+        const corpo = document.getElementById('corpoModalManut');
+        const linhas = [];
+        let totalAlt = 0, totalFalha = 0;
+        for (const [tabela, campos] of Object.entries(_CAMPOS_PADRONIZADOS)) {
+            const rows = await _buscarBruto(tabela, 'select=id,' + campos.join(','));
+            if (!rows) { linhas.push('⚠️ ' + tabela + ': não foi possível ler.'); continue; }
+            const alterar = [];
+            rows.forEach(r => {
+                const patch = {};
+                campos.forEach(c => {
+                    if (typeof r[c] !== 'string' || !r[c].trim()) return;
+                    const novo = formatarNomeProprio(r[c].replace(/\s+/g, ' ').trim());
+                    if (novo !== r[c]) patch[c] = novo;
+                });
+                if (Object.keys(patch).length) alterar.push({ id: r.id, patch });
+            });
+            let ok = 0, falha = 0;
+            for (let i = 0; i < alterar.length; i += 8) {
+                const lote = alterar.slice(i, i + 8);
+                const res = await Promise.all(lote.map(a => fetchSupabase(tabela, 'PATCH', a.patch, 'id=eq.' + a.id)));
+                res.forEach(r => (r === null ? falha++ : ok++));
+                corpo.innerHTML = '<div style="padding:12px;font-size:13px;line-height:1.7;">' + linhas.join('<br>') + (linhas.length ? '<br>' : '') + '⏳ ' + tabela + ': ' + (ok + falha) + ' de ' + alterar.length + '…</div>';
+            }
+            totalAlt += ok; totalFalha += falha;
+            linhas.push((falha ? '⚠️ ' : '✅ ') + tabela + ': ' + ok + ' ajustado(s)' + (falha ? ', ' + falha + ' com falha' : '') + ' de ' + rows.length + ' registro(s).');
+        }
+        corpo.innerHTML = '<div style="padding:12px;font-size:13px;line-height:1.7;">' + linhas.join('<br>') + '<br><br><b>Concluído:</b> ' + totalAlt + ' registro(s) padronizado(s)' + (totalFalha ? ', ' + totalFalha + ' com falha (veja a mensagem de erro do banco).' : '.')
+            + '<div style="margin-top:8px;color:#888;font-size:12px;">Dica: se houver falha por nome duplicado, rode antes "Eliminar duplicadas".</div></div>';
+        await carregarCategorias(); await carregarSubcategorias(); await carregarProdutos();
+        await carregarFornecedores(); await carregarClientes(); await carregarEmpresas();
+    }
+
     async function carregarCategorias() {
         const dados = await fetchSupabase('categorias', 'GET');
         if (dados) {
@@ -4924,10 +5333,25 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
                     || grupoLabel.toLowerCase().includes(busca);
             });
         }
+        // Aviso de categorias duplicadas (mesmo nome, ignorando acentos/maiúsculas)
+        const contagemNomes = {};
+        (dadosCache.categorias || []).forEach(c => { const k = _chaveNomeCategoria(c.nome); if (k) contagemNomes[k] = (contagemNomes[k] || 0) + 1; });
+        const nomesDup = Object.keys(contagemNomes).filter(k => contagemNomes[k] > 1);
+        const aviso = document.getElementById('avisoCatDuplicadas');
+        if (aviso) {
+            aviso.hidden = !nomesDup.length;
+            if (nomesDup.length) {
+                const copias = nomesDup.reduce((s, k) => s + contagemNomes[k] - 1, 0);
+                aviso.innerHTML = '<span>⚠️ <b>' + nomesDup.length + '</b> categoria(s) aparecem repetidas (' + copias + ' cópia(s) a mais). Os lançamentos das cópias são transferidos para a categoria que fica.</span>'
+                    + '<button class="btn btn-primary btn-small" onclick="analisarCategoriasDuplicadas()">Revisar e unificar</button>';
+            }
+        }
+
         lista.forEach(cat => {
             const grupoLabel = cat.grupo_dre ? (_GRUPOS_DRE_LABELS[cat.grupo_dre] || cat.grupo_dre) : '-';
+            const tagDup = contagemNomes[_chaveNomeCategoria(cat.nome)] > 1 ? '<span class="lg-tag-dup">duplicada</span>' : '';
             tbody.innerHTML += `<tr>
-                <td><b>${cat.nome}</b></td>
+                <td><b>${cat.nome}</b>${tagDup}</td>
                 <td><span style="background:#e8f4fd;color:#1565c0;padding:2px 8px;border-radius:10px;font-size:11px;">${grupoLabel}</span></td>
                 <td>${cat.tipo || '-'}</td>
                 <td>${cat.descricao || '-'}</td>
@@ -4992,6 +5416,14 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
             descricao: document.getElementById('descricaoCategoria').value,
             ativo:     document.getElementById('ativoCategoria').checked
         };
+
+        // Evita criar uma cópia de categoria já existente (compara sem acentos/maiúsculas)
+        const chaveNova = _chaveNomeCategoria(dados.nome);
+        const jaExiste = (dadosCache.categorias || []).find(c => _chaveNomeCategoria(c.nome) === chaveNova && String(c.id) !== String(editandoId || ''));
+        if (jaExiste) {
+            alert('Já existe a categoria "' + jaExiste.nome + '". Use a existente para não criar uma cópia.');
+            return;
+        }
 
         let resultado;
         if (editandoId) {
@@ -6381,6 +6813,9 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
     }
 
     function editarLancamento(id, tipo) {
+        toggleNovaCategoriaLanc(false);
+        const infoCat = document.getElementById('editLancCatInfo');
+        if (infoCat) infoCat.textContent = '';
         atualizarSelectClientes();
         atualizarSelectFornecedores();
         atualizarSelectCategorias();
@@ -6402,6 +6837,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
             document.getElementById('editLancVencimento').value = conta.data_vencimento || '';
             document.getElementById('editLancCompetencia').value= conta.data_competencia || '';
             document.getElementById('editLancObs').value        = conta.observacoes || '';
+            document.getElementById('editLancNotaWrap').style.display = 'none';
             document.getElementById('modalEditarLancamento').classList.add('active');
         } else {
             const conta = _acharContaParaEditar(id, 'pagar');
@@ -6421,7 +6857,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
             document.getElementById('editLancCompetencia').value= conta.data_competencia || '';
             document.getElementById('editLancObs').value        = conta.observacoes || '';
             document.getElementById('editLancNota').value       = conta.nota_fiscal || '';
-            document.getElementById('editLancNotaWrap').style.display = tipo === 'contas_a_pagar' ? '' : 'none';
+            document.getElementById('editLancNotaWrap').style.display = '';
             document.getElementById('modalEditarLancamento').classList.add('active');
         }
     }
@@ -6468,6 +6904,71 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         }
     }
 
+    // ── CADASTRO RÁPIDO DE CATEGORIA (dentro da edição do lançamento) ────────
+    function toggleNovaCategoriaLanc(mostrar) {
+        const box = document.getElementById('editLancNovaCat');
+        if (!box) return;
+        box.hidden = !mostrar;
+        document.getElementById('novaCatLancMsg').hidden = true;
+        if (!mostrar) return;
+
+        const selGrupo = document.getElementById('novaCatLancGrupo');
+        selGrupo.innerHTML = '<option value="">Selecione...</option>' + gruposDREEfetivos()
+            .map(g => '<option value="' + _lgEsc(g.id) + '">' + _lgEsc(g.label) + (g.sinal > 0 ? ' (+)' : ' (-)') + '</option>').join('');
+
+        // Sugestão: mesmo grupo/tipo da categoria que está selecionada hoje
+        const catAtual = (dadosCache.categorias || []).find(c => String(c.id) === document.getElementById('editLancCategoria').value);
+        selGrupo.value = (catAtual && catAtual.grupo_dre) || '';
+        const selTipo = document.getElementById('novaCatLancTipo');
+        const ehPagar = document.getElementById('editLancTipo').value === 'contas_a_pagar';
+        const tipoSugerido = (catAtual && catAtual.tipo) || (ehPagar ? 'Despesa' : 'Receita');
+        const opt = Array.from(selTipo.options).find(o => o.value.toLowerCase() === String(tipoSugerido).toLowerCase());
+        selTipo.value = opt ? opt.value : '';
+
+        const nome = document.getElementById('novaCatLancNome');
+        nome.value = '';
+        nome.focus();
+    }
+
+    async function salvarNovaCategoriaLanc() {
+        const nome = document.getElementById('novaCatLancNome').value.replace(/\s+/g, ' ').trim();
+        const grupo = document.getElementById('novaCatLancGrupo').value;
+        const tipo = document.getElementById('novaCatLancTipo').value;
+        const msg = document.getElementById('novaCatLancMsg');
+        const erro = t => { msg.textContent = t; msg.hidden = false; };
+        const sel = document.getElementById('editLancCategoria');
+        const info = document.getElementById('editLancCatInfo');
+
+        if (!nome) return erro('Informe o nome da categoria.');
+        if (!grupo) return erro('Escolha o Grupo DRE para a categoria aparecer na DRE.');
+
+        // Não cria cópia: se já existe (mesmo nome, ignorando acentos/maiúsculas), usa a existente
+        const chave = _chaveNomeCategoria(nome);
+        const existente = (dadosCache.categorias || []).find(c => _chaveNomeCategoria(c.nome) === chave);
+        if (existente) {
+            if (existente.ativo === false) await fetchSupabase('categorias', 'PATCH', { ativo: true }, 'id=eq.' + existente.id);
+            await carregarCategorias();
+            sel.value = String(existente.id);
+            toggleNovaCategoriaLanc(false);
+            info.textContent = 'A categoria "' + existente.nome + '" já existia e foi selecionada.';
+            return;
+        }
+
+        const btn = document.getElementById('novaCatLancBtn');
+        btn.disabled = true;
+        try {
+            const r = await fetchSupabase('categorias', 'POST', { nome: nome, grupo_dre: grupo, tipo: tipo || null, descricao: '', ativo: true });
+            if (r === null) return erro('Não foi possível salvar a categoria. Veja a mensagem de erro do banco.');
+            const nova = Array.isArray(r) ? r[0] : r;
+            await carregarCategorias();
+            if (nova && nova.id != null) sel.value = String(nova.id);
+            toggleNovaCategoriaLanc(false);
+            info.textContent = 'Categoria "' + ((nova && nova.nome) || nome) + '" criada e selecionada. Clique em Salvar para aplicar ao lançamento.';
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
     // DELETAR CONTAS
     async function deletarConta(id, tabela) {
         if (confirm('Tem certeza que deseja deletar esta conta?')) {
@@ -6496,6 +6997,130 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         renderizarDashboard(_dashContasRec, _dashContasPag);
     }
 
+    // ================================================================
+    // DICAS FINANCEIRAS — C@P CONSULTORIA (Dashboard)
+    // Mostra alertas calculados com os números da empresa e uma dica do dia.
+    // ================================================================
+    const _DICAS_CAP = [
+        { t: 'Separe o caixa da empresa do seu', d: 'Defina um pró-labore fixo e pague-se só por ele. Misturar contas pessoais e da empresa esconde o resultado real e dificulta qualquer decisão.' },
+        { t: 'Tenha uma reserva de caixa', d: 'O ideal é manter o equivalente a 3 a 6 meses de despesas fixas guardado em aplicação de liquidez diária. É ela que segura a empresa num mês fraco.' },
+        { t: 'Olhe o fluxo projetado toda semana', d: 'Quem enxerga o caixa das próximas 4 semanas negocia antes de faltar dinheiro. Reserve 15 minutos na segunda-feira para revisar o Fluxo Projetado.' },
+        { t: 'Prazo de recebimento menor que o de pagamento', d: 'Se você recebe em 45 dias e paga em 30, está financiando seu cliente com o seu caixa. Trabalhe para receber antes de pagar.' },
+        { t: 'Cobre no primeiro dia de atraso', d: 'A chance de receber cai muito depois de 30 dias de atraso. Um lembrete gentil no dia seguinte ao vencimento resolve a maioria dos casos.' },
+        { t: 'Conheça sua margem de contribuição', d: 'Preço menos custos variáveis é o que sobra para pagar a estrutura. Produto com margem baixa pode vender muito e ainda assim dar prejuízo.' },
+        { t: 'Calcule o ponto de equilíbrio', d: 'Divida as despesas fixas pela margem de contribuição percentual. É o faturamento mínimo do mês para não ter prejuízo.' },
+        { t: 'Revise as despesas fixas a cada trimestre', d: 'Assinaturas, planos de telefonia, seguros e contratos crescem sem ninguém notar. Uma revisão trimestral costuma encontrar economias rápidas.' },
+        { t: 'Concilie o banco toda semana', d: 'Conferir o extrato com os lançamentos evita surpresas, encontra tarifas indevidas e mantém a DFC confiável.' },
+        { t: 'Classifique certo cada despesa', d: 'Categoria errada distorce a DRE. Custo de produção em despesa administrativa, por exemplo, faz a margem bruta parecer melhor do que é.' },
+        { t: 'Lucro não é caixa', d: 'A DRE mostra se a empresa dá lucro; a DFC mostra se há dinheiro. Dá para ter lucro e faltar caixa quando se vende a prazo e se paga à vista.' },
+        { t: 'Negocie com fornecedores com dados', d: 'Saiba quanto você compra de cada fornecedor no ano. Volume comprovado é o melhor argumento para pedir desconto ou prazo maior.' },
+        { t: 'Cuidado com a concentração de clientes', d: 'Se um cliente representa mais de 30% da receita, a saída dele vira uma crise. Diversificar a carteira é gestão de risco.' },
+        { t: 'Antecipação de recebíveis tem custo', d: 'Antecipar pode salvar um mês apertado, mas a taxa corrói a margem. Use como exceção, não como rotina de caixa.' },
+        { t: 'Compare o regime tributário todo ano', d: 'Simples Nacional, Lucro Presumido e Lucro Real mudam muito a carga de impostos. Uma simulação anual com o contador pode render economia relevante.' },
+        { t: 'Defina metas mensais e acompanhe', d: 'Metas de faturamento, margem e despesas transformam o financeiro em rotina de gestão. Os indicadores do topo do Dashboard servem para isso.' },
+        { t: 'Estoque parado é dinheiro parado', d: 'Compras acima da necessidade prendem caixa. Compre com base no giro real e revise itens sem saída há mais de 90 dias.' },
+        { t: 'Reajuste preços com critério', d: 'Acompanhe a inflação dos seus custos. Ficar anos sem reajuste faz a margem encolher aos poucos sem ninguém perceber.' },
+        { t: 'Pague impostos em dia', d: 'Multa e juros de impostos atrasados são altos e ainda podem travar certidões negativas, que são exigidas em crédito e em licitações.' },
+        { t: 'Dívida cara primeiro', d: 'Se tem vários empréstimos, amortize primeiro o de maior taxa. Cheque especial e cartão rotativo estão entre os créditos mais caros do mercado.' },
+        { t: 'Planeje o 13º e as férias', d: 'Provisione todo mês cerca de 1/12 da folha para o 13º e outro tanto para férias. Assim dezembro não vira um susto.' },
+        { t: 'Investimento precisa ter retorno medido', d: 'Antes de comprar máquina ou abrir unidade, estime em quantos meses o investimento se paga. Sem essa conta, é aposta.' },
+        { t: 'Centralize os pagamentos em datas fixas', d: 'Pagar em um ou dois dias do mês reduz esquecimentos, facilita a conferência e dá mais controle sobre o saldo.' },
+        { t: 'Acompanhe o EBITDA', d: 'Ele mostra quanto a operação gera antes de juros e investimentos. EBITDA baixo indica que o problema está no negócio, não na dívida.' },
+        { t: 'Dê desconto só com contrapartida', d: 'Desconto à vista pode valer a pena se melhora o caixa. Desconto sem contrapartida só reduz a margem.' },
+        { t: 'Documente tudo', d: 'Nota fiscal, comprovante e contrato anexados ao lançamento poupam horas no fechamento e dão segurança numa fiscalização.' },
+        { t: 'Feche o mês até o dia 10', d: 'Com os números do mês anterior prontos cedo, dá tempo de corrigir o rumo ainda no mês atual.' },
+        { t: 'Use o DRE para decidir, não só para cumprir', d: 'Compare cada mês com o anterior e com o mesmo mês do ano passado. Variações grandes sempre têm uma história que vale entender.' }
+    ];
+    let _idxDicaCAP = null;
+
+    function _fmtDica(v) { return 'R$ ' + Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+    // Alertas calculados com os lançamentos da empresa
+    function _alertasCAP(rec, pag) {
+        const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+        const iso = d => d.toISOString().substring(0, 10);
+        const hojeIso = iso(hoje);
+        const em7 = new Date(hoje); em7.setDate(em7.getDate() + 7);
+        const em7Iso = iso(em7);
+        const soma = arr => arr.reduce((s, c) => s + parseFloat(c.valor || 0), 0);
+        const alertas = [];
+
+        const recVenc = rec.filter(c => c.status === 'pendente' && c.data_vencimento && c.data_vencimento < hojeIso);
+        if (recVenc.length) alertas.push({ nivel: 'alerta', t: 'Recebíveis em atraso',
+            d: 'Há ' + _fmtDica(soma(recVenc)) + ' a receber vencidos em ' + recVenc.length + ' lançamento(s). Faça contato de cobrança ainda esta semana: quanto antes, maior a chance de receber.' });
+
+        const pagVenc = pag.filter(c => c.status === 'pendente' && c.data_vencimento && c.data_vencimento < hojeIso);
+        if (pagVenc.length) alertas.push({ nivel: 'alerta', t: 'Contas a pagar vencidas',
+            d: _fmtDica(soma(pagVenc)) + ' em ' + pagVenc.length + ' conta(s) já venceram. Priorize impostos e fornecedores essenciais e renegocie o restante para evitar multa e juros.' });
+
+        const pag7 = soma(pag.filter(c => c.status === 'pendente' && c.data_vencimento >= hojeIso && c.data_vencimento <= em7Iso));
+        const rec7 = soma(rec.filter(c => c.status === 'pendente' && c.data_vencimento >= hojeIso && c.data_vencimento <= em7Iso));
+        if (pag7 > 0 && pag7 > rec7) alertas.push({ nivel: 'atencao', t: 'Próximos 7 dias',
+            d: 'Vencem ' + _fmtDica(pag7) + ' em pagamentos e estão previstos ' + _fmtDica(rec7) + ' em recebimentos. Confirme se o saldo em conta cobre a diferença de ' + _fmtDica(pag7 - rec7) + '.' });
+
+        // Concentração de clientes nos últimos 12 meses
+        const inicio = new Date(hoje); inicio.setFullYear(inicio.getFullYear() - 1);
+        const inicioIso = iso(inicio);
+        const porCliente = {}; let totRec = 0;
+        rec.forEach(c => {
+            const d = c.data_competencia || c.data_recebimento || c.data_vencimento;
+            if (!d || d < inicioIso || d > hojeIso) return;
+            const v = parseFloat(c.valor || 0); totRec += v;
+            porCliente[c.cliente_id || 0] = (porCliente[c.cliente_id || 0] || 0) + v;
+        });
+        const topo = Object.entries(porCliente).sort((a, b) => b[1] - a[1])[0];
+        if (topo && totRec > 0 && topo[1] / totRec > 0.3 && Object.keys(porCliente).length > 1) {
+            const cli = (dadosCache.clientes || []).find(x => String(x.id) === String(topo[0]));
+            alertas.push({ nivel: 'atencao', t: 'Receita concentrada',
+                d: (cli ? cli.nome : 'Um único cliente') + ' representa ' + (topo[1] / totRec * 100).toFixed(0) + '% da receita dos últimos 12 meses. Vale buscar novos clientes para reduzir esse risco.' });
+        }
+
+        // Caixa do mês atual
+        const pref = hojeIso.substring(0, 7);
+        const entMes = soma(rec.filter(c => c.status === 'recebido' && (c.data_recebimento || '').startsWith(pref)));
+        const saiMes = soma(pag.filter(c => c.status === 'pago' && (c.data_pagamento || '').startsWith(pref)));
+        if (saiMes > entMes && saiMes > 0) alertas.push({ nivel: 'atencao', t: 'Caixa do mês negativo',
+            d: 'Até agora saíram ' + _fmtDica(saiMes - entMes) + ' a mais do que entrou neste mês. Revise o que pode ser adiado e acompanhe o Fluxo de Caixa Diário.' });
+
+        // Despesas do último mês fechado vs média dos 3 anteriores
+        const mesRef = m => { const d = new Date(hoje.getFullYear(), hoje.getMonth() - m, 1); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); };
+        const pagoNoMes = p => soma(pag.filter(c => c.status === 'pago' && (c.data_pagamento || '').startsWith(p)));
+        const ult = pagoNoMes(mesRef(1));
+        const media = (pagoNoMes(mesRef(2)) + pagoNoMes(mesRef(3)) + pagoNoMes(mesRef(4))) / 3;
+        if (media > 0 && ult > media * 1.15) alertas.push({ nivel: 'atencao', t: 'Despesas acima da média',
+            d: 'As despesas pagas no mês passado ficaram ' + ((ult / media - 1) * 100).toFixed(0) + '% acima da média dos três meses anteriores. Veja em Análise de Categorias o que mais cresceu.' });
+
+        return alertas;
+    }
+
+    function renderizarDicasCAP() {
+        const el = document.getElementById('dicasCAP');
+        if (!el) return;
+        if (_idxDicaCAP === null) {
+            const h = new Date();
+            _idxDicaCAP = Math.floor((h - new Date(h.getFullYear(), 0, 0)) / 86400000) % _DICAS_CAP.length;   // dica do dia
+        }
+        const alertas = _alertasCAP(_dashContasRec || [], _dashContasPag || []).slice(0, 3);
+        const dica = _DICAS_CAP[_idxDicaCAP];
+        let html = '';
+        if (alertas.length) {
+            html += '<div class="dica-cap-alertas">' + alertas.map(a =>
+                '<div class="dica-cap-alerta ' + a.nivel + '"><div class="dica-cap-alerta-t">' + (a.nivel === 'alerta' ? '⚠️ ' : '📌 ') + a.t + '</div><div>' + a.d + '</div></div>').join('') + '</div>';
+        } else {
+            html += '<div class="dica-cap-alertas"><div class="dica-cap-alerta ok"><div class="dica-cap-alerta-t">✅ Tudo em dia</div><div>Sem contas vencidas e sem aperto de caixa previsto para os próximos 7 dias. Bom momento para reforçar a reserva.</div></div></div>';
+        }
+        html += '<div class="dica-cap-dia">'
+            + '<div class="dica-cap-num">' + (_idxDicaCAP + 1) + '/' + _DICAS_CAP.length + '</div>'
+            + '<div class="dica-cap-texto"><div class="dica-cap-titulo">' + dica.t + '</div><div>' + dica.d + '</div></div>'
+            + '<div class="dica-cap-nav"><button type="button" class="btn btn-secondary btn-small" onclick="trocarDicaCAP(-1)" aria-label="Dica anterior">◀</button>'
+            + '<button type="button" class="btn btn-secondary btn-small" onclick="trocarDicaCAP(1)" aria-label="Próxima dica">▶</button></div></div>';
+        el.innerHTML = html;
+    }
+    function trocarDicaCAP(delta) {
+        _idxDicaCAP = ((_idxDicaCAP || 0) + delta + _DICAS_CAP.length) % _DICAS_CAP.length;
+        renderizarDicasCAP();
+    }
+
     async function atualizarDashboard() {
         const contasReceber = await fetchSupabase('contas_a_receber', 'GET');
         const contasPagar   = await fetchSupabase('contas_a_pagar',   'GET');
@@ -6508,6 +7133,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         _dashContasRec = contasReceber;
         _dashContasPag = contasPagar;
         renderizarDashboard(contasReceber, contasPagar);
+        try { renderizarDicasCAP(); } catch (e) { console.error('Dicas C@P:', e); }
     }
 
     function renderizarDashboard(contasReceber, contasPagar) {
@@ -7395,6 +8021,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
     document.addEventListener('DOMContentLoaded', function () { _marcarBotoesTema(); _aplicarCoresGraficos(); });
 
     function showPage(pageId) {
+        _conferirViradaDoMes();
         // Oculta todas as páginas
         document.querySelectorAll('.page').forEach(page => {
             page.classList.remove('active');
@@ -7995,52 +8622,134 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
     // opts.liquido = true → a célula de origem é um SALDO (entradas − saídas).
     // Nesse caso as saídas chegam com valor negativo, o total do modal é o líquido
     // (bate exatamente com o número clicado) e o resumo abre entradas, saídas e saldo.
+    let _lancGenRows = [], _lancGenOpts = {}, _lancGenOrd = { campo: '_ord', asc: false };
+    const _lgEsc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const _lgNorm = t => String(t == null ? '' : t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const _LG_ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+    const _LG_ICON_DEL  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
+
     function abrirModalLancamentosGen(titulo, rows, opts) {
         opts = opts || {};
-        const tit = document.getElementById('tituloLancamentosGen');
-        if (tit) tit.textContent = titulo;
-        const thParte = document.getElementById('thParteLancGen');
-        if (thParte) thParte.textContent = opts.parteLabel || 'Parte';
-        rows = (rows || []).slice().sort(function(a,b){ return a._ord < b._ord ? 1 : (a._ord > b._ord ? -1 : 0); });
+        const modal = document.getElementById('modalLancamentosGen');
         _lancGenOnChange = (typeof opts.onChange === 'function') ? opts.onChange : null;
-        const total = rows.reduce(function(s,r){ return s + r.valor; }, 0);
-        const resumo = document.getElementById('resumoLancamentosGen');
-        if (resumo) {
-            if (opts.liquido) {
-                const entradas = rows.filter(function(r){ return r.valor >= 0; }).reduce(function(s,r){ return s + r.valor; }, 0);
-                const saidas   = rows.filter(function(r){ return r.valor <  0; }).reduce(function(s,r){ return s + Math.abs(r.valor); }, 0);
-                const corSaldo = total >= 0 ? '#28a745' : '#dc3545';
-                resumo.innerHTML = '<b>' + rows.length + '</b> lançamento(s) — '
-                    + 'Entradas: <b style="color:#28a745;">' + fmtValFull(entradas) + '</b> · '
-                    + 'Saídas: <b style="color:#dc3545;">' + fmtValFull(saidas) + '</b> · '
-                    + 'Saldo: <b style="color:' + corSaldo + ';">' + fmtValFull(total) + '</b>';
-            } else {
-                resumo.innerHTML = '<b>' + rows.length + '</b> lançamento(s) — Total: <b>' + fmtValFull(total) + '</b>';
-            }
+        _lancGenOpts = opts;
+        _lancGenRows = (rows || []).slice();
+
+        // "DRE — Grupo · Período" → título em cima, período embaixo
+        const t = String(titulo || 'Lançamentos');
+        const corte = t.lastIndexOf(' · ');
+        const tituloPrincipal = corte > 0 ? t.slice(0, corte) : t;
+        let subtitulo = corte > 0 ? t.slice(corte + 3) : '';
+
+        // Se todos os lançamentos são da mesma categoria, a coluna é redundante
+        const cats = Array.from(new Set(_lancGenRows.map(r => r.categoria || '-')));
+        const catUnica = (cats.length === 1 && cats[0] !== '-') ? cats[0] : null;
+        if (catUnica && _lgNorm(tituloPrincipal).indexOf(_lgNorm(catUnica)) === -1) {
+            subtitulo = (subtitulo ? subtitulo + ' · ' : '') + 'Categoria: ' + catUnica;
         }
+        document.getElementById('tituloLancamentosGen').textContent = tituloPrincipal;
+        document.getElementById('subtituloLancamentosGen').textContent = subtitulo;
+        document.getElementById('tabelaLancamentosGen').classList.toggle('lg-sem-cat', !!catUnica);
+
+        const thParte = document.getElementById('thParteLancGen');
+        const parteLabel = opts.parteLabel === 'Cliente / Despesas/Fornecedor' ? 'Cliente / Fornecedor' : (opts.parteLabel || 'Cliente / Fornecedor');
+        if (thParte) thParte.textContent = parteLabel + ' · Descrição';
+
+        // Ao reabrir a mesma lista depois de editar, mantém busca, filtros e ordenação
+        const mesmaLista = modal.dataset.titulo === t && modal.classList.contains('active');
+        modal.dataset.titulo = t;
+        if (!mesmaLista) {
+            document.getElementById('lgBusca').value = '';
+            document.getElementById('lgStatus').value = '';
+            _lancGenOrd = { campo: '_ord', asc: false };
+        }
+        const selEmp = document.getElementById('lgEmpresa');
+        const empAtual = mesmaLista ? selEmp.value : '';
+        const empresas = Array.from(new Set(_lancGenRows.map(r => r.empresa).filter(e => e && e !== '-'))).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        selEmp.innerHTML = '<option value="">Todas as empresas</option>' + empresas.map(e => '<option>' + _lgEsc(e) + '</option>').join('');
+        selEmp.value = empresas.includes(empAtual) ? empAtual : '';
+        selEmp.style.display = empresas.length > 1 ? '' : 'none';
+
+        _renderLancGen();
+        modal.classList.add('active');
+    }
+
+    function ordenarLancGen(campo) {
+        if (_lancGenOrd.campo === campo) _lancGenOrd.asc = !_lancGenOrd.asc;
+        else _lancGenOrd = { campo: campo, asc: campo !== '_ord' && campo !== 'valor' };
+        _renderLancGen();
+    }
+
+    function _renderLancGen() {
+        const opts = _lancGenOpts || {};
+        const busca = _lgNorm(document.getElementById('lgBusca').value.trim());
+        const emp = document.getElementById('lgEmpresa').value;
+        const st = document.getElementById('lgStatus').value;
+
+        let rows = _lancGenRows.filter(r =>
+            (!emp || r.empresa === emp) &&
+            (!st || r.statusClass === st) &&
+            (!busca || _lgNorm([r.descricao, r.parte, r.nf, r.categoria, r.empresa].join(' ')).indexOf(busca) !== -1));
+
+        const { campo, asc } = _lancGenOrd;
+        rows.sort((a, b) => {
+            let x = a[campo], y = b[campo];
+            let cmp = (campo === 'valor') ? (x - y) : String(x || '').localeCompare(String(y || ''), 'pt-BR', { numeric: true });
+            return asc ? cmp : -cmp;
+        });
+
+        // Resumo (sempre do que está visível na lista)
+        const soma = lista => lista.reduce((s, r) => s + r.valor, 0);
+        const total = soma(rows);
+        const chip = (cls, rotulo, valor, cor) => '<div class="lg-chip ' + cls + '"><span>' + rotulo + '</span><b' + (cor ? ' style="color:' + cor + ';"' : '') + '>' + valor + '</b></div>';
+        let resumo;
+        if (opts.liquido) {
+            const entradas = soma(rows.filter(r => r.valor >= 0));
+            const saidas = Math.abs(soma(rows.filter(r => r.valor < 0)));
+            resumo = chip(total >= 0 ? 'lg-chip-ok' : 'lg-chip-neg', 'Saldo', fmtValFull(total), total >= 0 ? '#28a745' : '#dc3545')
+                + chip('lg-chip-ok', 'Entradas', fmtValFull(entradas))
+                + chip('lg-chip-neg', 'Saídas', fmtValFull(saidas))
+                + chip('', 'Lançamentos', rows.length);
+        } else {
+            const pagos = soma(rows.filter(r => r.statusClass === 'pago'));
+            resumo = chip('lg-chip-total', 'Total', fmtValFull(total))
+                + chip('', 'Lançamentos', rows.length)
+                + chip('lg-chip-ok', 'Pagos / recebidos', fmtValFull(pagos))
+                + chip('lg-chip-pend', 'Pendentes', fmtValFull(total - pagos));
+        }
+        document.getElementById('resumoLancamentosGen').innerHTML = resumo;
+
+        // Linhas
         const tbody = document.querySelector('#tabelaLancamentosGen tbody');
-        if (tbody) {
-            tbody.innerHTML = rows.length ? rows.map(function(r){
-                const corVal = r.valor < 0 ? 'color:#dc3545;' : (opts.liquido ? 'color:#28a745;' : '');
-                // Editar/Excluir direto da lista, sem precisar navegar até Contas a Pagar/Receber
-                const acoes = (r.id && r.tipo)
-                    ? '<button class="btn btn-secondary btn-small" title="Editar categoria, datas, valor..." onclick="editarLancamentoGen(' + r.id + ',\'' + r.tipo + '\')">✏️</button> '
-                      + '<button class="btn btn-danger btn-small" title="Excluir lançamento" onclick="excluirLancamentoGen(' + r.id + ',\'' + r.tipo + '\')">🗑️</button>'
-                    : '<span style="color:#bbb;font-size:11px;">—</span>';
-                return '<tr>' +
-                    '<td style="white-space:nowrap;">' + r.data + '</td>' +
-                    '<td>' + r.descricao + '</td>' +
-                    '<td>' + r.categoria + '</td>' +
-                    '<td>' + r.parte + '</td>' +
-                    '<td>' + r.empresa + '</td>' +
-                    '<td style="font-weight:600;">' + r.nf + '</td>' +
-                    '<td style="text-align:right;white-space:nowrap;font-weight:600;' + corVal + '">' + fmtValFull(r.valor) + '</td>' +
-                    '<td><span class="status-badge status-' + r.statusClass + '">' + r.status + '</span></td>' +
-                    '<td style="text-align:center;white-space:nowrap;">' + acoes + '</td>' +
-                '</tr>';
-            }).join('') : '<tr><td colspan="9" style="text-align:center;color:#999;padding:20px;">Nenhum lançamento encontrado.</td></tr>';
-        }
-        document.getElementById('modalLancamentosGen').classList.add('active');
+        tbody.innerHTML = rows.length ? rows.map(r => {
+            const temParte = r.parte && r.parte !== '-';
+            const linha1 = temParte ? r.parte : (r.descricao || '-');
+            const linha2 = temParte && r.descricao && r.descricao !== '-' && r.descricao !== r.parte ? r.descricao : '';
+            const corVal = r.valor < 0 ? 'color:#dc3545;' : (opts.liquido ? 'color:#28a745;' : '');
+            const acoes = (r.id && r.tipo)
+                ? '<button class="lg-btn" title="Editar lançamento" aria-label="Editar" onclick="editarLancamentoGen(' + r.id + ',\'' + r.tipo + '\')">' + _LG_ICON_EDIT + '</button>'
+                  + '<button class="lg-btn lg-btn-del" title="Excluir lançamento" aria-label="Excluir" onclick="excluirLancamentoGen(' + r.id + ',\'' + r.tipo + '\')">' + _LG_ICON_DEL + '</button>'
+                : '<span style="color:#bbb;font-size:11px;">—</span>';
+            return '<tr>'
+                + '<td class="lg-c-data">' + _lgEsc(r.data) + '</td>'
+                + '<td class="lg-c-parte" title="' + _lgEsc(linha1 + (linha2 ? ' — ' + linha2 : '')) + '"><div class="lg-parte">' + _lgEsc(linha1) + '</div>' + (linha2 ? '<div class="lg-desc">' + _lgEsc(linha2) + '</div>' : '') + '</td>'
+                + '<td class="lg-c-cat" title="' + _lgEsc(r.categoria) + '">' + _lgEsc(r.categoria) + '</td>'
+                + '<td class="lg-c-emp" title="' + _lgEsc(r.empresa) + '">' + _lgEsc(r.empresa) + '</td>'
+                + '<td class="lg-c-nf" title="' + _lgEsc(r.nf) + '">' + _lgEsc(r.nf) + '</td>'
+                + '<td class="lg-c-val" style="' + corVal + '">' + fmtValFull(r.valor) + '</td>'
+                + '<td class="lg-c-st"><span class="lg-st lg-st-' + (r.statusClass === 'pago' ? 'pago' : 'pendente') + '">' + _lgEsc(r.status) + '</span></td>'
+                + '<td class="lg-c-acoes">' + acoes + '</td>'
+                + '</tr>';
+        }).join('') : '<tr><td colspan="8" class="lg-vazio">' + (_lancGenRows.length ? 'Nenhum lançamento corresponde à busca ou aos filtros.' : 'Nenhum lançamento encontrado.') + '</td></tr>';
+
+        // Indicador de ordenação no cabeçalho
+        document.querySelectorAll('#tabelaLancamentosGen th[data-ord]').forEach(th => {
+            th.classList.remove('lg-ord-asc', 'lg-ord-desc');
+            if (th.dataset.ord === campo) th.classList.add(asc ? 'lg-ord-asc' : 'lg-ord-desc');
+        });
+        document.getElementById('lgRodapeInfo').textContent = rows.length === _lancGenRows.length
+            ? _lancGenRows.length + ' lançamento(s)'
+            : 'Mostrando ' + rows.length + ' de ' + _lancGenRows.length + ' lançamento(s)';
     }
 
     // ── EDIÇÃO/EXCLUSÃO A PARTIR DO MODAL DE LANÇAMENTOS ─────────────────────
@@ -13663,6 +14372,15 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
     </div>
 </div>
 
+<div class="modal" id="modalManutencao">
+    <div class="modal-content" style="max-width:860px;">
+        <div class="modal-header">
+            <span id="tituloModalManut">Manutenção</span>
+            <button class="modal-close" onclick="closeModal('modalManutencao')">&times;</button>
+        </div>
+        <div id="corpoModalManut"></div>
+    </div>
+</div>
 <div class="modal" id="modalDetalheDRE">
     <div class="modal-content" style="max-width:700px;">
         <div class="modal-header">
@@ -13683,29 +14401,41 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
 
 <!-- Modal genérico de lançamentos (clique em cards, DRE, análise de categorias, etc.) -->
 <div class="modal" id="modalLancamentosGen">
-    <div class="modal-content" style="max-width:920px;">
-        <div class="modal-header">
-            <span id="tituloLancamentosGen">Lançamentos</span>
-            <button class="modal-close" onclick="closeModal('modalLancamentosGen')">&times;</button>
+    <div class="modal-content lg-modal" role="dialog" aria-labelledby="tituloLancamentosGen">
+        <div class="lg-head">
+            <div>
+                <div id="tituloLancamentosGen" class="lg-titulo">Lançamentos</div>
+                <div id="subtituloLancamentosGen" class="lg-sub"></div>
+            </div>
+            <button class="modal-close" aria-label="Fechar" onclick="closeModal('modalLancamentosGen')">&times;</button>
         </div>
-        <div id="resumoLancamentosGen" style="font-size:13px;color:#555;margin-bottom:10px;"></div>
-        <div class="table-container" style="max-height:60vh;overflow:auto;">
-            <table id="tabelaLancamentosGen" style="font-size:13px;">
+        <div id="resumoLancamentosGen" class="lg-resumo"></div>
+        <div class="lg-toolbar">
+            <input type="search" id="lgBusca" placeholder="Buscar por descrição, fornecedor/cliente ou NF" oninput="_renderLancGen()">
+            <select id="lgEmpresa" onchange="_renderLancGen()"><option value="">Todas as empresas</option></select>
+            <select id="lgStatus" onchange="_renderLancGen()">
+                <option value="">Todos os status</option>
+                <option value="pago">Pagos / recebidos</option>
+                <option value="pendente">Pendentes</option>
+            </select>
+        </div>
+        <div class="lg-tabela-wrap">
+            <table id="tabelaLancamentosGen" class="lg-tabela">
                 <thead><tr>
-                    <th>Data</th>
-                    <th>Descrição</th>
-                    <th>Categoria</th>
-                    <th id="thParteLancGen">Parte</th>
-                    <th>Empresa</th>
-                    <th>NF</th>
-                    <th style="text-align:right;">Valor</th>
-                    <th>Status</th>
-                    <th style="text-align:center;white-space:nowrap;">Ações</th>
+                    <th class="lg-c-data" data-ord="_ord" onclick="ordenarLancGen('_ord')">Data</th>
+                    <th class="lg-c-parte" data-ord="parte" onclick="ordenarLancGen('parte')" id="thParteLancGen">Fornecedor / Descrição</th>
+                    <th class="lg-c-cat" data-ord="categoria" onclick="ordenarLancGen('categoria')">Categoria</th>
+                    <th class="lg-c-emp" data-ord="empresa" onclick="ordenarLancGen('empresa')">Empresa</th>
+                    <th class="lg-c-nf" data-ord="nf" onclick="ordenarLancGen('nf')">NF / Doc.</th>
+                    <th class="lg-c-val" data-ord="valor" onclick="ordenarLancGen('valor')">Valor</th>
+                    <th class="lg-c-st" data-ord="status" onclick="ordenarLancGen('status')">Status</th>
+                    <th class="lg-c-acoes"></th>
                 </tr></thead>
                 <tbody></tbody>
             </table>
         </div>
-        <div class="form-actions" style="margin-top:12px;">
+        <div class="lg-rodape">
+            <span id="lgRodapeInfo"></span>
             <button class="btn btn-secondary" onclick="closeModal('modalLancamentosGen')">Fechar</button>
         </div>
     </div>
@@ -13734,7 +14464,41 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
             </div>
             <div class="form-group" id="editLancCategoriaWrap">
                 <label>Categoria</label>
-                <select id="editLancCategoria"><option value="">Selecione...</option></select>
+                <div class="lg-cat-linha">
+                    <select id="editLancCategoria" onchange="document.getElementById('editLancCatInfo').textContent=''"><option value="">Selecione...</option></select>
+                    <button type="button" class="btn btn-secondary btn-small lg-cat-add" onclick="toggleNovaCategoriaLanc(true)" title="Cadastrar uma categoria nova sem sair desta tela">+ Nova categoria</button>
+                </div>
+                <span class="lg-cat-info" id="editLancCatInfo"></span>
+                <div class="lg-nova-cat" id="editLancNovaCat" hidden>
+                    <div class="form-group">
+                        <label>Nome da nova categoria*</label>
+                        <input type="text" id="novaCatLancNome" placeholder="Ex.: Medicina do Trabalho" onkeydown="if(event.key==='Enter'){event.preventDefault();salvarNovaCategoriaLanc();}">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Grupo DRE*</label>
+                            <select id="novaCatLancGrupo"><option value="">Selecione...</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo</label>
+                            <select id="novaCatLancTipo">
+                                <option value="">-</option>
+                                <option value="Receita">Receita</option>
+                                <option value="Custo">Custo</option>
+                                <option value="Despesa">Despesa</option>
+                                <option value="Imposto">Imposto</option>
+                                <option value="Investimento">Investimento</option>
+                                <option value="Financeiro">Financeiro</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="lg-nova-cat-msg" id="novaCatLancMsg" hidden></div>
+                    <div class="lg-nova-cat-acoes">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleNovaCategoriaLanc(false)">Cancelar</button>
+                        <button type="button" class="btn btn-primary btn-small" id="novaCatLancBtn" onclick="salvarNovaCategoriaLanc()">Criar e usar</button>
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <label>Empresa</label>
