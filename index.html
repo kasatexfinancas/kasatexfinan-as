@@ -4718,7 +4718,37 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         return dados;
     }
 
-    async function fetchSupabase(tabela, metodo = 'GET', dados = null, filtros = '', _jaTentouRenovar = false) {
+    // O Supabase devolve no MÁXIMO 1000 linhas por consulta (limite "max_rows").
+    // Sem paginação, ao passar de 1000 lançamentos os mais novos simplesmente
+    // não vinham — pareciam "não salvos" e acabavam lançados em duplicidade.
+    // Aqui toda consulta GET de listagem busca TODAS as páginas.
+    const _TAM_PAGINA = 1000;
+    async function _fetchTodasPaginas(tabela, filtros) {
+        const base = filtros ? filtros + '&' : '';
+        const temOrdem = /(^|&)order=/.test(filtros || '');
+        let ordem = temOrdem ? '' : 'order=id.asc&';
+        let todos = [];
+        for (let offset = 0; ; offset += _TAM_PAGINA) {
+            let pagina = await fetchSupabase(tabela, 'GET', null,
+                base + ordem + 'limit=' + _TAM_PAGINA + '&offset=' + offset, false, true);
+            // Tabela sem coluna "id": tenta de novo sem ordenação
+            if (pagina === null && ordem && offset === 0) {
+                ordem = '';
+                pagina = await fetchSupabase(tabela, 'GET', null,
+                    base + 'limit=' + _TAM_PAGINA + '&offset=0', false, true);
+            }
+            if (pagina === null) return offset === 0 ? null : todos;
+            todos = todos.concat(pagina);
+            if (pagina.length < _TAM_PAGINA) break;
+        }
+        return todos;
+    }
+
+    async function fetchSupabase(tabela, metodo = 'GET', dados = null, filtros = '', _jaTentouRenovar = false, _paginaUnica = false) {
+        // Listagens: busca todas as páginas (exceto quando a chamada já pede um limite)
+        if (metodo === 'GET' && !_paginaUnica && !/(^|&)(limit|offset)=/.test(filtros || '')) {
+            return _fetchTodasPaginas(tabela, filtros);
+        }
         // Sem sessão válida não se fala com o banco.
         const token = tokenAtual();
         if (!token) {
@@ -4755,7 +4785,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
             // Token expirado/inválido: tenta renovar uma vez e repete a chamada
             if (status === 401 && !_jaTentouRenovar) {
                 const ok = await renovarSessao();
-                if (ok) return fetchSupabase(tabela, metodo, dados, filtros, true);
+                if (ok) return fetchSupabase(tabela, metodo, dados, filtros, true, _paginaUnica);
                 return null;
             }
 
