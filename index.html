@@ -501,6 +501,52 @@
             z-index: 200;
         }
         .colunas-dropdown.aberto { display: block; }
+
+        /* ── ANÁLISE DE CATEGORIAS: barra de categorias, meses e letra + zebrado ── */
+        .ac-toolbar { display: flex; flex-wrap: wrap; gap: 14px 26px; align-items: flex-end; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #eee; }
+        .ac-bloco { display: flex; flex-direction: column; gap: 5px; }
+        .ac-bloco-meses { flex: 1; min-width: 280px; }
+        .ac-rotulo { font-size: 13px; font-weight: 500; color: #333; }
+        .ac-rotulo small { font-weight: 400; color: #999; font-size: 11px; }
+        .ac-btn { background: #fff; border: 1px solid var(--cor-borda, #ddd); border-radius: 6px; padding: 7px 12px; font-size: 13px; cursor: pointer; font-family: inherit; color: #333; min-width: 40px; }
+        .ac-btn:hover { border-color: var(--cor-primaria); color: var(--cor-primaria); }
+        #btnCatsAnaliseCat { min-width: 240px; text-align: left; }
+        #btnCatsAnaliseCat.ativo { border-color: var(--cor-primaria); background: #fff4ed; color: #c4521e; font-weight: 600; }
+        .ac-cats-menu { left: 0; right: auto; width: 360px; max-width: 90vw; padding: 10px 12px; }
+        .ac-cats-menu .ac-cats-busca { width: 100%; padding: 7px 9px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; margin-bottom: 8px; }
+        .ac-cats-menu .ac-cats-lista { max-height: 300px; overflow-y: auto; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; padding: 4px 0; }
+        .ac-cats-menu .ac-cats-lista label { display: flex; align-items: center; gap: 7px; padding: 4px 2px; font-size: 13px; cursor: pointer; }
+        .ac-cats-menu .ac-cats-lista label:hover { background: #fff4ed; }
+        .ac-cats-menu .ac-cats-grupo { margin-left: auto; font-size: 10.5px; color: #999; white-space: nowrap; }
+        .ac-cats-menu .ac-cats-info { font-size: 11.5px; color: #888; margin: 6px 0 2px; }
+        .ac-chips { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+        .ac-chip { border: 1px solid #ddd; background: #f4f4f4; color: #999; border-radius: 16px; padding: 4px 10px; font-size: 12px; cursor: pointer; user-select: none; text-decoration: line-through; font-family: inherit; }
+        .ac-chip.on { background: var(--cor-primaria); border-color: var(--cor-primaria); color: #fff; text-decoration: none; font-weight: 600; }
+        .ac-chip.preset { background: #fff; color: #555; text-decoration: none; border-style: dashed; }
+        .ac-chip.preset:hover { border-color: var(--cor-primaria); color: var(--cor-primaria); }
+        .ac-chips.desativado .ac-chip:not(.preset) { opacity: .45; pointer-events: none; }
+        .ac-chips .ac-sep { width: 1px; height: 18px; background: #ddd; margin: 0 3px; }
+        .ac-fonte { display: flex; align-items: center; gap: 6px; }
+        .ac-fonte span { min-width: 44px; text-align: center; font-size: 13px; font-weight: 600; color: #555; }
+        /* Linhas alternadas (zebrado) */
+        .ac-tabela tbody tr:nth-child(odd) td { background: #ffffff; }
+        .ac-tabela tbody tr:nth-child(even) td { background: #fdeee4; }
+        .ac-tabela tbody tr:hover td { background: #ffd9c2; }
+        .ac-tabela td, .ac-tabela th { padding-top: .55em; padding-bottom: .55em; }
+        .ac-tabela td:nth-child(n+3) { white-space: nowrap; }
+        html[data-tema="escuro"] .ac-tabela tbody tr:nth-child(odd) td { background: transparent; }
+        html[data-tema="escuro"] .ac-tabela tbody tr:nth-child(even) td { background: rgba(255, 122, 66, 0.09); }
+        html[data-tema="escuro"] .ac-tabela tbody tr:hover td { background: rgba(255, 122, 66, 0.2); }
+        html[data-tema="escuro"] .ac-btn, html[data-tema="escuro"] .ac-chip.preset { background: #1f2228; color: #ddd; border-color: #3a3f47; }
+        html[data-tema="escuro"] .ac-chip { background: #2a2e35; border-color: #3a3f47; color: #777; }
+        html[data-tema="escuro"] .ac-chip.on { background: var(--cor-primaria); color: #fff; }
+        html[data-tema="escuro"] .ac-rotulo { color: #ccc; }
+        html[data-tema="escuro"] .ac-cats-menu .ac-cats-busca { background: #1f2228; color: #ddd; border-color: #3a3f47; }
+        html[data-tema="escuro"] .ac-cats-menu .ac-cats-lista label:hover { background: #2d241f; }
+        html[data-tema="escuro"] #btnCatsAnaliseCat.ativo { background: #2d241f; color: #ff9a6c; }
+        html[data-tema="escuro"] .lanc-h .lh-actions { background: #1b1e23; border-top-color: #2e333a; }
+        html[data-tema="escuro"] .lanc-h .lh-preview, html[data-tema="escuro"] .lanc-h .lh-vigencia { background: #1f2228; border-color: #3a3f47; }
+        html[data-tema="escuro"] .lanc-h .form-group label { color: #ccc; }
         /* DFC: blocos que ficam ocultos na tela (os dados continuam sendo calculados) */
         #dfc .dfc-oculto { display: none !important; }
         /* Dicas da C@P Consultoria (Dashboard) */
@@ -811,6 +857,135 @@
 
         .modal-lancamento .modal-header .modal-close:hover {
             opacity: 1;
+        }
+
+        /* ── NOVO LANÇAMENTO A PAGAR — layout horizontal compacto ── */
+        .modal-content.modal-lancamento.lanc-h {
+            max-width: 1100px;
+            width: 96%;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            max-height: 94vh;
+            overflow: hidden;
+        }
+        .lanc-h .modal-header {
+            margin: 0;
+            padding: 12px 20px;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+        .lanc-h form {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            flex: 1;
+        }
+        .lanc-h .lh-grid {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 8px 14px;
+            padding: 12px 20px 14px;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }
+        .lanc-h .lh-sec {
+            grid-column: 1 / -1;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--cor-primaria);
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            padding: 6px 0 3px;
+            border-bottom: 1px solid #f3e1d6;
+            margin-top: 2px;
+        }
+        .lanc-h .lh-sec:not(:first-child) { margin-top: 8px; }
+        .lanc-h .lh-3  { grid-column: span 3; }
+        .lanc-h .lh-4  { grid-column: span 4; }
+        .lanc-h .lh-5  { grid-column: span 5; }
+        .lanc-h .lh-6  { grid-column: span 6; }
+        .lanc-h .lh-7  { grid-column: span 7; }
+        .lanc-h .lh-12 { grid-column: 1 / -1; }
+        .lanc-h .form-group { margin: 0; min-width: 0; }
+        .lanc-h .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .lanc-h .form-group input,
+        .lanc-h .form-group select,
+        .lanc-h .form-group textarea,
+        .lanc-h .ss-input {
+            padding: 7px 9px;
+            font-size: 13px;
+            height: 34px;
+            border-radius: 6px;
+        }
+        .lanc-h .form-group textarea {
+            resize: vertical;
+            min-height: 34px;
+            height: 50px;
+        }
+        .lanc-h .lh-valor { font-weight: 700; color: #c0392b; }
+        .lanc-h .lh-req { color: #dc3545; margin-left: 2px; }
+        .lanc-h .lh-toggle {
+            margin: 0;
+            padding: 7px 12px;
+            height: 50px;
+            margin-top: 17px;
+        }
+        .lanc-h .lh-toggle .toggle-fixo-titulo { font-size: 13px; }
+        .lanc-h .lh-toggle .toggle-fixo-sub { font-size: 11px; }
+        .lanc-h .lh-vigencia {
+            background: #fff8f4;
+            border-left: 3px solid var(--cor-primaria);
+            border-radius: 6px;
+            padding: 0 0 0 8px;
+        }
+        .lanc-h .lh-preview {
+            border: 1px solid #f0e2d8;
+            background: #fffdfb;
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .lanc-h .lh-preview-titulo {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--cor-primaria);
+            margin-bottom: 6px;
+        }
+        .lanc-h .lh-preview-lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 0 18px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+        .lanc-h .lh-preview-lista input { height: auto; }
+        .lanc-h .lh-actions {
+            margin: 0;
+            padding: 10px 20px;
+            border-top: 1px solid #eee;
+            background: #fafafa;
+            justify-content: flex-end;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .lanc-h .lh-dica { margin-right: auto; font-size: 11.5px; color: #888; }
+        @media (max-width: 900px) {
+            .lanc-h .lh-3, .lanc-h .lh-4, .lanc-h .lh-5, .lanc-h .lh-6, .lanc-h .lh-7 { grid-column: span 6; }
+        }
+        @media (max-width: 600px) {
+            .lanc-h .lh-3, .lanc-h .lh-4, .lanc-h .lh-5, .lanc-h .lh-6, .lanc-h .lh-7 { grid-column: 1 / -1; }
+            .lanc-h .lh-toggle { margin-top: 0; }
         }
 
         .form-section {
@@ -2071,6 +2246,14 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
             <div class="filter-container">
                 <div class="filter-row">
                     <div class="form-group">
+                        <label>Descrição</label>
+                        <input type="text" id="filtroDescReceber" autocomplete="off" placeholder="🔍 Buscar descrição" oninput="atualizarTabelaPendentesReceber()">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor</label>
+                        <input type="text" id="filtroValorReceber" autocomplete="off" placeholder="Ex: 1.500,00" inputmode="decimal" oninput="atualizarTabelaPendentesReceber()">
+                    </div>
+                    <div class="form-group">
                         <label>Cliente</label>
                         <select id="filtroClienteReceber" onchange="atualizarTabelaPendentesReceber()">
                             <option value="">Todos</option>
@@ -2211,6 +2394,14 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Descrição</label>
+                        <input type="text" id="filtroDescPagar" autocomplete="off" placeholder="🔍 Buscar descrição" oninput="atualizarTabelaPendentesPagar()">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor</label>
+                        <input type="text" id="filtroValorPagar" autocomplete="off" placeholder="Ex: 1.500,00" inputmode="decimal" oninput="atualizarTabelaPendentesPagar()">
+                    </div>
+                    <div class="form-group">
                         <label>NF</label>
                         <input type="text" id="filtroNFPagar" placeholder="Nº da nota" oninput="atualizarTabelaPendentesPagar()">
                     </div>
@@ -2319,6 +2510,14 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
             <div class="filter-container">
                 <div class="filter-row">
                     <div class="form-group">
+                        <label>Descrição</label>
+                        <input type="text" id="filtroDescRecebida" autocomplete="off" placeholder="🔍 Buscar descrição" oninput="atualizarTabelaRecebidas()">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor</label>
+                        <input type="text" id="filtroValorRecebida" autocomplete="off" placeholder="Ex: 1.500,00" inputmode="decimal" oninput="atualizarTabelaRecebidas()">
+                    </div>
+                    <div class="form-group">
                         <label>Cliente</label>
                         <select id="filtroClienteRecebida" onchange="carregarContasRecebidas()">
                             <option value="">Todos</option>
@@ -2420,6 +2619,14 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
 
             <div class="filter-container">
                 <div class="filter-row">
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <input type="text" id="filtroDescPaga" autocomplete="off" placeholder="🔍 Buscar descrição" oninput="atualizarTabelaPagas()">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor</label>
+                        <input type="text" id="filtroValorPaga" autocomplete="off" placeholder="Ex: 1.500,00" inputmode="decimal" oninput="atualizarTabelaPagas()">
+                    </div>
                     <div class="form-group">
                         <label>Despesas/Fornecedor</label>
                         <select id="filtroFornecedorPaga" onchange="carregarContasPagas()">
@@ -3407,6 +3614,27 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
                         </select>
                     </div>
                 </div>
+                <div class="ac-toolbar">
+                    <div class="ac-bloco">
+                        <span class="ac-rotulo">Categorias</span>
+                        <div class="colunas-btn-wrap ac-cats-wrap">
+                            <button type="button" id="btnCatsAnaliseCat" class="ac-btn" onclick="abrirMenuCatsAnaliseCat(event)">Todas as categorias ▾</button>
+                            <div id="menuCatsAnaliseCat" class="colunas-dropdown ac-cats-menu"></div>
+                        </div>
+                    </div>
+                    <div class="ac-bloco ac-bloco-meses">
+                        <span class="ac-rotulo">Meses exibidos <small>(clique para mostrar/ocultar)</small></span>
+                        <div id="chipsMesesAnaliseCat" class="ac-chips"></div>
+                    </div>
+                    <div class="ac-bloco">
+                        <span class="ac-rotulo">Tamanho da letra</span>
+                        <div class="ac-fonte">
+                            <button type="button" class="ac-btn" onclick="ajustarFonteAnaliseCat(-1)" title="Diminuir letra">A−</button>
+                            <span id="fonteAnaliseCatLabel">100%</span>
+                            <button type="button" class="ac-btn" onclick="ajustarFonteAnaliseCat(1)" title="Aumentar letra" style="font-size:15px;">A+</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card">
                 <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
@@ -3424,7 +3652,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
                 </div>
                 <div style="font-size:12px;color:#888;margin-bottom:10px;" id="analiseCatDescricao">Somatório de contas a pagar por categoria e mês, com base na Data de Competência. Categorias sem movimento no período selecionado não aparecem na lista.</div>
                 <div style="overflow-x:auto;">
-                    <table id="tabelaAnaliseCategorias" style="font-size:12.5px;min-width:900px;">
+                    <table id="tabelaAnaliseCategorias" class="ac-tabela" style="font-size:12.5px;min-width:600px;">
                         <thead><tr id="analiseCategoriasCabecalho"></tr></thead>
                         <tbody id="analiseCategoriasCorpo"></tbody>
                         <tfoot id="analiseCategoriasRodape"></tfoot>
@@ -3594,124 +3822,104 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
     </div>
 </div>
 
-<!-- MODAL LANÇAR PAGAR -->
+<!-- MODAL LANÇAR PAGAR (layout horizontal compacto) -->
 <div class="modal" id="modalLancarPagar">
-    <div class="modal-content modal-lancamento">
+    <div class="modal-content modal-lancamento lanc-h">
         <div class="modal-header">
             <span>📤 Novo Lançamento a Pagar</span>
-            <button class="modal-close" onclick="closeModal('modalLancarPagar')">&times;</button>
+            <button type="button" class="modal-close" onclick="closeModal('modalLancarPagar')">&times;</button>
         </div>
         <form onsubmit="salvarContaPagar(event)">
-            <div class="form-section">
-                <div class="form-section-title">🏭 Despesas/Fornecedor e Categoria</div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Despesas/Fornecedor*</label>
-                        <select id="fornecedorPagar" required>
-                            <option value="">Selecione...</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Categoria*</label>
-                        <select id="categoriaPagar" required onchange="preencherSubcategoriasPagar()">
-                            <option value="">Selecione...</option>
-                        </select>
-                    </div>
+            <div class="lh-grid">
+                <div class="lh-sec">🏭 Despesas/Fornecedor e Categoria</div>
+                <div class="form-group lh-4">
+                    <label>Despesas/Fornecedor</label>
+                    <select id="fornecedorPagar">
+                        <option value="">Selecione...</option>
+                    </select>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Subcategoria</label>
-                        <select id="subcategoriaPagar">
-                            <option value="">Selecione a categoria primeiro...</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Descrição*</label>
-                        <input type="text" id="descricaoPagar" required placeholder="Ex: Compra de mercadorias">
-                    </div>
+                <div class="form-group lh-4">
+                    <label>Categoria<span class="lh-req">*</span></label>
+                    <select id="categoriaPagar" required onchange="preencherSubcategoriasPagar()">
+                        <option value="">Selecione...</option>
+                    </select>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Empresa</label>
-                        <select id="empresaPagar">
-                            <option value="">Selecione...</option>
-                        </select>
-                    </div>
+                <div class="form-group lh-4">
+                    <label>Subcategoria</label>
+                    <select id="subcategoriaPagar">
+                        <option value="">Selecione a categoria primeiro...</option>
+                    </select>
+                </div>
+                <div class="form-group lh-6">
+                    <label>Descrição</label>
+                    <input type="text" id="descricaoPagar" placeholder="Opcional — se vazio, usa o nome da categoria">
+                </div>
+                <div class="form-group lh-3">
+                    <label>Empresa</label>
+                    <select id="empresaPagar">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+                <div class="form-group lh-3">
+                    <label>Nº Nota Fiscal</label>
+                    <input type="text" id="notaFiscalPagar" placeholder="Opcional">
+                </div>
+
+                <div class="lh-sec">💰 Valor e Datas</div>
+                <div class="form-group lh-3">
+                    <label>Valor Total<span class="lh-req">*</span></label>
+                    <input type="number" id="valorPagar" step="0.01" required oninput="calcularParcelasPagar()" placeholder="0,00" class="lh-valor">
+                </div>
+                <div class="form-group lh-3">
+                    <label>Data de Competência<span class="lh-req">*</span></label>
+                    <input type="date" id="competenciaPagar" required>
+                </div>
+                <div class="form-group lh-3">
+                    <label>Data Prevista de Pagamento<span class="lh-req">*</span></label>
+                    <input type="date" id="vencimentoPagar" required oninput="calcularParcelasPagar()">
+                </div>
+                <div class="form-group lh-3" id="parcelasPagarWrap">
+                    <label>Parcelas</label>
+                    <select id="parcelasPagar" onchange="calcularParcelasPagar()">
+                        <option value="1">À vista (1x)</option>
+                        <option value="2">2x</option><option value="3">3x</option>
+                        <option value="4">4x</option><option value="5">5x</option>
+                        <option value="6">6x</option><option value="7">7x</option>
+                        <option value="8">8x</option><option value="9">9x</option>
+                        <option value="10">10x</option><option value="11">11x</option>
+                        <option value="12">12x</option>
+                    </select>
+                </div>
+                <div class="form-group lh-3 lh-vigencia" id="vigenciaPagarWrap" style="display:none;">
+                    <label>Vigente até (mês/ano)<span class="lh-req">*</span></label>
+                    <input type="month" id="vigenciaPagar" oninput="calcularParcelasPagar()">
+                </div>
+
+                <div class="lh-5">
+                    <label class="toggle-fixo lh-toggle" for="custoFixoPagar">
+                        <input type="checkbox" id="custoFixoPagar" onchange="toggleCustoFixoPagar()">
+                        <span class="toggle-fixo-texto">
+                            <span class="toggle-fixo-titulo">🔁 Lançamento fixo (custo recorrente)</span>
+                            <span class="toggle-fixo-sub">Repete o valor todo mês até a vigência</span>
+                        </span>
+                    </label>
+                </div>
+                <div class="form-group lh-7">
+                    <label>Observações</label>
+                    <textarea id="observacoesPagar" rows="1" placeholder="Opcional"></textarea>
+                </div>
+
+                <!-- Preview parcelas -->
+                <div id="previewParcelasPagar" class="lh-12 lh-preview" style="display:none;">
+                    <div class="lh-preview-titulo" id="previewParcelasPagarTitulo">Parcelas geradas:</div>
+                    <div id="listaParcelasPagar" class="lh-preview-lista"></div>
                 </div>
             </div>
 
-            <div class="form-section">
-                <div class="form-section-title">💰 Valor e Datas</div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Valor Total*</label>
-                        <input type="number" id="valorPagar" step="0.01" required oninput="calcularParcelasPagar()" placeholder="0,00">
-                    </div>
-                    <div class="form-group">
-                        <label>Data de Competência*</label>
-                        <input type="date" id="competenciaPagar" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Data Prevista de Pagamento*</label>
-                        <input type="date" id="vencimentoPagar" required oninput="calcularParcelasPagar()">
-                    </div>
-                    <div class="form-group" id="parcelasPagarWrap">
-                        <label>Parcelas</label>
-                        <select id="parcelasPagar" onchange="calcularParcelasPagar()">
-                            <option value="1">À vista (1x)</option>
-                            <option value="2">2x</option><option value="3">3x</option>
-                            <option value="4">4x</option><option value="5">5x</option>
-                            <option value="6">6x</option><option value="7">7x</option>
-                            <option value="8">8x</option><option value="9">9x</option>
-                            <option value="10">10x</option><option value="11">11x</option>
-                            <option value="12">12x</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <div class="form-section-title">🔁 Recorrência</div>
-                <label class="toggle-fixo" for="custoFixoPagar">
-                    <input type="checkbox" id="custoFixoPagar" onchange="toggleCustoFixoPagar()">
-                    <span class="toggle-fixo-texto">
-                        <span class="toggle-fixo-titulo">Lançamento fixo (custo fixo recorrente)</span>
-                        <span class="toggle-fixo-sub">Repete o mesmo valor todo mês até a data de vigência informada</span>
-                    </span>
-                </label>
-                <div id="vigenciaPagarWrap" class="vigencia-wrap" style="display:none;">
-                    <div class="form-group">
-                        <label>Vigente até (mês/ano)*</label>
-                        <input type="month" id="vigenciaPagar" oninput="calcularParcelasPagar()">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Preview parcelas -->
-            <div id="previewParcelasPagar" style="display:none; margin-bottom:16px;">
-                <div style="font-size:12px; font-weight:600; color:var(--cor-primaria); margin-bottom:6px;" id="previewParcelasPagarTitulo">Parcelas geradas:</div>
-                <div id="listaParcelasPagar" style="max-height:140px; overflow-y:auto; border:1px solid #eee; border-radius:6px; padding:8px; font-size:12px;"></div>
-            </div>
-
-            <div class="form-section">
-                <div class="form-section-title">📝 Informações Adicionais</div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nº Nota Fiscal</label>
-                        <input type="text" id="notaFiscalPagar" placeholder="Ex: 001234 (opcional)">
-                    </div>
-                    <div class="form-group">
-                        <label>Observações</label>
-                        <textarea id="observacoesPagar" rows="2"></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn btn-success">💾 Salvar</button>
+            <div class="form-actions lh-actions">
+                <span class="lh-dica">Campos com <span class="lh-req">*</span> são obrigatórios</span>
                 <button type="button" class="btn btn-secondary" onclick="closeModal('modalLancarPagar')">Cancelar</button>
+                <button type="submit" class="btn btn-success">💾 Salvar</button>
             </div>
         </form>
     </div>
@@ -6087,6 +6295,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         if (!tbody) return;
         tbody.innerHTML = '';
         let filtrado = dadosCache.contasReceber;
+        filtrado = _filtrarDescricaoValor(filtrado, 'filtroDescReceber', 'filtroValorReceber');
         const filtroCliente = document.getElementById('filtroClienteReceber');
         const filtroEmpresa = document.getElementById('filtroEmpresaReceber');
         const filtroAno = document.getElementById('filtroAnoReceber');
@@ -6270,6 +6479,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         if (!tbody) return;
         tbody.innerHTML = '';
         let filtrado = dadosCache.contasPagar;
+        filtrado = _filtrarDescricaoValor(filtrado, 'filtroDescPagar', 'filtroValorPagar');
         const filtroFornecedor = document.getElementById('filtroFornecedorPagar');
         const filtroGrupoDRE = document.getElementById('filtroGrupoDREPagar');
         const filtroCategoria = document.getElementById('filtroCategoriaPagar');
@@ -6464,6 +6674,40 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
     });
     // ──────────────────────────────────────────────────────────────────────
 
+    // ── FILTRO DE DESCRIÇÃO E VALOR (Contas a Pagar/Receber, Pagas, Recebidas) ──
+    // Descrição: busca parcial, sem diferenciar maiúsculas nem acentos.
+    // Valor: aceita "1500", "1.500", "1.500,00", "1500,5", "R$ 1.500"... e
+    // encontra lançamentos cujo valor contém o que foi digitado.
+    function _normTxtBusca(t) {
+        return (t || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    }
+    function _filtrarDescricaoValor(lista, idDesc, idValor) {
+        if (!Array.isArray(lista)) return lista || [];
+        const elD = document.getElementById(idDesc);
+        const elV = document.getElementById(idValor);
+        const termoD = elD ? _normTxtBusca(elD.value.trim()) : '';
+        const termoV = elV ? elV.value.replace(/r\$|\s/gi, '') : '';
+        if (!termoD && !termoV) return lista;
+        let res = lista;
+        if (termoD) {
+            const palavras = termoD.split(/\s+/).filter(Boolean);
+            res = res.filter(c => { const d = _normTxtBusca(c.descricao); return palavras.every(w => d.includes(w)); });
+        }
+        if (termoV) {
+            const semPontos = termoV.replace(/\./g, '');            // "1.500,00" -> "1500,00"
+            const numero = parseFloat(semPontos.replace(',', '.'));
+            res = res.filter(c => {
+                const v = parseFloat(c.valor);
+                if (isNaN(v)) return false;
+                if (!isNaN(numero) && Math.abs(v - numero) < 0.005) return true;
+                const br = v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // 1.500,00
+                const brSemPonto = br.replace(/\./g, '');                                                   // 1500,00
+                return br.includes(termoV) || brSemPonto.includes(semPontos);
+            });
+        }
+        return res;
+    }
+
     async function salvarContaPagar(event) {
         event.preventDefault();
         const custoFixo = document.getElementById('custoFixoPagar').checked;
@@ -6471,11 +6715,20 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         const competencia = document.getElementById('competenciaPagar').value;
         const obs = document.getElementById('observacoesPagar').value;
         const notaFiscal = document.getElementById('notaFiscalPagar').value.trim() || null;
-        const fornecedorId = parseInt(document.getElementById('fornecedorPagar').value);
+        // Despesas/Fornecedor é opcional: vazio grava null
+        const fornecedorId = parseInt(document.getElementById('fornecedorPagar').value) || null;
         const empresaId = document.getElementById('empresaPagar').value ? parseInt(document.getElementById('empresaPagar').value) : null;
         const categoriaId = document.getElementById('categoriaPagar').value ? parseInt(document.getElementById('categoriaPagar').value) : null;
         const subcategoriaId = document.getElementById('subcategoriaPagar').value ? parseInt(document.getElementById('subcategoriaPagar').value) : null;
-        const descricao = document.getElementById('descricaoPagar').value;
+        // Descrição é opcional: se ficar vazia, usa "Categoria" ou "Categoria - Subcategoria"
+        let descricao = document.getElementById('descricaoPagar').value.trim();
+        if (!descricao) {
+            const selCat = document.getElementById('categoriaPagar');
+            const selSub = document.getElementById('subcategoriaPagar');
+            const nomeCat = (categoriaId && selCat.selectedOptions[0]) ? selCat.selectedOptions[0].textContent.trim() : '';
+            const nomeSub = (subcategoriaId && selSub.selectedOptions[0]) ? selSub.selectedOptions[0].textContent.trim() : '';
+            descricao = [nomeCat, nomeSub].filter(Boolean).join(' - ') || 'Lançamento';
+        }
         const valorTotal = parseFloat(document.getElementById('valorPagar').value);
 
         let numLancamentos, valorLancamento, vigenciaData = null;
@@ -6579,6 +6832,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         if (!tbody) return;
         tbody.innerHTML = '';
         let filtrado = dadosCache.contasRecebidas;
+        filtrado = _filtrarDescricaoValor(filtrado, 'filtroDescRecebida', 'filtroValorRecebida');
         const filtroAno = document.getElementById('filtroAnoRecebida');
         const filtroMes = document.getElementById('filtroMesRecebida');
         const filtroDia = document.getElementById('filtroDialRecebida');
@@ -6656,6 +6910,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         if (!tbody) return;
         tbody.innerHTML = '';
         let filtrado = dadosCache.contasPagas;
+        filtrado = _filtrarDescricaoValor(filtrado, 'filtroDescPaga', 'filtroValorPaga');
         const filtroAno = document.getElementById('filtroAnoPaga');
         const filtroMes = document.getElementById('filtroMesPaga');
         const filtroDia = document.getElementById('filtroDiaPaga');
@@ -11676,6 +11931,12 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
                 aoMudar();
             },
             setAcum(visivel) { try { localStorage.setItem(k('acum_oculto'), visivel ? '0' : '1'); } catch (e) {} aoMudar(); },
+            // Define de uma vez quais meses (1-12) ficam visíveis
+            definirVisiveis(mesesVisiveis) {
+                const oc = [1,2,3,4,5,6,7,8,9,10,11,12].filter(m => !mesesVisiveis.includes(m));
+                try { localStorage.setItem(k('meses_ocultos'), JSON.stringify(oc)); } catch (e) {}
+                aoMudar();
+            },
             todos(mostrar) {
                 try {
                     localStorage.setItem(k('meses_ocultos'), JSON.stringify(mostrar ? [] : [1,2,3,4,5,6,7,8,9,10,11,12]));
@@ -13307,7 +13568,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
                 larguras: [34, 46, 34, 20, 20, 22, 14, 18],
                 alinhamentos: ['left', 'left', 'left', 'center', 'center', 'right', 'center', 'center'],
                 tableId: 'tabelaPendentesReceber',
-                filtroIds: ['filtroClienteReceber', 'filtroEmpresaReceber', 'filtroStatusReceber', 'filtroTipoDataReceber', 'filtroAnoReceber', 'filtroMesReceber']
+                filtroIds: ['filtroDescReceber', 'filtroValorReceber', 'filtroClienteReceber', 'filtroEmpresaReceber', 'filtroStatusReceber', 'filtroTipoDataReceber', 'filtroAnoReceber', 'filtroMesReceber']
             },
             pagar: {
                 titulo: 'Contas a Pagar (Pendentes)',
@@ -13315,7 +13576,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
                 larguras: [30, 24, 34, 30, 14, 18, 18, 20, 12, 16],
                 alinhamentos: ['left', 'left', 'left', 'left', 'center', 'center', 'center', 'right', 'center', 'center'],
                 tableId: 'tabelaPendentesPagar',
-                filtroIds: ['filtroFornecedorPagar', 'filtroGrupoDREPagar', 'filtroCategoriaPagar', 'filtroSubcategoriaPagar', 'filtroEmpresaPagar', 'filtroStatusPagar', 'filtroTipoDataPagar', 'filtroAnoPagar', 'filtroMesPagar']
+                filtroIds: ['filtroDescPagar', 'filtroValorPagar', 'filtroFornecedorPagar', 'filtroGrupoDREPagar', 'filtroCategoriaPagar', 'filtroSubcategoriaPagar', 'filtroEmpresaPagar', 'filtroStatusPagar', 'filtroTipoDataPagar', 'filtroAnoPagar', 'filtroMesPagar']
             },
             recebidas: {
                 titulo: 'Contas Recebidas',
@@ -13323,7 +13584,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
                 larguras: [32, 42, 30, 14, 22, 20, 20, 20, 26],
                 alinhamentos: ['left', 'left', 'left', 'center', 'right', 'center', 'center', 'left', 'left'],
                 tableId: 'tabelaRecebidas',
-                filtroIds: ['filtroClienteRecebida', 'filtroEmpresaRecebida', 'filtroAnoRecebida', 'filtroMesRecebida', 'filtroBancoRecebida']
+                filtroIds: ['filtroDescRecebida', 'filtroValorRecebida', 'filtroClienteRecebida', 'filtroEmpresaRecebida', 'filtroAnoRecebida', 'filtroMesRecebida', 'filtroBancoRecebida']
             },
             pagas: {
                 titulo: 'Contas Pagas',
@@ -13331,7 +13592,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
                 larguras: [26, 20, 30, 26, 12, 12, 20, 18, 18, 18, 22],
                 alinhamentos: ['left', 'left', 'left', 'left', 'center', 'center', 'right', 'center', 'center', 'left', 'left'],
                 tableId: 'tabelaPagas',
-                filtroIds: ['filtroFornecedorPaga', 'filtroEmpresaPaga', 'filtroAnoPaga', 'filtroMesPaga', 'filtroBancoPaga']
+                filtroIds: ['filtroDescPaga', 'filtroValorPaga', 'filtroFornecedorPaga', 'filtroEmpresaPaga', 'filtroAnoPaga', 'filtroMesPaga', 'filtroBancoPaga']
             }
         };
 
@@ -13355,7 +13616,8 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
                 const label = (el.previousElementSibling && el.previousElementSibling.textContent) || '';
                 filtrosAplicados.push((label ? label.trim() + ': ' : '') + el.selectedOptions[0].textContent.trim());
             } else if (el && el.value) {
-                filtrosAplicados.push(el.value);
+                const label = (el.previousElementSibling && el.previousElementSibling.textContent) || '';
+                filtrosAplicados.push((label ? label.trim() + ': ' : '') + el.value);
             }
         });
 
@@ -13678,7 +13940,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         doc.text(normalizarTexto('Contas a Pagar - Por Dia de Vencimento'), pageW / 2, 27, { align: 'center' });
 
         // Filtros aplicados (mesma lógica do gerarPDF)
-        const filtroIds = ['filtroFornecedorPagar', 'filtroGrupoDREPagar', 'filtroCategoriaPagar', 'filtroSubcategoriaPagar', 'filtroEmpresaPagar', 'filtroStatusPagar', 'filtroTipoDataPagar', 'filtroAnoPagar', 'filtroMesPagar'];
+        const filtroIds = ['filtroDescPagar', 'filtroValorPagar', 'filtroFornecedorPagar', 'filtroGrupoDREPagar', 'filtroCategoriaPagar', 'filtroSubcategoriaPagar', 'filtroEmpresaPagar', 'filtroStatusPagar', 'filtroTipoDataPagar', 'filtroAnoPagar', 'filtroMesPagar'];
         const filtrosAplicados = [];
         filtroIds.forEach(id => {
             const el = document.getElementById(id);
@@ -13686,7 +13948,8 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
                 const label = (el.previousElementSibling && el.previousElementSibling.textContent) || '';
                 filtrosAplicados.push((label ? label.trim() + ': ' : '') + el.selectedOptions[0].textContent.trim());
             } else if (el && el.value) {
-                filtrosAplicados.push(el.value);
+                const label = (el.previousElementSibling && el.previousElementSibling.textContent) || '';
+                filtrosAplicados.push((label ? label.trim() + ': ' : '') + el.value);
             }
         });
         let startY = 31;
@@ -13826,6 +14089,145 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
 
     const _ctlMesesAnaliseCat = criarControleMeses('analise_cat', 'menuMesesAnaliseCat', 'Total', () => renderizarAnaliseCategorias());
 
+    // ================================================================
+    // ANÁLISE DE CATEGORIAS — filtro de várias categorias, chips de meses
+    // e tamanho da letra (preferências salvas por usuário neste navegador)
+    // ================================================================
+    function _chaveAnaliseCat(suf) { return 'cap_analise_cat_' + suf + '_' + (usuarioAtual ? usuarioAtual.email : 'guest'); }
+    function _catsSelAnaliseCat() {
+        try { const v = localStorage.getItem(_chaveAnaliseCat('cats')); return v ? JSON.parse(v).map(String) : []; } catch (e) { return []; }
+    }
+    function _salvarCatsSelAnaliseCat(lista) {
+        try { localStorage.setItem(_chaveAnaliseCat('cats'), JSON.stringify(lista)); } catch (e) {}
+    }
+    function _categoriasDisponiveisAnaliseCat() {
+        const selGrupo = document.getElementById('filtroGrupoDREAnaliseCat');
+        const grupoSel = selGrupo ? selGrupo.value : '';
+        return (dadosCache.categorias || [])
+            .filter(cat => !grupoSel || cat.grupo_dre === grupoSel)
+            .slice()
+            .sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+    }
+    function _atualizarBotaoCatsAnaliseCat() {
+        const btn = document.getElementById('btnCatsAnaliseCat');
+        if (!btn) return;
+        const sel = _catsSelAnaliseCat();
+        if (!sel.length) { btn.textContent = 'Todas as categorias ▾'; btn.classList.remove('ativo'); return; }
+        if (sel.length === 1) {
+            const cat = (dadosCache.categorias || []).find(c => String(c.id) === sel[0]);
+            btn.textContent = (cat ? cat.nome : '1 categoria') + ' ▾';
+        } else {
+            btn.textContent = sel.length + ' categorias selecionadas ▾';
+        }
+        btn.classList.add('ativo');
+    }
+    function abrirMenuCatsAnaliseCat(event) {
+        if (event) event.stopPropagation();
+        const menu = document.getElementById('menuCatsAnaliseCat');
+        if (!menu) return;
+        const abrindo = !menu.classList.contains('aberto');
+        if (abrindo) {
+            menu.innerHTML =
+                '<input type="search" class="ac-cats-busca" id="buscaCatsAnaliseCat" placeholder="🔍 Buscar categoria..." oninput="_listarCatsMenuAnaliseCat()">' +
+                '<div class="ac-cats-lista" id="listaCatsAnaliseCat"></div>' +
+                '<div class="ac-cats-info" id="infoCatsAnaliseCat"></div>' +
+                '<div class="colunas-dropdown-actions">' +
+                '<button type="button" class="btn btn-secondary" onclick="_marcarCatsAnaliseCat(true)">Marcar listadas</button>' +
+                '<button type="button" class="btn btn-secondary" onclick="_marcarCatsAnaliseCat(false)">Limpar (todas)</button>' +
+                '</div>';
+            _listarCatsMenuAnaliseCat();
+        }
+        menu.classList.toggle('aberto', abrindo);
+        if (abrindo) { const b = document.getElementById('buscaCatsAnaliseCat'); if (b) b.focus(); }
+    }
+    function _listarCatsMenuAnaliseCat() {
+        const lista = document.getElementById('listaCatsAnaliseCat');
+        if (!lista) return;
+        const busca = document.getElementById('buscaCatsAnaliseCat');
+        const termo = busca ? _normTxtBusca(busca.value.trim()) : '';
+        const sel = _catsSelAnaliseCat();
+        const cats = _categoriasDisponiveisAnaliseCat().filter(c => !termo || _normTxtBusca(c.nome).includes(termo));
+        lista.innerHTML = cats.map(c => {
+            const g = c.grupo_dre ? (_GRUPOS_DRE_LABELS[c.grupo_dre] || c.grupo_dre) : '';
+            return '<label><input type="checkbox" value="' + c.id + '" ' + (sel.includes(String(c.id)) ? 'checked' : '') +
+                ' onchange="_toggleCatAnaliseCat(this.value, this.checked)"> <span>' + (c.nome || '') + '</span><span class="ac-cats-grupo">' + g + '</span></label>';
+        }).join('') || '<div style="color:#999;font-size:12px;padding:6px;">Nenhuma categoria encontrada.</div>';
+        const info = document.getElementById('infoCatsAnaliseCat');
+        if (info) info.textContent = sel.length ? sel.length + ' selecionada(s) — só elas aparecem na tabela e no PDF.' : 'Nenhuma marcada = mostra todas.';
+    }
+    function _toggleCatAnaliseCat(id, marcado) {
+        let sel = _catsSelAnaliseCat();
+        id = String(id);
+        if (marcado) { if (!sel.includes(id)) sel.push(id); } else sel = sel.filter(x => x !== id);
+        _salvarCatsSelAnaliseCat(sel);
+        renderizarAnaliseCategorias();
+        const info = document.getElementById('infoCatsAnaliseCat');
+        if (info) info.textContent = sel.length ? sel.length + ' selecionada(s) — só elas aparecem na tabela e no PDF.' : 'Nenhuma marcada = mostra todas.';
+    }
+    function _marcarCatsAnaliseCat(marcar) {
+        if (!marcar) { _salvarCatsSelAnaliseCat([]); }
+        else {
+            const sel = _catsSelAnaliseCat();
+            document.querySelectorAll('#listaCatsAnaliseCat input[type="checkbox"]').forEach(cb => { if (!sel.includes(cb.value)) sel.push(cb.value); });
+            _salvarCatsSelAnaliseCat(sel);
+        }
+        renderizarAnaliseCategorias();
+        _listarCatsMenuAnaliseCat();
+    }
+    document.addEventListener('click', function (event) {
+        const menu = document.getElementById('menuCatsAnaliseCat');
+        if (!menu || !menu.classList.contains('aberto')) return;
+        if (!menu.contains(event.target) && !event.target.closest('.ac-cats-wrap')) menu.classList.remove('aberto');
+    });
+
+    // Chips de meses (usam o mesmo controle do botão "📅 Meses")
+    function _renderChipsMesesAnaliseCat() {
+        const box = document.getElementById('chipsMesesAnaliseCat');
+        if (!box) return;
+        let vis;
+        try { vis = _ctlMesesAnaliseCat.visiveis(); } catch (e) { return; }
+        const selMes = document.getElementById('filtroMesAnaliseCat');
+        box.classList.toggle('desativado', !!(selMes && selMes.value));
+        box.title = (selMes && selMes.value) ? 'Para escolher vários meses, deixe o filtro "Mês" em "Todos (Jan-Dez)".' : '';
+        let html = '';
+        _COLMESES_CURTOS.forEach((nome, i) => {
+            html += '<button type="button" class="ac-chip' + (vis.includes(i) ? ' on' : '') + '" onclick="_ctlMesesAnaliseCat.setMes(' + (i + 1) + ',' + (!vis.includes(i)) + ')">' + nome + '</button>';
+        });
+        html += '<span class="ac-sep"></span>' +
+            '<button type="button" class="ac-chip preset" onclick="_presetMesesAnaliseCat(\'todos\')">Todos</button>' +
+            '<button type="button" class="ac-chip preset" onclick="_presetMesesAnaliseCat(\'s1\')">1º sem</button>' +
+            '<button type="button" class="ac-chip preset" onclick="_presetMesesAnaliseCat(\'s2\')">2º sem</button>' +
+            '<button type="button" class="ac-chip preset" onclick="_presetMesesAnaliseCat(\'ate\')">Até mês atual</button>' +
+            '<button type="button" class="ac-chip preset" onclick="_presetMesesAnaliseCat(\'ult3\')">Últimos 3</button>';
+        box.innerHTML = html;
+    }
+    function _presetMesesAnaliseCat(tipo) {
+        const mesAtual = new Date().getMonth() + 1;
+        let meses = [1,2,3,4,5,6,7,8,9,10,11,12];
+        if (tipo === 's1') meses = [1,2,3,4,5,6];
+        else if (tipo === 's2') meses = [7,8,9,10,11,12];
+        else if (tipo === 'ate') meses = meses.filter(m => m <= mesAtual);
+        else if (tipo === 'ult3') meses = meses.filter(m => m <= mesAtual && m > mesAtual - 3);
+        _ctlMesesAnaliseCat.definirVisiveis(meses);
+    }
+
+    // Tamanho da letra da tabela (80% a 200%)
+    function _fonteAnaliseCat() {
+        try { const v = parseInt(localStorage.getItem(_chaveAnaliseCat('fonte')), 10); return v >= 80 && v <= 200 ? v : 100; } catch (e) { return 100; }
+    }
+    function _aplicarFonteAnaliseCat() {
+        const f = _fonteAnaliseCat();
+        const t = document.getElementById('tabelaAnaliseCategorias');
+        if (t) t.style.fontSize = (12.5 * f / 100).toFixed(2) + 'px';
+        const lbl = document.getElementById('fonteAnaliseCatLabel');
+        if (lbl) lbl.textContent = f + '%';
+    }
+    function ajustarFonteAnaliseCat(passo) {
+        const f = Math.min(200, Math.max(80, _fonteAnaliseCat() + passo * 10));
+        try { localStorage.setItem(_chaveAnaliseCat('fonte'), String(f)); } catch (e) {}
+        _aplicarFonteAnaliseCat();
+    }
+
     function renderizarAnaliseCategorias() {
         const cabecalho = document.getElementById('analiseCategoriasCabecalho');
         const corpo = document.getElementById('analiseCategoriasCorpo');
@@ -13881,7 +14283,13 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         const contasFiltradas = (filtroEmpresaCat && filtroEmpresaCat.value)
             ? contas.filter(c => c.empresa_id == filtroEmpresaCat.value)
             : contas;
-        const categorias = (dadosCache.categorias || []).filter(cat => !grupoSel || cat.grupo_dre === grupoSel);
+        let categorias = (dadosCache.categorias || []).filter(cat => !grupoSel || cat.grupo_dre === grupoSel);
+        // Filtro de categorias escolhidas (vazio = todas)
+        const catsSel = _catsSelAnaliseCat();
+        if (catsSel.length) categorias = categorias.filter(cat => catsSel.includes(String(cat.id)));
+        _atualizarBotaoCatsAnaliseCat();
+        _renderChipsMesesAnaliseCat();
+        _aplicarFonteAnaliseCat();
 
         const totalPorMes = {};
         mesesExibir.forEach(m => totalPorMes[m] = 0);
@@ -13929,7 +14337,7 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         let corpoHtml = '';
         linhas.forEach(linha => {
             const nomeEsc = (linha.nome || '').replace(/'/g, "\\'");
-            corpoHtml += '<tr style="cursor:pointer;" onclick="abrirLancamentosAnaliseCat(' + linha.catId + ',\'' + nomeEsc + '\')" title="Ver lançamentos"><td><b>' + linha.nome + '</b> <span style="color:#bbb;font-size:11px;">🔍</span></td><td style="font-size:11px;color:#666;">' + linha.grupoLabel + '</td>';
+            corpoHtml += '<tr style="cursor:pointer;" onclick="abrirLancamentosAnaliseCat(' + linha.catId + ',\'' + nomeEsc + '\')" title="Ver lançamentos"><td><b>' + linha.nome + '</b> <span style="color:#bbb;font-size:0.85em;">🔍</span></td><td style="font-size:0.88em;color:#666;">' + linha.grupoLabel + '</td>';
             mesesExibir.forEach(m => {
                 corpoHtml += '<td style="text-align:right;">' + (linha.valoresPorMes[m] ? fmt(linha.valoresPorMes[m]) : '<span style="color:#ccc;">-</span>') + '</td>';
             });
@@ -14001,24 +14409,38 @@ html[data-tema="escuro"] [style*=";color:#aaa"], html[data-tema="escuro"] [style
         if (selGrupo && selGrupo.value && selGrupo.selectedOptions[0]) filtrosAplicados.push('Grupo DRE: ' + selGrupo.selectedOptions[0].textContent.trim());
         if (selTipoDataPdf && selTipoDataPdf.selectedOptions[0]) filtrosAplicados.push('Base: ' + selTipoDataPdf.selectedOptions[0].textContent.trim());
         if (selStatusPdf && selStatusPdf.selectedOptions[0]) filtrosAplicados.push('Situacao: ' + selStatusPdf.selectedOptions[0].textContent.trim());
+        const catsSelPdf = _catsSelAnaliseCat();
+        if (catsSelPdf.length) {
+            const nomes = catsSelPdf.map(id => { const c = (dadosCache.categorias || []).find(x => String(x.id) === id); return c ? c.nome : null; }).filter(Boolean);
+            filtrosAplicados.push('Categorias: ' + (nomes.length > 6 ? nomes.length + ' selecionadas' : nomes.join(', ')));
+        }
+        let yTabela = 26;
         if (filtrosAplicados.length) {
             doc.setFontSize(8);
-            doc.text(normalizarTexto('Filtros: ' + filtrosAplicados.join(' | ')), 14, 27);
+            const linhasFiltro = doc.splitTextToSize(normalizarTexto('Filtros: ' + filtrosAplicados.join(' | ')), doc.internal.pageSize.getWidth() - 28);
+            doc.text(linhasFiltro, 14, 27);
+            yTabela = 27 + linhasFiltro.length * 3.5 + 1;
         }
 
         const table = document.getElementById('tabelaAnaliseCategorias');
         if (table && typeof doc.autoTable === 'function') {
             const nCols = table.querySelectorAll('thead th').length;
             const retrato = selOr && selOr.value === 'portrait';
-            const fonte = retrato ? (nCols > 10 ? 5 : 6.5) : (nCols > 12 ? 6 : 7);
+            // Menos colunas (meses ocultos) → letra maior no PDF
+            const fonte = retrato
+                ? (nCols <= 5 ? 9 : nCols <= 7 ? 8 : nCols <= 10 ? 6.5 : 5)
+                : (nCols <= 6 ? 10 : nCols <= 9 ? 8.5 : nCols <= 12 ? 7 : 6);
             doc.autoTable({
-                html: table, startY: filtrosAplicados.length ? 31 : 26, theme: 'grid',
+                html: table, startY: yTabela, theme: 'grid',
                 margin: { left: 8, right: 8 },
-                styles: { fontSize: fonte, cellPadding: 1.4, lineColor: [235, 235, 235], lineWidth: 0.1 },
+                styles: { fontSize: fonte, cellPadding: 1.4, lineColor: [225, 225, 225], lineWidth: 0.1 },
                 headStyles: { fillColor: [230,102,34], textColor: 255 },
+                footStyles: { fillColor: [235, 235, 235], textColor: 30, fontStyle: 'bold' },
                 didParseCell: function (data) {
                     data.cell.text = (data.cell.text || []).map(t => normalizarTexto(String(t).replace(/🔍/g, '').trim()));
                     if (data.column.index > 1) data.cell.styles.halign = 'right';
+                    // Linhas alternadas: uma clarinha, outra mais escura
+                    if (data.section === 'body') data.cell.styles.fillColor = (data.row.index % 2 === 0) ? [255, 255, 255] : [250, 222, 202];
                 }
             });
         }
